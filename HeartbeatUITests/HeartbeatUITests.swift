@@ -2,7 +2,7 @@
 //  HeartbeatUITests.swift
 //  HeartbeatUITests
 //
-//  Created by Lexi Diep on 10/24/20.
+//  Created by Heartbeat on 10/11/20.
 //
 
 import XCTest
