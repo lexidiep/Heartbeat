@@ -194,6 +194,22 @@
                                         <color key="textColor" systemColor="systemGray4Color"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CYZ-lJ-FfU">
+                                        <rect key="frame" x="25" y="691" width="369" height="160"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </imageView>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Mf8-iy-FZL">
+                                        <rect key="frame" x="20" y="77" width="374" height="283"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </imageView>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XWT-Pr-0U9">
+                                        <rect key="frame" x="20" y="483" width="177" height="160"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </imageView>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="j3B-mB-VOx">
+                                        <rect key="frame" x="217" y="483" width="177" height="160"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </imageView>
                                 </subviews>
                                 <viewLayoutGuide key="contentLayoutGuide" id="X9a-gy-YMD"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="Jpd-qb-cGy"/>
@@ -205,10 +221,14 @@
                     <navigationItem key="navigationItem" id="GPk-Zt-fl4"/>
                     <connections>
                         <outlet property="featured" destination="QWz-0a-ovb" id="GYf-lI-BxT"/>
+                        <outlet property="featured_panel" destination="Mf8-iy-FZL" id="fp5-Ww-PoR"/>
                         <outlet property="first_recomm" destination="kPm-xM-78M" id="IdL-CO-eIK"/>
+                        <outlet property="first_recomm_panel" destination="XWT-Pr-0U9" id="S41-xy-VLI"/>
                         <outlet property="scrollView" destination="voy-go-ELE" id="SyR-Tu-AQr"/>
                         <outlet property="second_recomm" destination="mej-v5-uF5" id="tmX-Y5-Ayj"/>
+                        <outlet property="second_recomm_panel" destination="j3B-mB-VOx" id="TTk-Y4-qM1"/>
                         <outlet property="third_recomm" destination="52z-RL-0T8" id="WO5-Dn-Csz"/>
+                        <outlet property="third_recomm_panel" destination="CYZ-lJ-FfU" id="gI6-Z6-6OH"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JUU-P4-zL1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
