@@ -17,6 +17,7 @@
 		8AD1015325440F250087773C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8AD1015125440F250087773C /* LaunchScreen.storyboard */; };
 		8AD1015E25440F250087773C /* HeartbeatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AD1015D25440F250087773C /* HeartbeatTests.swift */; };
 		8AD1016925440F250087773C /* HeartbeatUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AD1016825440F250087773C /* HeartbeatUITests.swift */; };
+		8AF3C4C2255D18D700E85397 /* HomeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AF3C4C1255D18D700E85397 /* HomeCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,7 @@
 		8AD1016425440F250087773C /* HeartbeatUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HeartbeatUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8AD1016825440F250087773C /* HeartbeatUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartbeatUITests.swift; sourceTree = "<group>"; };
 		8AD1016A25440F250087773C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8AF3C4C1255D18D700E85397 /* HomeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCollectionViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +109,7 @@
 				8AD1014525440F220087773C /* SceneDelegate.swift */,
 				8AD1014725440F220087773C /* LoginController.swift */,
 				8AB939522557C82800F2F02D /* HomeController.swift */,
+				8AF3C4C1255D18D700E85397 /* HomeCollectionViewCell.swift */,
 				8AD1014925440F230087773C /* Main.storyboard */,
 				8AD1014F25440F250087773C /* Assets.xcassets */,
 				8AD1015125440F250087773C /* LaunchScreen.storyboard */,
@@ -269,6 +272,7 @@
 				8AD1014E25440F230087773C /* Heartbeat.xcdatamodeld in Sources */,
 				8AD1014625440F220087773C /* SceneDelegate.swift in Sources */,
 				8AB939532557C82800F2F02D /* HomeController.swift in Sources */,
+				8AF3C4C2255D18D700E85397 /* HomeCollectionViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
