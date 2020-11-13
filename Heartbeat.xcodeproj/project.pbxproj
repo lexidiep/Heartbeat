@@ -19,6 +19,7 @@
 		8AD1016925440F250087773C /* HeartbeatUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AD1016825440F250087773C /* HeartbeatUITests.swift */; };
 		8AF3C4C2255D18D700E85397 /* HomeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AF3C4C1255D18D700E85397 /* HomeCollectionViewCell.swift */; };
 		8AF3C4CD255E58C100E85397 /* SearchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AF3C4CC255E58C100E85397 /* SearchTableViewCell.swift */; };
+		8AF3C4D4255E8FBD00E85397 /* SongInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AF3C4D3255E8FBC00E85397 /* SongInfo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 		8AD1016A25440F250087773C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8AF3C4C1255D18D700E85397 /* HomeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCollectionViewCell.swift; sourceTree = "<group>"; };
 		8AF3C4CC255E58C100E85397 /* SearchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTableViewCell.swift; sourceTree = "<group>"; };
+		8AF3C4D3255E8FBC00E85397 /* SongInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongInfo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +120,7 @@
 				8AD1015125440F250087773C /* LaunchScreen.storyboard */,
 				8AD1015425440F250087773C /* Info.plist */,
 				8AD1014C25440F230087773C /* Heartbeat.xcdatamodeld */,
+				8AF3C4D3255E8FBC00E85397 /* SongInfo.swift */,
 			);
 			path = Heartbeat;
 			sourceTree = "<group>";
@@ -274,6 +277,7 @@
 				8AD1014425440F220087773C /* AppDelegate.swift in Sources */,
 				8AD1014E25440F230087773C /* Heartbeat.xcdatamodeld in Sources */,
 				8AD1014625440F220087773C /* SceneDelegate.swift in Sources */,
+				8AF3C4D4255E8FBD00E85397 /* SongInfo.swift in Sources */,
 				8AB939532557C82800F2F02D /* HomeController.swift in Sources */,
 				8AF3C4C2255D18D700E85397 /* HomeCollectionViewCell.swift in Sources */,
 				8AF3C4CD255E58C100E85397 /* SearchTableViewCell.swift in Sources */,

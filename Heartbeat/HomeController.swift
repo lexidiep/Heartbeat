@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import SwiftUI
 
 class HomeController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
 
@@ -143,6 +142,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         songTable.dataSource = self
         songTable.rowHeight = 65
         self.songTable.tableFooterView = UIView()
+        
     }   // end viewDidLoad()
     
     
@@ -157,6 +157,11 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
 
         scrollView.contentSize = CGSize(width: view.frame.size.width, height: view.frame.size.height)
     }   // end viewDidLayoutSubviews()
+    
+    
+    @IBAction func searchFieldAction(_ sender: Any) {
+        print("search was pressed")
+    }
     
     
     // keyboard dismissal
@@ -223,6 +228,11 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             var result:Response1?
             do {
                 result = try JSONDecoder().decode(Response1.self, from: data)
+                DispatchQueue.main.async {
+                    self.songListCount = (result?.search?.count)!
+                    self.songTable.reloadData()
+                 }
+                
             }
             catch {
                 print("Failed to convert \(error.localizedDescription)")
@@ -232,26 +242,26 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 return
             }
 
-            self.songListCount = json.search!.count
+            self.songList.removeAll()
+            if json.search?.count != nil {
+                self.songListCount = json.search!.count
             
-            for i in 0...(self.songListCount-1) {
-                var newSong:song! = song()
-                newSong.Title = json.search![i].title!
-                newSong.Artist = json.search![i].artist!.name!
-                newSong.BPM = ""
-                self.songList.append(newSong)
-                songID = json.search![i].id!
-                self.getSongBPM(id: songID)
+                for i in 0...(self.songListCount-1) {
+                    var newSong:song! = song()
+                    newSong.Title = json.search![i].title!
+                    newSong.Artist = json.search![i].artist!.name!
+                    newSong.BPM = ""
+                    self.songList.append(newSong)
+                    songID = json.search![i].id!
+                    //self.getSongBPM(id: songID)
+                }
             }
-            print(self.songList[0]!.Title!)
-            print(self.songList[0]!.Artist!)
- 
         })
         task.resume()
         
     }   // end getData()
     
-    
+    /*
     // get bpm of song
     func getSongBPM(id:String) {
         let config2 = URLSessionConfiguration.default
@@ -292,7 +302,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         })
          task2.resume()
     }
-    
+    */
 
     // action for home nav button clicked
     @IBAction func homeClicked(_ sender: Any) {
@@ -386,18 +396,6 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }   // end profileClicked()
     
     
-    
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-    
-    
     // data source/delegates (collection views)
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         var count:Int = 0
@@ -451,92 +449,30 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }   // didSelectRowAt (tableView -> search page)
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        print(self.songListCount)
+        return self.songListCount
     }   // numberOfRowsInSection (tableView -> search page)
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = songTable.dequeueReusableCell(withIdentifier: "song_cell", for: indexPath)
-        
+        let cell = songTable.dequeueReusableCell(withIdentifier: "song_cell", for: indexPath) as! SearchTableViewCell
+        print("Song list count: \(songListCount)")
+        print("Song list: \(songList.count)")
+        cell.titleLabel?.text = songList[indexPath.row]?.Title!
+        cell.artistLabel?.text = songList[indexPath.row]?.Artist!
+                
         return cell
     }   // cellForRowAt (tableView -> search page)
     
+    
+    /*
+    // MARK: - Navigation
+
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destination.
+        // Pass the selected object to the new view controller.
+    }
+    */
+    
 }   // end HomeController class
 
-
-struct Response1: Codable {
-    let search: [SongSearch]?
-}
-
-struct FinalResponse: Codable {
-    let song: SongResult?
-}
-
-struct SongResult: Codable {
-    let id: String?
-    let title: String?
-    let uri: String?
-    let artist: ArtistInfo?
-    let tempo: String?
-    let time_sig: String?
-    let key_of: String?
-    let open_key: String?
-}
-
-struct SongSearch: Codable {
-    let id: String?
-    let title: String?
-    let uri: String?
-    let artist: ArtistInfo?
-}
-
-struct ArtistInfo: Codable {
-    let id: String?
-    let name: String?
-    let uri: String?
-    let img: String?
-    let genres: [String]?
-    let from: String?
-    let mbid: String?
-}
-
-/*
- SEARCH QUERY
- {"search":
-    [
-        {"id":"57633B",
-         "title":"Blinding Lights",
-         "uri":"https:\/\/getsongbpm.com\/song\/blinding-lights\/57633B",
-         "artist":
-            {"id":"jvJjY",
-             "name":"The Weeknd",
-             "uri":"https:\/\/getsongbpm.com\/artist\/the-weeknd\/jvJjY",
-             "img":"https:\/\/i.scdn.co\/image\/22c98f5bc7713315e8d3e48aa3ce8a98ce4ec873",
-             "genres":["pop","r&b"],
-             "from":"CA",
-             "mbid":"c8b03190-306c-4120-bb0b-6f2ebfc06ea9"
-            } //artist
-        } //song
-    ]
-  } //search
- 
- SONG QUERY
-    {"song":
-        {"id":"57633B",
-         "title":"Blinding Lights",
-         "uri":"https:\/\/getsongbpm.com\/song\/blinding-lights\/57633B",
-         "artist":
-            {"id":"jvJjY",
-             "name":"The Weeknd",
-             "uri":"https:\/\/getsongbpm.com\/artist\/the-weeknd\/jvJjY",
-             "img":"https:\/\/i.scdn.co\/image\/22c98f5bc7713315e8d3e48aa3ce8a98ce4ec873",
-             "genres":["pop","r&b"],
-             "from":"CA",
-             "mbid":"c8b03190-306c-4120-bb0b-6f2ebfc06ea9"
-            },
-         "tempo":"172",
-         "time_sig":"4\/4",
-         "key_of":"Fm",
-         "open_key":"9m"
-        } // details
-    } // song
- */
