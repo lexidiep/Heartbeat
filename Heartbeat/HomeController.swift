@@ -39,10 +39,10 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var searchIcon: UIImageView!
     @IBOutlet weak var songTable: UITableView!
     var songListCount:Int = 0
-    struct song {var Title:String?
+    struct songInfo {var Title:String?
         var Artist:String?
         var BPM:String?}
-    var songList = [song?]()
+    var songList = [songInfo?]()
     
     
     // saved page
@@ -142,6 +142,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         songTable.dataSource = self
         songTable.rowHeight = 65
         self.songTable.tableFooterView = UIView()
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(HomeController.dismissKeyboard))
+        searchView.addGestureRecognizer(tap)
         
     }   // end viewDidLoad()
     
@@ -158,6 +160,12 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         scrollView.contentSize = CGSize(width: view.frame.size.width, height: view.frame.size.height)
     }   // end viewDidLayoutSubviews()
     
+    @objc func dismissKeyboard() {
+        //Causes the view (or one of its embedded text fields) to resign the first responder status.
+        searchView.endEditing(true)
+        self.songTable.isHidden = false
+    }
+    
     
     @IBAction func searchFieldAction(_ sender: Any) {
         print("search was pressed")
@@ -168,6 +176,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         searchField.resignFirstResponder()
         searchSongs();
+        songTable.isHidden = false
         return true;
     }   // end textFieldShouldReturn()
     
@@ -175,10 +184,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     // searches for songs through api
     func searchSongs() {
         // API
-        let song = self.searchField.text
-        let songToSearch = song?.replacingOccurrences(of: " ", with: "+")
-        let url1 = "https://api.getsongbpm.com/search/?api_key=c42bacc54624edfd4f3d4365f8025bab&type=song&lookup=\(songToSearch!)"
-        getData(from: url1)
+        getData()
     }
 
     
@@ -211,14 +217,24 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     
     // api function
-    private func getData(from url: String) {
+    private func getData() {
+        let song = self.searchField.text
+        let searchReplace1 = song?.replacingOccurrences(of: " ", with: "+")
+        let searchReplace2 = searchReplace1?.replacingOccurrences(of: "’", with: "")
+        let searchReplace3 = searchReplace2?.replacingOccurrences(of: ",", with: "")
+        let searchReplace4 = searchReplace3?.replacingOccurrences(of: "-", with: "+")
+        let songToSearch = searchReplace4?.replacingOccurrences(of: ".", with: "")
+        print(songToSearch!)
+        let link = "https://api.getsongbpm.com/search/?api_key=c42bacc54624edfd4f3d4365f8025bab&type=song&lookup=\(songToSearch!)"
         var songID: String = ""
         let config = URLSessionConfiguration.default
         let session = URLSession(configuration: config)
         //var bpm: String = ""
         
+        guard let url = URL(string: link) else { print("found nil"); return }
+        
         // first data grab
-        let task = session.dataTask(with: URL(string: url)!, completionHandler:{ data, response, error in
+        let task = session.dataTask(with: url, completionHandler:{ data, response, error in
             guard let data = data, error == nil else {
                 print("Something went wrong")
                 return
@@ -247,7 +263,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 self.songListCount = json.search!.count
             
                 for i in 0...(self.songListCount-1) {
-                    var newSong:song! = song()
+                    var newSong:songInfo! = songInfo()
                     newSong.Title = json.search![i].title!
                     newSong.Artist = json.search![i].artist!.name!
                     newSong.BPM = ""
@@ -397,6 +413,11 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     
     // data source/delegates (collection views)
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        self.songTable.isHidden = true
+    }   // didBeginEditing (text field -> search page)
+    
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         var count:Int = 0
         if collectionView == slow_slide {
