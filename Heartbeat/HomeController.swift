@@ -8,7 +8,7 @@
 import UIKit
 import SwiftUI
 
-class HomeController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class HomeController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
 
     // home page
     @IBOutlet weak var featured: UILabel!
@@ -38,6 +38,12 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var searchButton: UIButton!
     @IBOutlet weak var searchView: UIView!
     @IBOutlet weak var searchIcon: UIImageView!
+    @IBOutlet weak var songTable: UITableView!
+    var songListCount:Int = 0
+    struct song {var Title:String?
+        var Artist:String?
+        var BPM:String?}
+    var songList = [song?]()
     
     
     // saved page
@@ -132,6 +138,11 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         // search page
         searchField.attributedPlaceholder = NSAttributedString(string: "Search for a song", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         searchField.layer.cornerRadius = 10
+        searchField.delegate = self
+        songTable.delegate = self
+        songTable.dataSource = self
+        songTable.rowHeight = 65
+        self.songTable.tableFooterView = UIView()
     }   // end viewDidLoad()
     
     
@@ -146,6 +157,24 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
 
         scrollView.contentSize = CGSize(width: view.frame.size.width, height: view.frame.size.height)
     }   // end viewDidLayoutSubviews()
+    
+    
+    // keyboard dismissal
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        searchField.resignFirstResponder()
+        searchSongs();
+        return true;
+    }   // end textFieldShouldReturn()
+    
+    
+    // searches for songs through api
+    func searchSongs() {
+        // API
+        let song = self.searchField.text
+        let songToSearch = song?.replacingOccurrences(of: " ", with: "+")
+        let url1 = "https://api.getsongbpm.com/search/?api_key=c42bacc54624edfd4f3d4365f8025bab&type=song&lookup=\(songToSearch!)"
+        getData(from: url1)
+    }
 
     
     // functions for panels' image auto-scrolls
@@ -174,6 +203,95 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         moderate_slide.scrollToItem(at: IndexPath(item: currentIndex, section: 0), at: .centeredHorizontally, animated: true)
         moderate_pageCtrl.currentPage = currentIndex
     }   // end moveToNextIndex()
+    
+    
+    // api function
+    private func getData(from url: String) {
+        var songID: String = ""
+        let config = URLSessionConfiguration.default
+        let session = URLSession(configuration: config)
+        //var bpm: String = ""
+        
+        // first data grab
+        let task = session.dataTask(with: URL(string: url)!, completionHandler:{ data, response, error in
+            guard let data = data, error == nil else {
+                print("Something went wrong")
+                return
+            }
+            
+            // have data
+            var result:Response1?
+            do {
+                result = try JSONDecoder().decode(Response1.self, from: data)
+            }
+            catch {
+                print("Failed to convert \(error.localizedDescription)")
+            }
+            
+            guard let json = result else {
+                return
+            }
+
+            self.songListCount = json.search!.count
+            
+            for i in 0...(self.songListCount-1) {
+                var newSong:song! = song()
+                newSong.Title = json.search![i].title!
+                newSong.Artist = json.search![i].artist!.name!
+                newSong.BPM = ""
+                self.songList.append(newSong)
+                songID = json.search![i].id!
+                self.getSongBPM(id: songID)
+            }
+            print(self.songList[0]!.Title!)
+            print(self.songList[0]!.Artist!)
+ 
+        })
+        task.resume()
+        
+    }   // end getData()
+    
+    
+    // get bpm of song
+    func getSongBPM(id:String) {
+        let config2 = URLSessionConfiguration.default
+        let session2 = URLSession(configuration: config2)
+        //var songBPM: String = ""
+        
+        let url2 = "https://api.getsongbpm.com/song/?api_key=c42bacc54624edfd4f3d4365f8025bab&id=\(id)"
+        
+        //print(url2)
+        
+        // final data grab
+        let task2 = session2.dataTask(with: URL(string: url2)!, completionHandler:{ data, response, error in
+            guard let data = data, error == nil else {
+                print("Something went wrong")
+                return
+            }
+            
+            // have data
+            var result:FinalResponse?
+            do {
+                result = try JSONDecoder().decode(FinalResponse.self, from: data)
+            }
+            catch {
+                print("Failed to convert \(error.localizedDescription)")
+            }
+            
+            guard let json = result else {
+                return
+            }
+            
+            if json.song!.tempo != nil {
+                //songBPM = json.song!.tempo!
+                //print("BPM: \(json.song!.tempo!)\n")
+            }
+            else {
+                //songBPM = "error"
+            }
+        })
+         task2.resume()
+    }
     
 
     // action for home nav button clicked
@@ -280,7 +398,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     */
     
     
-    // data source/delegates
+    // data source/delegates (collection views)
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         var count:Int = 0
         if collectionView == slow_slide {
@@ -320,39 +438,69 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
-    }
+    }   // collectionViewLayout (collectionView -> home page)
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 0
     }   // layout (collectionView -> home page)
+    
+    
+    // data source/delegates (table view)
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print("you selected a row")
+    }   // didSelectRowAt (tableView -> search page)
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 3
+    }   // numberOfRowsInSection (tableView -> search page)
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = songTable.dequeueReusableCell(withIdentifier: "song_cell", for: indexPath)
+        
+        return cell
+    }   // cellForRowAt (tableView -> search page)
+    
 }   // end HomeController class
 
 
-let url = "https://api.getsongbpm.com/search/?api_key=c42bacc54624edfd4f3d4365f8025bab&type=song&lookup="
+struct Response1: Codable {
+    let search: [SongSearch]?
+}
 
-struct Response: Codable {
-    let search: SongSearch
+struct FinalResponse: Codable {
+    let song: SongResult?
+}
+
+struct SongResult: Codable {
+    let id: String?
+    let title: String?
+    let uri: String?
+    let artist: ArtistInfo?
+    let tempo: String?
+    let time_sig: String?
+    let key_of: String?
+    let open_key: String?
 }
 
 struct SongSearch: Codable {
-    let id: String
-    let title: String
-    let uri: String
-    let artist: ArtistInfo
+    let id: String?
+    let title: String?
+    let uri: String?
+    let artist: ArtistInfo?
 }
 
 struct ArtistInfo: Codable {
-    let id: String
-    let name: String
-    let uri: String
-    let img: String
-    let genres: [String]
-    let from: String
-    let mbid: String
+    let id: String?
+    let name: String?
+    let uri: String?
+    let img: String?
+    let genres: [String]?
+    let from: String?
+    let mbid: String?
 }
 
 /*
- WHAT A SEARCH RESULT FOR A SONG LOOKS LIKE
+ SEARCH QUERY
  {"search":
     [
         {"id":"57633B",
@@ -370,4 +518,25 @@ struct ArtistInfo: Codable {
         } //song
     ]
   } //search
+ 
+ SONG QUERY
+    {"song":
+        {"id":"57633B",
+         "title":"Blinding Lights",
+         "uri":"https:\/\/getsongbpm.com\/song\/blinding-lights\/57633B",
+         "artist":
+            {"id":"jvJjY",
+             "name":"The Weeknd",
+             "uri":"https:\/\/getsongbpm.com\/artist\/the-weeknd\/jvJjY",
+             "img":"https:\/\/i.scdn.co\/image\/22c98f5bc7713315e8d3e48aa3ce8a98ce4ec873",
+             "genres":["pop","r&b"],
+             "from":"CA",
+             "mbid":"c8b03190-306c-4120-bb0b-6f2ebfc06ea9"
+            },
+         "tempo":"172",
+         "time_sig":"4\/4",
+         "key_of":"Fm",
+         "open_key":"9m"
+        } // details
+    } // song
  */
