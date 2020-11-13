@@ -143,6 +143,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         songTable.rowHeight = 65
         self.songTable.tableFooterView = UIView()
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(HomeController.dismissKeyboard))
+        tap.cancelsTouchesInView = false
         searchView.addGestureRecognizer(tap)
         
     }   // end viewDidLoad()
@@ -466,7 +467,9 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     // data source/delegates (table view)
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("you selected a row")
+        let indexPath = songTable.indexPathForSelectedRow!
+        let selectedCell = songTable.cellForRow(at: indexPath) as! SearchTableViewCell
+        print("You selected:\nTitle: \(selectedCell.titleLabel!.text!), Artist: \(selectedCell.artistLabel!.text!)")
     }   // didSelectRowAt (tableView -> search page)
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
