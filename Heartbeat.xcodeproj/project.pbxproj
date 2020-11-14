@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8A15D15A255F430D00A06B7E /* CreateAccountController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A15D159255F430D00A06B7E /* CreateAccountController.swift */; };
+		8A15D162255FA0F000A06B7E /* UserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A15D161255FA0EF00A06B7E /* UserData.swift */; };
 		8AB939532557C82800F2F02D /* HomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AB939522557C82800F2F02D /* HomeController.swift */; };
 		8AD1014425440F220087773C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AD1014325440F220087773C /* AppDelegate.swift */; };
 		8AD1014625440F220087773C /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AD1014525440F220087773C /* SceneDelegate.swift */; };
@@ -42,6 +43,7 @@
 
 /* Begin PBXFileReference section */
 		8A15D159255F430D00A06B7E /* CreateAccountController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountController.swift; sourceTree = "<group>"; };
+		8A15D161255FA0EF00A06B7E /* UserData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserData.swift; sourceTree = "<group>"; };
 		8AB939522557C82800F2F02D /* HomeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeController.swift; sourceTree = "<group>"; };
 		8AD1014025440F220087773C /* Heartbeat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Heartbeat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8AD1014325440F220087773C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -115,6 +117,7 @@
 				8AD1014525440F220087773C /* SceneDelegate.swift */,
 				8AD1014725440F220087773C /* LoginController.swift */,
 				8A15D159255F430D00A06B7E /* CreateAccountController.swift */,
+				8A15D161255FA0EF00A06B7E /* UserData.swift */,
 				8AB939522557C82800F2F02D /* HomeController.swift */,
 				8AF3C4C1255D18D700E85397 /* HomeCollectionViewCell.swift */,
 				8AF3C4CC255E58C100E85397 /* SearchTableViewCell.swift */,
@@ -284,6 +287,7 @@
 				8AF3C4D4255E8FBD00E85397 /* SongInfo.swift in Sources */,
 				8AB939532557C82800F2F02D /* HomeController.swift in Sources */,
 				8AF3C4C2255D18D700E85397 /* HomeCollectionViewCell.swift in Sources */,
+				8A15D162255FA0F000A06B7E /* UserData.swift in Sources */,
 				8AF3C4CD255E58C100E85397 /* SearchTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -19,6 +19,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var topSplitBar: UILabel!
     @IBOutlet weak var homeButton: UIButton!
     @IBOutlet weak var homeIcon: UIImageView!
+    @IBOutlet weak var welcomeLabel: UILabel!
+    var users_name: String?
     
     
     // for recommended panels (home page)
@@ -95,6 +97,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        welcomeLabel.text = "Hi, \(users_name!)"
         
         // featured panel attributes
         featured.layer.borderColor = UIColor.lightGray.cgColor
@@ -225,7 +229,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         let searchReplace3 = searchReplace2?.replacingOccurrences(of: ",", with: "")
         let searchReplace4 = searchReplace3?.replacingOccurrences(of: "-", with: "+")
         let songToSearch = searchReplace4?.replacingOccurrences(of: ".", with: "")
-        print(songToSearch!)
+        //print(songToSearch!)
         let link = "https://api.getsongbpm.com/search/?api_key=c42bacc54624edfd4f3d4365f8025bab&type=song&lookup=\(songToSearch!)"
         var songID: String = ""
         let config = URLSessionConfiguration.default
@@ -469,18 +473,18 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let indexPath = songTable.indexPathForSelectedRow!
         let selectedCell = songTable.cellForRow(at: indexPath) as! SearchTableViewCell
-        print("You selected:\nTitle: \(selectedCell.titleLabel!.text!), Artist: \(selectedCell.artistLabel!.text!)")
+        //print("You selected:\nTitle: \(selectedCell.titleLabel!.text!), Artist: \(selectedCell.artistLabel!.text!)")
     }   // didSelectRowAt (tableView -> search page)
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print(self.songListCount)
+        //print(self.songListCount)
         return self.songListCount
     }   // numberOfRowsInSection (tableView -> search page)
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = songTable.dequeueReusableCell(withIdentifier: "song_cell", for: indexPath) as! SearchTableViewCell
-        print("Song list count: \(songListCount)")
-        print("Song list: \(songList.count)")
+        //print("Song list count: \(songListCount)")
+        //print("Song list: \(songList.count)")
         cell.titleLabel?.text = songList[indexPath.row]?.Title!
         cell.artistLabel?.text = songList[indexPath.row]?.Artist!
                 

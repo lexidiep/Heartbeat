@@ -8,25 +8,7 @@
 import UIKit
 
 class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
-    
-    // variables
-    // struct for saved songs by user
-    struct saved {
-        var title:String?
-        var artist: String?
-        var id:String?
-    }
-    // struct for individual user data
-    struct userInfo {
-        var username:String?
-        var email:String?
-        var password:String?
-        var savedSongs:[saved?]
-        var securityQuestion:String?
-        var securityAnswer: String?
-    }
-    var users = [userInfo?]()   // array of structs used to store user information
-    
+
     // create username page
     @IBOutlet weak var usernameView: UIView!
     @IBOutlet weak var usernameTitleLabel: UILabel!
@@ -93,15 +75,49 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
         securityField.delegate = self
         securityField.addTarget(self, action: #selector(CreateAccountController.textFieldDidChange(_:)), for: UIControl.Event.editingChanged)
         
+        //debugging
+        /*
+        if (UIApplication.shared.delegate as! AppDelegate).userData.count != 0 {
+            print("\((UIApplication.shared.delegate as! AppDelegate).userData.count)) In CreateAccountScreen:")
+            for i in 0...(UIApplication.shared.delegate as! AppDelegate).userData.count-1 {
+                print((UIApplication.shared.delegate as! AppDelegate).userData[i]!.email!)
+            }
+        }
+        else {
+            print("(0) In CreateAccountScreen: empty")
+        }
+       */
+        
     }   // end viewDidLoad()
     
 
     // button enabled on user input
     @objc func textFieldDidChange(_ textField : UITextField){
+        var usernameTaken:Bool = false
+        var emailUsed:Bool = false
+        
         if textField == usernameField {
-            if usernameField.text != "" {
+            for user in (UIApplication.shared.delegate as! AppDelegate).userData {
+                if (user?.username)?.lowercased() == (usernameField.text)?.lowercased() {
+                    usernameTaken = true
+                }
+            }
+            if usernameField.text != "" && !usernameTaken {
                 usernameNextButton.alpha = 1.0
                 usernameNextButton.isEnabled = true
+                errorMessage.isHidden = true
+                usernameField.layer.borderWidth = 0.0
+                usernameTaken = false
+                
+            }
+            else if usernameTaken {
+                errorMessage.isHidden = false
+                errorMessage.text = "That username is taken"
+                usernameNextButton.alpha = 0.7
+                usernameNextButton.isEnabled = false
+                usernameField.layer.borderWidth = 1.0
+                usernameField.layer.cornerRadius = 5.0
+                usernameField.layer.borderColor = UIColor.red.cgColor
             }
             else {
                 usernameNextButton.alpha = 0.7
@@ -109,11 +125,26 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
             }
         }
         else if textField == emailField {
-            if emailField.text != "" && emailField.text!.contains("@") && (emailField.text!.suffix(4) == ".com" || emailField.text!.suffix(4) == ".net" || emailField.text!.suffix(4) == ".org" || emailField.text!.suffix(4) == ".edu" || emailField.text!.suffix(4) == ".gov") {
+            for user in (UIApplication.shared.delegate as! AppDelegate).userData {
+                if (user?.email)?.lowercased() == (emailField.text)?.lowercased() {
+                    emailUsed = true
+                }
+            }
+            if emailUsed {
+                emailNextButton.alpha = 0.7
+                emailNextButton.isEnabled = false
+                emailErrorMessage.text = "That email address is already in use"
+                emailErrorMessage.isHidden = false
+                emailField.layer.borderWidth = 1.0
+                emailField.layer.cornerRadius = 5.0
+                emailField.layer.borderColor = UIColor.red.cgColor
+            }
+            else if emailField.text != "" && emailField.text!.contains("@") && (emailField.text!.suffix(4) == ".com" || emailField.text!.suffix(4) == ".net" || emailField.text!.suffix(4) == ".org" || emailField.text!.suffix(4) == ".edu" || emailField.text!.suffix(4) == ".gov" && !emailUsed) {
                 emailNextButton.alpha = 1.0
                 emailNextButton.isEnabled = true
                 emailErrorMessage.isHidden = true
                 emailField.layer.borderWidth = 0.0
+                emailUsed = false
             }
             else {
                 emailNextButton.alpha = 0.7
@@ -124,6 +155,7 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
                 emailField.layer.cornerRadius = 5.0
                 emailField.layer.borderColor = UIColor.red.cgColor
             }
+ 
         }
         else if textField == passwordField {
             if passwordField.text!.count < 8 {
@@ -209,7 +241,17 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
     }   // end passwordBack
     
     
-    // securitynext should go to login screen and add all info to array
+    // go back to login screen and add all info to users array
+    @IBAction func securityNext(_ sender: Any) {
+        
+        // warning: this is just a test -- user's saved songs needs to be assigned to savedSongs in parameter
+        let createTempUser:userInfo = userInfo(username: usernameField.text, email: emailField.text, password: passwordField.text, savedSongs: [], securityQuestion: pickerData[questionPicker.selectedRow(inComponent: 0)], securityAnswer: securityField.text)
+        
+        (UIApplication.shared.delegate as! AppDelegate).userData.append(createTempUser)
+        
+        backToLoginView()
+    }   // end securityNext
+    
     
     // go back to password page
     @IBAction func securityBack(_ sender: Any) {
@@ -220,12 +262,17 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
     
     // cancel create account and go back to login screen
     @IBAction func cancelCreateAccount(_ sender: Any) {
+        backToLoginView()
+    }   // end cancelCreateAccount
+    
+    
+    // function to go back to login screen (for cancel button and complete button)
+    func backToLoginView() {
         let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
         let loginViewController = storyBoard.instantiateViewController(withIdentifier: "LoginScreen") as! LoginController
         loginViewController.modalPresentationStyle = .fullScreen
         self.viewSlideInFromTop(controller: loginViewController)
-        
-    }   // end cancelCreateAccount
+    }
     
     
     // slide from top animation for cancel create account
@@ -283,20 +330,7 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
     
     // Capture the picker view selection
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        //
     }   // didSelectRow (pickerView -> security page)
 
-    
-    
-    
-    /*
-    // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
-}
+}   // end CreateAccountController

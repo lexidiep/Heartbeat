@@ -31,7 +31,7 @@
                                 <textInputTraits key="textInputTraits" returnKeyType="next" enablesReturnKeyAutomatically="YES"/>
                             </textField>
                             <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" restorationIdentifier="password" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="h09-2x-kw9">
-                                <rect key="frame" x="50" y="412" width="315" height="34"/>
+                                <rect key="frame" x="50" y="417" width="315" height="34"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.12984204290000001" green="0.12984612579999999" blue="0.12984395030000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -39,7 +39,7 @@
                                 <textInputTraits key="textInputTraits" returnKeyType="go" secureTextEntry="YES"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" restorationIdentifier="login_button" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0gx-5L-xae">
-                                <rect key="frame" x="50" y="454" width="315" height="35"/>
+                                <rect key="frame" x="50" y="459" width="315" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" systemColor="systemTealColor"/>
                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="18"/>
@@ -47,11 +47,11 @@
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
-                                    <segue destination="SF3-sz-NiH" kind="presentation" modalPresentationStyle="fullScreen" id="5da-gT-upG"/>
+                                    <action selector="loginTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="JT6-Yn-sEU"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XmE-SC-t6p">
-                                <rect key="frame" x="139" y="509" width="143" height="34"/>
+                                <rect key="frame" x="139" y="514" width="143" height="34"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="18"/>
                                 <state key="normal" title="Forgot Password?">
@@ -93,8 +93,8 @@
                                     <segue destination="JhB-4n-BVt" kind="presentation" modalPresentationStyle="fullScreen" id="AHS-qz-sa5"/>
                                 </connections>
                             </button>
-                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Error Message" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a1a-kv-rdJ">
-                                <rect key="frame" x="154" y="350" width="113" height="22"/>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Error Message" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a1a-kv-rdJ">
+                                <rect key="frame" x="20" y="358" width="374" height="22"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="18"/>
                                 <color key="textColor" systemColor="systemRedColor"/>
@@ -108,8 +108,10 @@
                         <outlet property="createAcctButton" destination="lyx-Dg-ZDw" id="ghL-1O-gxf"/>
                         <outlet property="errorMessage" destination="a1a-kv-rdJ" id="Qc9-dW-OdU"/>
                         <outlet property="loginButton" destination="0gx-5L-xae" id="w8U-IK-3g3"/>
+                        <outlet property="loginView" destination="8bC-Xf-vdC" id="h7t-yw-6NZ"/>
                         <outlet property="passwordField" destination="h09-2x-kw9" id="mg7-9V-kvH"/>
                         <outlet property="usernameField" destination="F5e-TU-zFG" id="lnq-YR-zhb"/>
+                        <segue destination="SF3-sz-NiH" kind="presentation" identifier="loginToHome" modalPresentationStyle="fullScreen" id="EJ5-2b-37P"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -169,8 +171,8 @@
                                             <action selector="usernameNext:" destination="JhB-4n-BVt" eventType="touchUpInside" id="ceI-iU-Roh"/>
                                         </connections>
                                     </button>
-                                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Error Message" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XSl-ws-ZGA">
-                                        <rect key="frame" x="151" y="213" width="113" height="22"/>
+                                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Error Message" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XSl-ws-ZGA">
+                                        <rect key="frame" x="24" y="213" width="367" height="22"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="18"/>
                                         <color key="textColor" systemColor="systemRedColor"/>
@@ -256,7 +258,7 @@
                                         <color key="backgroundColor" red="0.12984204290000001" green="0.12984612579999999" blue="0.12984395030000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="18"/>
-                                        <textInputTraits key="textInputTraits" keyboardType="emailAddress" returnKeyType="next" enablesReturnKeyAutomatically="YES" secureTextEntry="YES" textContentType="password"/>
+                                        <textInputTraits key="textInputTraits" returnKeyType="next" enablesReturnKeyAutomatically="YES" secureTextEntry="YES" textContentType="password"/>
                                     </textField>
                                     <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" restorationIdentifier="confirmPassword" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Confirm Password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gh6-NE-4Rd" userLabel="Confirm Password Field">
                                         <rect key="frame" x="50" y="236" width="315" height="34"/>
@@ -264,7 +266,7 @@
                                         <color key="backgroundColor" red="0.12984204290000001" green="0.12984612579999999" blue="0.12984395030000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="18"/>
-                                        <textInputTraits key="textInputTraits" keyboardType="emailAddress" returnKeyType="next" enablesReturnKeyAutomatically="YES" secureTextEntry="YES" textContentType="password"/>
+                                        <textInputTraits key="textInputTraits" returnKeyType="next" enablesReturnKeyAutomatically="YES" secureTextEntry="YES" textContentType="password"/>
                                     </textField>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3r0-Yy-TMH" userLabel="passwordBackButton">
                                         <rect key="frame" x="13" y="56" width="40" height="40"/>
@@ -287,7 +289,6 @@
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
                                         <connections>
-                                            <action selector="emailNext:" destination="JhB-4n-BVt" eventType="touchUpInside" id="e2o-yD-WrP"/>
                                             <action selector="passwordNext:" destination="JhB-4n-BVt" eventType="touchUpInside" id="UbE-f3-zqQ"/>
                                         </connections>
                                     </button>
@@ -328,7 +329,6 @@
                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large" weight="semibold"/>
                                         </state>
                                         <connections>
-                                            <action selector="passwordBack:" destination="JhB-4n-BVt" eventType="touchUpInside" id="Y0M-Zb-Jjk"/>
                                             <action selector="securityBack:" destination="JhB-4n-BVt" eventType="touchUpInside" id="R6E-WU-eKZ"/>
                                         </connections>
                                     </button>
@@ -347,7 +347,7 @@
                                         <color key="backgroundColor" red="0.12984204290000001" green="0.12984612579999999" blue="0.12984395030000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="18"/>
-                                        <textInputTraits key="textInputTraits" keyboardType="emailAddress" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
+                                        <textInputTraits key="textInputTraits" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
                                     </textField>
                                     <button opaque="NO" alpha="0.69999998807907104" contentMode="scaleToFill" fixedFrame="YES" restorationIdentifier="securityNextButton" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TA9-Jf-4Of" userLabel="securityNextButton">
                                         <rect key="frame" x="50" y="395" width="315" height="35"/>
@@ -358,8 +358,7 @@
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
                                         <connections>
-                                            <action selector="emailNext:" destination="JhB-4n-BVt" eventType="touchUpInside" id="uek-BK-4xf"/>
-                                            <action selector="passwordNext:" destination="JhB-4n-BVt" eventType="touchUpInside" id="QrJ-Pf-5XM"/>
+                                            <action selector="securityNext:" destination="JhB-4n-BVt" eventType="touchUpInside" id="E2o-rk-agz"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -406,7 +405,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Jhg-AO-h1X" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="137.68115942028987" y="770.75892857142856"/>
+            <point key="canvasLocation" x="137.68115942028987" y="811.60714285714278"/>
         </scene>
         <!--Home Controller-->
         <scene sceneID="qVa-ei-aOw">
@@ -462,8 +461,8 @@
                                         <color key="textColor" systemColor="systemGray4Color"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" restorationIdentifier="hi_label" text="Hi, " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tKw-MG-Ebz">
-                                        <rect key="frame" x="20" y="35" width="41" height="34"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" restorationIdentifier="hi_label" text="Hi, " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tKw-MG-Ebz" userLabel="Welcome Label">
+                                        <rect key="frame" x="20" y="35" width="374" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="28"/>
                                         <color key="textColor" systemColor="systemGray4Color"/>
@@ -856,6 +855,7 @@
                         <outlet property="topSplitBar" destination="r07-fj-ZPh" id="98n-Iy-KrV"/>
                         <outlet property="upbeat_pageCtrl" destination="4hX-4G-h4T" id="Src-Aj-cxp"/>
                         <outlet property="upbeat_slide" destination="OIg-Nf-17l" id="42j-UQ-yRP"/>
+                        <outlet property="welcomeLabel" destination="tKw-MG-Ebz" id="4dX-U2-vQY"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JUU-P4-zL1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

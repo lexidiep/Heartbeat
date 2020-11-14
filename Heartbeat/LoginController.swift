@@ -15,25 +15,7 @@ class LoginController: UIViewController {
     @IBOutlet weak var errorMessage: UILabel!
     @IBOutlet weak var usernameField: UITextField!
     @IBOutlet weak var passwordField: UITextField!
-    
-    // variables
-    // struct for saved songs by user
-    struct saved {
-        var title:String?
-        var artist: String?
-        var id:String?
-    }
-    // struct for individual user data
-    struct userInfo {
-        var firstName: String?
-        var lastName: String?
-        var email:String?
-        var password:String?
-        var username:String?
-        var savedSongs:[saved?]
-        var securityAnswer: String?
-    }
-    var users = [userInfo?]()   // array of structs used to store user information
+    @IBOutlet var loginView: UIView!
     
     
     override func viewDidLoad() {
@@ -41,9 +23,103 @@ class LoginController: UIViewController {
         loginButton.layer.cornerRadius = 5
         createAcctButton.layer.cornerRadius = 5
         
+        // username field
         usernameField.attributedPlaceholder = NSAttributedString(string: "Username or email", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
+        
+        // password field
         passwordField.attributedPlaceholder = NSAttributedString(string: "Password", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
-    }
+        
+        
+        // debugging
+        /*
+        if ((UIApplication.shared.delegate as! AppDelegate).userData.count != 0) {
+            print("(\((UIApplication.shared.delegate as! AppDelegate).userData.count)) In LoginScreen: ")
+            for i in 0...(UIApplication.shared.delegate as! AppDelegate).userData.count-1 {
+                print((UIApplication.shared.delegate as! AppDelegate).userData[i]!.username!)
+            }
+        }
+        else {
+            print("(0) In LoginScreen: empty")
+        }
+    */
+        
+        
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(HomeController.dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        loginView.addGestureRecognizer(tap)
+ 
+    }   // end viewDidLoad()
+    
+    
+    @IBAction func loginTapped(_ sender: Any) {
+        var userExists:Bool = false
+        var passwordCorrect:Bool = false
+        
+        for user in (UIApplication.shared.delegate as! AppDelegate).userData {
+            if (user?.username)?.lowercased() == (usernameField.text)?.lowercased() || (user?.email)?.lowercased() == (usernameField.text?.lowercased()) {
+                userExists = true
 
-}
+                if user?.password == passwordField.text {
+                    passwordCorrect = true
+                }
+            }
+        }
+
+        if userExists && passwordCorrect {
+            errorMessage.isHidden = true
+            passwordField.layer.borderWidth = 0.0
+            usernameField.layer.borderWidth = 0.0
+            performSegue(withIdentifier: "loginToHome", sender: self)
+        }
+        else if usernameField.text == "" {
+            errorMessage.isHidden = false
+            errorMessage.text = "Please enter your username or email"
+            usernameField.layer.borderWidth = 1.0
+            usernameField.layer.cornerRadius = 5.0
+            usernameField.layer.borderColor = UIColor.red.cgColor
+            passwordField.layer.borderWidth = 0.0
+        }
+        else if !userExists {
+            errorMessage.isHidden = false
+            errorMessage.text = "User does not exist"
+            usernameField.layer.borderWidth = 1.0
+            usernameField.layer.cornerRadius = 5.0
+            usernameField.layer.borderColor = UIColor.red.cgColor
+            passwordField.layer.borderWidth = 0.0
+        }
+        else if passwordField.text == "" {
+            errorMessage.isHidden = false
+            errorMessage.text = "Please enter your password"
+            passwordField.layer.borderWidth = 1.0
+            passwordField.layer.cornerRadius = 5.0
+            passwordField.layer.borderColor = UIColor.red.cgColor
+            usernameField.layer.borderWidth = 0.0
+        }
+        else if userExists && !passwordCorrect {
+            errorMessage.isHidden = false
+            errorMessage.text = "Password is incorrect"
+            passwordField.layer.borderWidth = 1.0
+            passwordField.layer.cornerRadius = 5.0
+            passwordField.layer.borderColor = UIColor.red.cgColor
+            usernameField.layer.borderWidth = 0.0
+        }
+        
+    }   // end loginTapped
+    
+    
+    @objc func dismissKeyboard() {
+        //Causes the view (or one of its embedded text fields) to resign the first responder status.
+        loginView.endEditing(true)
+    }
+    
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "loginToHome" {
+            let destination = segue.destination as! HomeController
+            destination.users_name = usernameField.text!
+        }
+    }
+    
+    
+}   // end LoginController
 
