@@ -6,8 +6,9 @@
 //
 
 import UIKit
+import iCarousel
 
-class HomeController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
+class HomeController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, iCarouselDataSource {
 
     // home page
     @IBOutlet weak var featured: UILabel!
@@ -20,12 +21,15 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var homeButton: UIButton!
     @IBOutlet weak var homeIcon: UIImageView!
     @IBOutlet weak var welcomeLabel: UILabel!
+    let featCarousel: iCarousel = {
+        let view = iCarousel()
+        view.type = .coverFlow
+        return view
+    }()
     var users_name: String?
     
     
     // for recommended panels (home page)
-    @IBOutlet weak var featured_slide: UICollectionView!
-    @IBOutlet weak var featured_pageCtrl: UIPageControl!
     @IBOutlet weak var upbeat_slide: UICollectionView!
     @IBOutlet weak var upbeat_pageCtrl: UIPageControl!
     @IBOutlet weak var slow_slide: UICollectionView!
@@ -94,6 +98,13 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                       UIImage(named:"power_kanye_west_152bpm") ,
                       UIImage(named:"thunder_imagine_dragons_166bpm") ]
     
+    var featImages = [UIImage(named: "juice-wrld-ellie-goulding") ,
+                      UIImage(named: "mac_miller") ,
+                      UIImage(named: "billie") ,
+                      UIImage(named: "lana") ,
+                      UIImage(named: "khalid") ,
+                      UIImage(named: "alicia_keys") ]
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -104,9 +115,12 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         featured.layer.borderColor = UIColor.lightGray.cgColor
         featured.layer.borderWidth = 1.0
         featured.layer.cornerRadius = 5
-        featured_slide.layer.cornerRadius = 5
-        //featured_slide.delegate = self
+        //featured_slide.layer.cornerRadius = 5
         //featured_slide.dataSource = self
+        //featured_slide.delegate = self
+        scrollView.addSubview(featCarousel)
+        featCarousel.dataSource = self
+        featCarousel.frame = CGRect(x: 0, y: 80, width: self.view.frame.width, height: 283)
         
         // upbeat panel attributes
         first_recomm.layer.borderColor = UIColor.lightGray.cgColor
@@ -457,6 +471,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             mod_cell.moderate_image.image = moderateImages[indexPath.row]
             return mod_cell
         }
+        // featured cells
+
         return UICollectionViewCell()
     }   // cellForItemAt (collectionView -> home page)
     
@@ -490,6 +506,22 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 
         return cell
     }   // cellForRowAt (tableView -> search page)
+    
+    
+    // Featured Panel Carousel
+    func numberOfItems(in carousel: iCarousel) -> Int {
+        return 6
+    }
+    
+    func carousel(_ carousel: iCarousel, viewForItemAt index: Int, reusing view: UIView?) -> UIView {
+        let view = UIView(frame:CGRect(x: 0, y: 80, width: 374, height: 283))
+        let imageView = UIImageView()
+        imageView.frame = CGRect(x: 5, y: 0, width: 374, height: 283)
+        view.addSubview(imageView)
+        imageView.contentMode = .scaleAspectFill
+        imageView.image = featImages[index]
+        return view
+    }
     
     
     /*

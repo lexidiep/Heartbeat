@@ -114,9 +114,17 @@ class LoginController: UIViewController {
     
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        var name:String = ""
+        
+        for user in (UIApplication.shared.delegate as! AppDelegate).userData {
+            if (user?.username)?.lowercased() == (usernameField.text)?.lowercased() || (user?.email)?.lowercased() == (usernameField.text?.lowercased()) {
+                name = user!.username!
+            }
+        }
+        
         if segue.identifier == "loginToHome" {
             let destination = segue.destination as! HomeController
-            destination.users_name = usernameField.text!
+            destination.users_name = name
         }
     }
     

@@ -8,7 +8,8 @@
 import UIKit
 
 class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
-
+    @IBOutlet var allView: UIView!
+    
     // create username page
     @IBOutlet weak var usernameView: UIView!
     @IBOutlet weak var usernameTitleLabel: UILabel!
@@ -88,7 +89,16 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
         }
        */
         
+        // username
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(CreateAccountController.dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        allView.addGestureRecognizer(tap)
     }   // end viewDidLoad()
+    
+    @objc func dismissKeyboard() {
+        allView.endEditing(true)
+    }   // end dismissKeyboard()
+ 
     
 
     // button enabled on user input

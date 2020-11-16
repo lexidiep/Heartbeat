@@ -381,6 +381,7 @@
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
                     <connections>
+                        <outlet property="allView" destination="cpg-Ig-lJc" id="RyA-Yx-I7C"/>
                         <outlet property="confirmPasswordField" destination="gh6-NE-4Rd" id="ehB-Ds-iKH"/>
                         <outlet property="emailErrorMessage" destination="RlO-k7-BiZ" id="OVi-jn-1Yb"/>
                         <outlet property="emailField" destination="Gf4-g9-UM2" id="J34-fz-fBS"/>
@@ -419,7 +420,7 @@
                                 <rect key="frame" x="0.0" y="114" width="414" height="713"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" restorationIdentifier="feat_label" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QWz-0a-ovb">
+                                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" restorationIdentifier="feat_label" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QWz-0a-ovb">
                                         <rect key="frame" x="20" y="77" width="374" height="283"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -482,33 +483,6 @@
                                         <color key="textColor" systemColor="systemGray4Color"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="ZAw-E7-Iqj" userLabel="Featured Collection View">
-                                        <rect key="frame" x="20" y="77" width="374" height="283"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                        <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="Crk-rF-jS7">
-                                            <size key="itemSize" width="374" height="283"/>
-                                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                        </collectionViewFlowLayout>
-                                        <cells>
-                                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="featured_cell" id="29H-sa-7Si">
-                                                <rect key="frame" x="0.0" y="0.0" width="374" height="283"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="YvW-Lb-4a7">
-                                                    <rect key="frame" x="0.0" y="0.0" width="374" height="283"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <subviews>
-                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Mf8-iy-FZL">
-                                                            <rect key="frame" x="0.0" y="0.0" width="374" height="283"/>
-                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        </imageView>
-                                                    </subviews>
-                                                </collectionViewCellContentView>
-                                            </collectionViewCell>
-                                        </cells>
-                                    </collectionView>
                                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="gC4-0m-22k" userLabel="Slow-PacedCollection View">
                                         <rect key="frame" x="217" y="483" width="177" height="160"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -616,10 +590,6 @@
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="pageIndicatorTintColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <color key="currentPageIndicatorTintColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    </pageControl>
-                                    <pageControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="3" translatesAutoresizingMaskIntoConstraints="NO" id="2eN-2T-tLW" userLabel="Featured Page Control">
-                                        <rect key="frame" x="146" y="326" width="123" height="28"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     </pageControl>
                                     <pageControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="3" translatesAutoresizingMaskIntoConstraints="NO" id="nP8-2d-Fff" userLabel="Slow-Paced Page Control">
                                         <rect key="frame" x="217" y="609" width="177" height="28"/>
@@ -825,8 +795,6 @@
                     <navigationItem key="navigationItem" id="GPk-Zt-fl4"/>
                     <connections>
                         <outlet property="featured" destination="QWz-0a-ovb" id="GYf-lI-BxT"/>
-                        <outlet property="featured_pageCtrl" destination="2eN-2T-tLW" id="FLq-po-1gk"/>
-                        <outlet property="featured_slide" destination="ZAw-E7-Iqj" id="Tz8-vN-zIs"/>
                         <outlet property="first_recomm" destination="kPm-xM-78M" id="IdL-CO-eIK"/>
                         <outlet property="heartIcon" destination="5ux-Lf-tLW" id="DBr-zD-0nb"/>
                         <outlet property="heartRateButton" destination="3oH-iE-FlX" id="cFi-Jq-T3N"/>
