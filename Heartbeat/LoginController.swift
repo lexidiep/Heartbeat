@@ -20,6 +20,12 @@ class LoginController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // create test user account
+        let testAccount = userInfo(username: "test", email: "test@test.com", password: "testtest", savedSongs: [], securityQuestion: "What is your mother's maiden name?", securityAnswer: "test")
+        (UIApplication.shared.delegate as! AppDelegate).userData.append(testAccount)
+        
+        
         loginButton.layer.cornerRadius = 5
         createAcctButton.layer.cornerRadius = 5
         

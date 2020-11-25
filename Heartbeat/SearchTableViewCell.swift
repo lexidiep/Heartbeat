@@ -11,9 +11,16 @@ class SearchTableViewCell: UITableViewCell {
     
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var artistLabel: UILabel!
-    @IBOutlet weak var bpmLabel: UILabel!
     @IBOutlet weak var bookmarkIcon: UIImageView!
     @IBOutlet weak var bookmarkButton: UIButton!
+    
+    var actionBlock: (() -> Void)? = nil
+    
+    
+    @IBAction func bookmarkClicked(_ sender: UIButton) {
+        actionBlock?()
+    }
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()

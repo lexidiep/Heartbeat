@@ -47,13 +47,18 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     var songListCount:Int = 0
     struct songInfo {var Title:String?
         var Artist:String?
-        var BPM:String?}
+        var id:String?
+        var BPM:String?
+    }
     var songList = [songInfo?]()
     
     
     // saved page
+    @IBOutlet weak var savedView: UIView!
+    @IBOutlet weak var savedTable: UITableView!
     @IBOutlet weak var savedIcon: UIImageView!
     @IBOutlet weak var savedButton: UIButton!
+    @IBOutlet weak var noSongsLabel: UILabel!
     
     
     // profile page
@@ -164,6 +169,28 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         tap.cancelsTouchesInView = false
         searchView.addGestureRecognizer(tap)
         
+
+        // saved page
+        savedTable.delegate = self
+        savedTable.dataSource = self
+        savedTable.rowHeight = 65
+        self.savedTable.tableFooterView = UIView()
+        let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
+            item?.username == users_name
+        })
+        
+        
+        if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs) != nil && ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! != 0  {
+            self.noSongsLabel.isHidden = true
+            self.savedTable.isHidden = false
+        }
+        else if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs) == nil || ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! == 0{
+            print("empty")
+            self.noSongsLabel.isHidden = false
+            self.savedView.bringSubviewToFront(noSongsLabel)
+            self.savedTable.isHidden = true
+        }
+        
     }   // end viewDidLoad()
     
     
@@ -243,12 +270,9 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         let searchReplace3 = searchReplace2?.replacingOccurrences(of: ",", with: "")
         let searchReplace4 = searchReplace3?.replacingOccurrences(of: "-", with: "+")
         let songToSearch = searchReplace4?.replacingOccurrences(of: ".", with: "")
-        //print(songToSearch!)
         let link = "https://api.getsongbpm.com/search/?api_key=c42bacc54624edfd4f3d4365f8025bab&type=song&lookup=\(songToSearch!)"
-        var songID: String = ""
         let config = URLSessionConfiguration.default
         let session = URLSession(configuration: config)
-        //var bpm: String = ""
         
         guard let url = URL(string: link) else { print("found nil"); return }
         
@@ -285,9 +309,10 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     var newSong:songInfo! = songInfo()
                     newSong.Title = json.search![i].title!
                     newSong.Artist = json.search![i].artist!.name!
+                    newSong.id = json.search![i].id!
                     newSong.BPM = ""
                     self.songList.append(newSong)
-                    songID = json.search![i].id!
+                    //songID = json.search![i].id!
                     //self.getSongBPM(id: songID)
                 }
             }
@@ -343,6 +368,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBAction func homeClicked(_ sender: Any) {
         // hide/show pages
         searchView.isHidden = true
+        savedView.isHidden = true
         scrollView.isHidden = false
         topLogo.isHidden = false
         topSplitBar.isHidden = false
@@ -365,6 +391,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBAction func searchClicked(_ sender: Any) {
         // hide/show pages
         searchView.isHidden = false
+        savedView.isHidden = true
         scrollView.isHidden = true
         topLogo.isHidden = true
         topSplitBar.isHidden = true
@@ -401,6 +428,28 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     // action for saved nav button clicked
     @IBAction func savedClicked(_ sender: Any) {
+        // hide/show pages
+        savedView.isHidden = false
+        searchView.isHidden = true
+        scrollView.isHidden = true
+        topLogo.isHidden = false
+        topSplitBar.isHidden = true
+        
+        let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
+            item?.username == users_name
+        })
+
+        if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs) != nil && ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! != 0  {
+            self.noSongsLabel.isHidden = true
+            self.savedTable.isHidden = false
+        }
+        else if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs) == nil || ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! == 0{
+            print("empty")
+            self.noSongsLabel.isHidden = false
+            self.savedView.bringSubviewToFront(noSongsLabel)
+            self.savedTable.isHidden = true
+        }
+
         // tints of other icons
         savedIcon.tintColor = UIColor(red: 25/255, green: 197/255, blue: 255/255, alpha: 1.0)
         homeIcon.tintColor = UIColor(red: 33/255, green: 33/255, blue: 33/255, alpha: 1.0)
@@ -487,24 +536,209 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     // data source/delegates (table view)
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let indexPath = songTable.indexPathForSelectedRow!
-        let selectedCell = songTable.cellForRow(at: indexPath) as! SearchTableViewCell
-        //print("You selected:\nTitle: \(selectedCell.titleLabel!.text!), Artist: \(selectedCell.artistLabel!.text!)")
+        if tableView == songTable {
+            let indexPath = songTable.indexPathForSelectedRow!
+            let selectedCell = songTable.cellForRow(at: indexPath) as! SearchTableViewCell
+        }
+        else if tableView == savedTable {
+            let indexPath = savedTable.indexPathForSelectedRow!
+            let selectedCell = savedTable.cellForRow(at: indexPath) as! SearchTableViewCell
+        }
     }   // didSelectRowAt (tableView -> search page)
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        //print(self.songListCount)
-        return self.songListCount
+        var count:Int = 0
+        if tableView == songTable {
+            count = self.songListCount
+        }
+        else if tableView == savedTable {
+            let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
+                item?.username == users_name
+            })
+            if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs) != nil || ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count) != 0  {
+                noSongsLabel.isHidden = true
+                savedTable.isHidden = false
+                count = ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)!
+            }
+            else if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs) == nil || ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count) == 0{
+                noSongsLabel.isHidden = false
+                savedTable.isHidden = true
+            }
+        }
+        return count
     }   // numberOfRowsInSection (tableView -> search page)
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = songTable.dequeueReusableCell(withIdentifier: "song_cell", for: indexPath) as! SearchTableViewCell
-        //print("Song list count: \(songListCount)")
-        //print("Song list: \(songList.count)")
-        cell.titleLabel?.text = songList[indexPath.row]?.Title!
-        cell.artistLabel?.text = songList[indexPath.row]?.Artist!
+        // if we are looking at the songTable
+        if tableView == songTable {
+            let cell = songTable.dequeueReusableCell(withIdentifier: "song_cell", for: indexPath) as! SearchTableViewCell
+            
+            if songList.count != 0 {
+                cell.titleLabel?.text = songList[indexPath.row]?.Title!
+                cell.artistLabel?.text = songList[indexPath.row]?.Artist!
+            }
+            else {
+                //show label for no songs found
+            }
+            
+            // get index of the user
+            let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
+                item?.username == users_name
+            })
+            
+            // if song is saved, filled bookmark should show on search
+            if (((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count) != 0) {
+                if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs)!.firstIndex(where: { (item) -> Bool in
+                    item?.id != self.songList[indexPath.row]?.id!
+                }) != nil {
+                    cell.bookmarkIcon.image = UIImage(systemName: "bookmark")
+                }
+                else {
+                    cell.bookmarkIcon.image
+                        = UIImage(systemName: "bookmark.fill")
+                }
+            }
+            // if user has an empty saved songs list
+            else {
+                cell.bookmarkIcon.image = UIImage(systemName: "bookmark")
+            }
+
+            // if the song is already saved, upon search, make the bookmark filled
+            if (((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count) != 0) {
+                let saved = ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs)
+                if saved!.firstIndex(where: { (item) -> Bool in
+                    item?.id == songList[indexPath.row]?.id!
+                }) != nil {
+                    cell.bookmarkIcon.image = UIImage(systemName: "bookmark.fill")
+                }
+            }
+                       
+            // save/unsave songs from the search page
+            cell.actionBlock = {
+                // make the bookmark empty if the song is not saved already
+                let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
+                    item?.username == self.users_name
+                })
                 
-        return cell
+                if (((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count) != 0) {
+                    if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs)!.firstIndex(where: { (item) -> Bool in
+                        item?.id == self.songList[indexPath.row]?.id!
+                    }) != nil {
+                        cell.bookmarkIcon.image = UIImage(systemName: "bookmark")
+                        
+                        // get index of the song in the user's saved song list
+                        if let songIndex = ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs)!.firstIndex(where: { (item) -> Bool in
+                            item?.id == self.songList[indexPath.row]?.id!
+                        }) {
+                            self.savedTable.beginUpdates()
+                            
+                            // delete the song from the saved songs table
+                            self.savedTable.deleteRows(at: [(IndexPath(row: songIndex, section:0))], with: .automatic)
+                            ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.deleteSavedSong(id: self.songList[indexPath.row]?.id!))
+                            
+                            self.savedTable.endUpdates()
+                            
+                            if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs) == nil || ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! == 0{
+                                print("User's saved songs list is now empty")
+                                self.noSongsLabel.isHidden = false
+                                self.savedView.bringSubviewToFront(self.noSongsLabel)
+                                self.savedTable.isHidden = true
+                            }
+                        }
+                    }
+                    else {
+                        cell.bookmarkIcon.image = UIImage(systemName: "bookmark.fill")
+                        
+                        // create saved object to append to user's saved songs list
+                        var newSaved = saved()
+                        newSaved.title = self.songList[indexPath.row]?.Title!
+                        newSaved.artist = self.songList[indexPath.row]?.Artist!
+                        newSaved.id = self.songList[indexPath.row]?.id!
+                        //get bpm from api
+                        ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.addSavedSong(song: newSaved))
+                        self.savedTable.beginUpdates()
+                        
+                        // insert the new saved song to the saved songs page
+                        self.savedTable.insertRows(at: [IndexPath(row:  ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! - 1, section: 0)], with: .automatic)
+                        self.savedTable.endUpdates()
+                    }
+                }
+                // savedSongs is empty
+                else {
+                    cell.bookmarkIcon.image = UIImage(systemName: "bookmark.fill")
+                    
+                    // create saved object to append to user's saved songs list
+                    var newSaved = saved()
+                    newSaved.title = self.songList[indexPath.row]?.Title!
+                    newSaved.artist = self.songList[indexPath.row]?.Artist!
+                    newSaved.id = self.songList[indexPath.row]?.id!
+                    //get bpm from api
+                    ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.addSavedSong(song: newSaved))
+                    self.savedTable.beginUpdates()
+                    
+                    // insert the new saved song to the saved songs page
+                    self.savedTable.insertRows(at: [IndexPath(row:  ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! - 1, section: 0)], with: .automatic)
+                    self.savedTable.endUpdates()
+                }
+            } // end actionblock
+
+            return cell
+        } // end if songTable
+        
+        else if tableView == savedTable {
+            // get the index of the current user
+            let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
+                item?.username == users_name
+            })
+            
+            // get prototype cell to modify contents
+            let cell = savedTable.dequeueReusableCell(withIdentifier: "saved_cell", for: indexPath) as! SearchTableViewCell
+
+            // modify title and artist labels in cell
+            cell.titleLabel?.text = ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs[indexPath.row]?.title)
+            cell.artistLabel?.text = ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs[indexPath.row]?.artist)
+            
+            // all cells should look saved, since it only displays saved songs
+            cell.bookmarkIcon.image = UIImage(systemName: "bookmark.fill")
+        
+            // Unsave song in saved songs tab
+            // The only option in the saved songs tab is to unsave, since the table only shows saved songs
+            cell.actionBlock = {
+                // make the bookmark empty if the song is not saved already
+                let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
+                    item?.username == self.users_name
+                })
+                
+                // if user has songs saved
+                if (((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count) != 0) {
+                    
+                    cell.bookmarkIcon.image = UIImage(systemName: "bookmark")
+                                        
+                    // delete the song from the saved songs table
+                    var idToDelete:String?
+                    idToDelete = ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs[indexPath.row]?.id!)
+                    
+                    // delete from user's saved songs and remove from savedTable
+                    ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.deleteSavedSong(id: idToDelete))
+                    self.savedTable.deleteRows(at: [(IndexPath(row: indexPath.row, section:0))], with: .automatic)
+                    
+                    self.savedTable.reloadData()
+                    self.songTable.reloadData()
+                    
+                    if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs) == nil || ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! == 0{
+                        print("User's saved songs list is now empty (savedTable)")
+                        self.noSongsLabel.isHidden = false
+                        self.savedView.bringSubviewToFront(self.noSongsLabel)
+                        self.savedTable.isHidden = true
+                    }
+
+                }
+            } // end of actionBlock
+            return cell
+        } // end if savedTable
+                        
+        
+        return UITableViewCell()
     }   // cellForRowAt (tableView -> search page)
     
     

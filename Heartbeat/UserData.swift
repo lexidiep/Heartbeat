@@ -14,6 +14,7 @@ struct saved {
     var title:String?
     var artist: String?
     var id:String?
+    var bpm:String?
 }
 // struct for individual user data
 struct userInfo {
@@ -23,4 +24,22 @@ struct userInfo {
     var savedSongs:[saved?]
     var securityQuestion:String?
     var securityAnswer: String?
+    
+    mutating func addSavedSong(song:saved?) {
+        savedSongs.append(song)
+    }
+    
+    mutating func deleteSavedSong(id:String?) {
+        if savedSongs.count != 0 {
+            if let songIndex = savedSongs.firstIndex(where: { (item) -> Bool in
+                item?.id == id!
+            }) {
+                print("Removed \(savedSongs[songIndex]!)")
+                savedSongs.remove(at: songIndex)
+            }
+            else {
+                print("Song not found in saved Songs!")
+            }
+        }
+    }
 }
