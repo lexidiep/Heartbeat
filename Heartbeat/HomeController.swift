@@ -85,7 +85,6 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var editProfileButton: UIButton!
     
     
-        
     // variables for recommended section (home page)
     var timer: Timer?
     var currentIndex = 0
@@ -120,6 +119,9 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                       UIImage(named: "lana") ,
                       UIImage(named: "khalid") ,
                       UIImage(named: "alicia_keys") ]
+    
+    
+    
     
     
     override func viewDidLoad() {
@@ -218,10 +220,13 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         deleteAccountButton.layer.cornerRadius = 5
         logOutButton.layer.cornerRadius = 5
         
-        
-        
     }   // end viewDidLoad()
     
+    
+    
+    
+    
+    // --------------- OVERRIDE FUNCTIONS ---------------
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -235,6 +240,12 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         scrollView.contentSize = CGSize(width: view.frame.size.width, height: view.frame.size.height)
     }   // end viewDidLayoutSubviews()
     
+    
+    
+    
+    
+    // --------------- KEYBOARD DISMISSAL ---------------
+    
     @objc func dismissKeyboard() {
         //Causes the view (or one of its embedded text fields) to resign the first responder status.
         searchView.endEditing(true)
@@ -242,6 +253,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }
     
     
+    // testing to check if search button is functional
     @IBAction func searchFieldAction(_ sender: Any) {
         print("search was pressed")
     }
@@ -262,6 +274,11 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         getData()
     }
 
+    
+    
+    
+    
+    // --------------- RECOMMENDED PANELS (ANIMATIONS) ---------------
     
     // functions for panels' image auto-scrolls
     func startTimer() {
@@ -290,6 +307,11 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         moderate_pageCtrl.currentPage = currentIndex
     }   // end moveToNextIndex()
     
+    
+    
+    
+    
+    // --------------- RETRIEVE SONG DATA FROM API ---------------
     
     // api function
     private func getData() {
@@ -393,6 +415,12 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }
     */
 
+    
+    
+    
+    
+    // -------------- NAVIGATION BUTTONS ---------------
+    
     // action for home nav button clicked
     @IBAction func homeClicked(_ sender: Any) {
         // hide/show pages
@@ -521,7 +549,12 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }   // end profileClicked()
     
     
-    // data source/delegates (collection views)
+    
+    
+    
+    // --------------- DATA SOURCE/DELEGATES ---------------
+    
+    // COLLECTION VIEW
     func textFieldDidBeginEditing(_ textField: UITextField) {
         self.songTable.isHidden = true
     }   // didBeginEditing (text field -> search page)
@@ -575,7 +608,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }   // layout (collectionView -> home page)
     
     
-    // data source/delegates (table view)
+    
+    // TABLEVIEW
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if tableView == songTable {
             let indexPath = songTable.indexPathForSelectedRow!
@@ -782,6 +816,11 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         return UITableViewCell()
     }   // cellForRowAt (tableView -> search page)
     
+    
+    
+    
+    
+    // --------------- FEATURED PANEL ---------------
     
     // Featured Panel Carousel
     func numberOfItems(in carousel: iCarousel) -> Int {

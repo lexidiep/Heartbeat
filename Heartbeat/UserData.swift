@@ -27,7 +27,7 @@ struct userInfo {
     
     mutating func addSavedSong(song:saved?) {
         savedSongs.append(song)
-    }
+    } // end addSavedSong function
     
     mutating func deleteSavedSong(id:String?) {
         if savedSongs.count != 0 {
@@ -41,5 +41,7 @@ struct userInfo {
                 print("Song not found in saved Songs!")
             }
         }
-    }
-}
+    } // end deleteSavedSong function
+    
+} // end userInfo struct
+

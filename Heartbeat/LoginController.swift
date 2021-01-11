@@ -7,6 +7,8 @@
 
 import UIKit
 
+var loginViewCount:Int = 1  // for storing admin account on first visit to login screen
+
 class LoginController: UIViewController, UITextFieldDelegate {
 
     // UIelements
@@ -51,9 +53,11 @@ class LoginController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // create test user account
-        let testAccount = userInfo(username: "admin", email: "test@test.com", password: "testtest", savedSongs: [], securityQuestion: "What is your mother's maiden name?", securityAnswer: "test")
-        (UIApplication.shared.delegate as! AppDelegate).userData.append(testAccount)
+        // create test user account on first visit to login screen
+        if loginViewCount == 1 {
+            let testAccount = userInfo(username: "admin", email: "test@test.com", password: "testtest", savedSongs: [], securityQuestion: "What is your mother's maiden name?", securityAnswer: "test")
+            (UIApplication.shared.delegate as! AppDelegate).userData.append(testAccount)
+        }
         
         
         loginButton.layer.cornerRadius = 5
@@ -432,7 +436,7 @@ class LoginController: UIViewController, UITextFieldDelegate {
             // DEBUGGING
             for user in (UIApplication.shared.delegate as! AppDelegate).userData {
                 
-                print("---------- USERS ON FILE ----------")
+                print("---------- USERS ON FILE (\((UIApplication.shared.delegate as! AppDelegate).userData.count)) ----------")
                 print("Username: \(user!.username!)")
                 print("Email: \(user!.email!)")
                 print("Password: \(user!.password!)")
@@ -446,6 +450,35 @@ class LoginController: UIViewController, UITextFieldDelegate {
                 }
                 print("-------------------------------------------------")
             }
+            
+            // clear the forgetfulUser's username
+            forgetfulUser = ""
+            
+            // clear text fields in forgot password process and go back to
+            // first page in forgot password process
+            usernameEmailField.text = ""
+            usernameEmailField.layer.borderWidth = 0.0
+            forgotPasswordError.isHidden = true
+            // second page in forgot password process
+            securityAnswerField.text = ""
+            securityAnswerField.layer.borderWidth = 0.0
+            securityQuestionView.isHidden = true
+            // third page in forgot password process
+            createPasswordField.text = ""
+            createPasswordField.layer.borderWidth = 0.0
+            confirmPasswordField.text = ""
+            confirmPasswordField.layer.borderWidth = 0.0
+            resetPasswordView.isHidden = true
+            resetPasswordErrorLabel.isHidden = true
+            resetPasswordErrorLabel.font = resetPasswordErrorLabel.font.withSize(18)
+            
+            // disable next buttons and change alpha of next buttons
+            usernameNextDisabled = true
+            usernameNextButton.alpha = 0.7
+            securityNextDisabled = true
+            securityNextButton.alpha = 0.7
+            resetPasswordDisabled = true
+            resetPasswordButton.alpha = 0.7
             
             logo.alpha = 1.0
             orLeftLine.alpha = 1.0
@@ -470,10 +503,15 @@ class LoginController: UIViewController, UITextFieldDelegate {
         usernameEmailField.text = ""
         usernameEmailField.layer.borderWidth = 0.0
         forgotPasswordError.isHidden = true
+        // second page in forgot password process
         securityAnswerField.text = ""
+        securityAnswerField.layer.borderWidth = 0.0
         securityQuestionView.isHidden = true
+        // third page in forgot password process
         createPasswordField.text = ""
+        createPasswordField.layer.borderWidth = 0.0
         confirmPasswordField.text = ""
+        confirmPasswordField.layer.borderWidth = 0.0
         resetPasswordView.isHidden = true
         resetPasswordErrorLabel.isHidden = true
         resetPasswordErrorLabel.font = resetPasswordErrorLabel.font.withSize(18)
@@ -481,6 +519,10 @@ class LoginController: UIViewController, UITextFieldDelegate {
         // disable next buttons and change alpha of next buttons
         usernameNextDisabled = true
         usernameNextButton.alpha = 0.7
+        securityNextDisabled = true
+        securityNextButton.alpha = 0.7
+        resetPasswordDisabled = true
+        resetPasswordButton.alpha = 0.7
         
         // slide out of view and hide forgot password panel
         self.viewSlideCancel(view: forgotPasswordView)
@@ -518,6 +560,9 @@ class LoginController: UIViewController, UITextFieldDelegate {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         var name:String = ""
         var email:String = ""
+        loginViewCount = -999
+        
+        print("(\((UIApplication.shared.delegate as! AppDelegate).userData.count))")
         
         for user in (UIApplication.shared.delegate as! AppDelegate).userData {
             if (user?.username)?.lowercased() == (usernameField.text)?.lowercased() || (user?.email)?.lowercased() == (usernameField.text?.lowercased()) {

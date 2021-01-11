@@ -44,6 +44,8 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
     
     
 
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -93,17 +95,28 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
         }
        */
         
-        // username
+        // dismisses keyboard on tap anywhere
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(CreateAccountController.dismissKeyboard))
         tap.cancelsTouchesInView = false
         allView.addGestureRecognizer(tap)
+        
     }   // end viewDidLoad()
+    
+    
+    
+    
+    
+    // ---------------- KEYBOARD DISMISSAL ----------------
     
     @objc func dismissKeyboard() {
         allView.endEditing(true)
     }   // end dismissKeyboard()
  
     
+    
+    
+    
+    // -------------------- TEXT FIELD CHANGE ACTIONS -------------------
 
     // button enabled on user input
     @objc func textFieldDidChange(_ textField : UITextField){
@@ -230,6 +243,11 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
     }   // end textFieldDidChange()
     
     
+    
+    
+    
+    // --------------- CREATE PASSWORD PROCESS ---------------
+    
     // show add email page
     // check through users array for existing username
     @IBAction func usernameNext(_ sender: Any) {
@@ -274,6 +292,25 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
         (UIApplication.shared.delegate as! AppDelegate).userData.append(createTempUser)
         
         backToLoginView()
+        
+        // DEBUGGING
+        print("---------- USERS ON FILE (\((UIApplication.shared.delegate as! AppDelegate).userData.count)) ----------")
+        for user in (UIApplication.shared.delegate as! AppDelegate).userData {
+            
+            print("Username: \(user!.username!)")
+            print("Email: \(user!.email!)")
+            print("Password: \(user!.password!)")
+            print("Security Question: \(user!.securityQuestion!)")
+            print("Security Answer: \(user!.securityAnswer!)")
+            if (user?.savedSongs) != nil {
+                print("Saved Songs: \(user!.savedSongs)")
+            }
+            else {
+                print("Saved Songs: NONE")
+            }
+            print("-------------------------------------------------")
+        }
+        
     }   // end securityNext
     
     
@@ -298,6 +335,11 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
         self.viewSlideInFromTop(controller: loginViewController)
     }
     
+    
+    
+    
+    
+    // --------------- ANIMATIONS ---------------
     
     // slide from top animation for cancel create account
     func viewSlideInFromTop(controller: UIViewController) -> Void {
@@ -334,7 +376,11 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
     }   // end viewSlideInFromLeft()
     
     
-    // data source/delegates
+    
+    
+    
+    // --------------- DATA SOURCE/DELEGATES ---------------
+    
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }   // numberOfComponents (pickerView -> security page)

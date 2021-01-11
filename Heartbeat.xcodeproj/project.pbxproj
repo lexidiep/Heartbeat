@@ -159,7 +159,6 @@
 				8AD1014525440F220087773C /* SceneDelegate.swift */,
 				8AD1014725440F220087773C /* LoginController.swift */,
 				8A15D159255F430D00A06B7E /* CreateAccountController.swift */,
-				8A15D161255FA0EF00A06B7E /* UserData.swift */,
 				8AB939522557C82800F2F02D /* HomeController.swift */,
 				8AF3C4C1255D18D700E85397 /* HomeCollectionViewCell.swift */,
 				8A15D1672561D63200A06B7E /* FeaturedCollectionViewCell.swift */,
@@ -169,6 +168,7 @@
 				8AD1015125440F250087773C /* LaunchScreen.storyboard */,
 				8AD1015425440F250087773C /* Info.plist */,
 				8AD1014C25440F230087773C /* Heartbeat.xcdatamodeld */,
+				8A15D161255FA0EF00A06B7E /* UserData.swift */,
 				8AF3C4D3255E8FBC00E85397 /* SongInfo.swift */,
 			);
 			path = Heartbeat;
