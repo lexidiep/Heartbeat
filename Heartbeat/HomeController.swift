@@ -27,6 +27,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         return view
     }()
     var users_name: String?
+    var users_email: String?
     
     
     // for recommended panels (home page)
@@ -61,11 +62,6 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var noSongsLabel: UILabel!
     
     
-    // profile page
-    @IBOutlet weak var profileIcon: UIImageView!
-    @IBOutlet weak var profileButton: UIButton!
-    
-    
     // heartRate page
     @IBOutlet weak var heartIcon: UIImageView!
     @IBOutlet weak var musicIcon: UIImageView!
@@ -74,7 +70,22 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var heartRateButton: UIButton!
     
     
+    // profile page
+    @IBOutlet weak var profileIcon: UIImageView!
+    @IBOutlet weak var profileButton: UIButton!
+    @IBOutlet weak var profileView: UIView!
+    @IBOutlet weak var profilePic: UIImageView!
+    @IBOutlet weak var usernameLabel: UILabel!
+    @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet weak var emailLabel: UILabel!
+    @IBOutlet weak var logOutButton: UIButton!
+    @IBOutlet weak var deleteAccountButton: UIButton!
+    @IBOutlet weak var savedSongsLabel: UILabel!
+    @IBOutlet weak var editProfilePicButton: UIButton!
+    @IBOutlet weak var editProfileButton: UIButton!
     
+    
+        
     // variables for recommended section (home page)
     var timer: Timer?
     var currentIndex = 0
@@ -190,6 +201,24 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             self.savedView.bringSubviewToFront(noSongsLabel)
             self.savedTable.isHidden = true
         }
+        
+        
+        // profile page
+        // profile pic
+        profilePic.layer.borderWidth = 1
+        profilePic.layer.masksToBounds = false
+        profilePic.layer.cornerRadius = profilePic.frame.height/2
+        profilePic.clipsToBounds = true
+        
+        // username/email Label
+        usernameLabel.text = "\(users_name!)"
+        emailLabel.text?.append("   \(users_email!)")
+        
+        // buttons
+        deleteAccountButton.layer.cornerRadius = 5
+        logOutButton.layer.cornerRadius = 5
+        
+        
         
     }   // end viewDidLoad()
     
@@ -372,6 +401,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         scrollView.isHidden = false
         topLogo.isHidden = false
         topSplitBar.isHidden = false
+        profileView.isHidden = true
         
         // tints of other icons
         homeIcon.tintColor = UIColor(red: 25/255, green: 197/255, blue: 255/255, alpha: 1.0)
@@ -395,6 +425,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         scrollView.isHidden = true
         topLogo.isHidden = true
         topSplitBar.isHidden = true
+        profileView.isHidden = true
         
         // tints of other icons
         searchIcon.tintColor = UIColor(red: 25/255, green: 197/255, blue: 255/255, alpha: 1.0)
@@ -434,6 +465,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         scrollView.isHidden = true
         topLogo.isHidden = false
         topSplitBar.isHidden = true
+        profileView.isHidden = true
         
         let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
             item?.username == users_name
@@ -477,6 +509,15 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         musicIcon.tintColor = UIColor(red: 33/255, green: 33/255, blue: 33/255, alpha: 1.0)
         leftWaveIcon.tintColor = UIColor(red: 33/255, green: 33/255, blue: 33/255, alpha: 1.0)
         rightWaveIcon.tintColor = UIColor(red: 33/255, green: 33/255, blue: 33/255, alpha: 1.0)
+        
+        // hide/show pages
+        savedView.isHidden = true
+        searchView.isHidden = true
+        scrollView.isHidden = true
+        topLogo.isHidden = false
+        topSplitBar.isHidden = true
+        profileView.isHidden = false
+                
     }   // end profileClicked()
     
     

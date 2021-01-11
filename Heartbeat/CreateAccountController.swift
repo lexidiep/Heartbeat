@@ -51,12 +51,14 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
         usernameField.attributedPlaceholder = NSAttributedString(string: "Username", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         usernameField.delegate = self
         usernameField.addTarget(self, action: #selector(CreateAccountController.textFieldDidChange(_:)), for: UIControl.Event.editingChanged)
+        usernameNextButton.layer.cornerRadius = 5
         
         
         // add email page
         emailField.attributedPlaceholder = NSAttributedString(string: "Email Address", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         emailField.delegate = self
         emailField.addTarget(self, action: #selector(CreateAccountController.textFieldDidChange(_:)), for: UIControl.Event.editingChanged)
+        emailNextButton.layer.cornerRadius = 5
         
         
         // create password page
@@ -66,6 +68,7 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
         confirmPasswordField.delegate = self
         passwordField.addTarget(self, action: #selector(CreateAccountController.textFieldDidChange(_:)), for: UIControl.Event.editingChanged)
         confirmPasswordField.addTarget(self, action: #selector(CreateAccountController.textFieldDidChange(_:)), for: UIControl.Event.editingChanged)
+        passwordNextButton.layer.cornerRadius = 5
         
         
         // security page
@@ -75,6 +78,7 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
         securityField.attributedPlaceholder = NSAttributedString(string: "Answer", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         securityField.delegate = self
         securityField.addTarget(self, action: #selector(CreateAccountController.textFieldDidChange(_:)), for: UIControl.Event.editingChanged)
+        securityNextButton.layer.cornerRadius = 5
         
         //debugging
         /*
@@ -106,7 +110,8 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
         var usernameTaken:Bool = false
         var emailUsed:Bool = false
         
-        if textField == usernameField {
+        switch (textField) {
+        case usernameField:
             for user in (UIApplication.shared.delegate as! AppDelegate).userData {
                 if (user?.username)?.lowercased() == (usernameField.text)?.lowercased() {
                     usernameTaken = true
@@ -133,8 +138,8 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
                 usernameNextButton.alpha = 0.7
                 usernameNextButton.isEnabled = false
             }
-        }
-        else if textField == emailField {
+        
+        case emailField:
             for user in (UIApplication.shared.delegate as! AppDelegate).userData {
                 if (user?.email)?.lowercased() == (emailField.text)?.lowercased() {
                     emailUsed = true
@@ -166,9 +171,14 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
                 emailField.layer.borderColor = UIColor.red.cgColor
             }
  
-        }
-        else if textField == passwordField {
-            if passwordField.text!.count < 8 {
+        case passwordField:
+            if passwordField.text == confirmPasswordField.text && passwordField.text!.count >= 8 && confirmPasswordField.text!.count >= 8{
+                passwordNextButton.alpha = 1.0
+                passwordNextButton.isEnabled = true
+                passwordErrorMessage.isHidden = true
+                confirmPasswordField.layer.borderWidth = 0.0
+            }
+            else if passwordField.text!.count < 8 {
                 passwordNextButton.alpha = 0.7
                 passwordNextButton.isEnabled = false
                 passwordErrorMessage.isHidden = false
@@ -181,8 +191,8 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
                 passwordErrorMessage.isHidden = true
                 passwordField.layer.borderWidth = 0.0
             }
-        }
-        else if textField == confirmPasswordField {
+        
+        case confirmPasswordField:
             if passwordField.text == confirmPasswordField.text && passwordField.text!.count >= 8 && confirmPasswordField.text!.count >= 8{
                 passwordNextButton.alpha = 1.0
                 passwordNextButton.isEnabled = true
@@ -202,8 +212,8 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
                 passwordNextButton.alpha = 0.7
                 passwordNextButton.isEnabled = false
             }
-        }
-        else if textField == securityField {
+        
+        case securityField:
             if securityField.text != "" {
                 securityNextButton.alpha = 1.0
                 securityNextButton.isEnabled = true
@@ -212,7 +222,11 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
                 securityNextButton.alpha = 0.7
                 securityNextButton.isEnabled = false
             }
-        }
+        
+        default: fatalError("Unknown field: \(textField)")
+            
+        } // end textField switch
+        
     }   // end textFieldDidChange()
     
     
