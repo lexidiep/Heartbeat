@@ -287,7 +287,13 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
     @IBAction func securityNext(_ sender: Any) {
         
         // warning: this is just a test -- user's saved songs needs to be assigned to savedSongs in parameter
-        let createTempUser:userInfo = userInfo(username: usernameField.text, email: emailField.text, password: passwordField.text, savedSongs: [], securityQuestion: pickerData[questionPicker.selectedRow(inComponent: 0)], securityAnswer: securityField.text)
+        let createTempUser:userInfo = userInfo()
+        createTempUser.username = usernameField.text
+        createTempUser.email = emailField.text
+        createTempUser.password = passwordField.text
+        createTempUser.savedSongs = []
+        createTempUser.securityQuestion = pickerData[questionPicker.selectedRow(inComponent: 0)]
+        createTempUser.securityAnswer = securityField.text
         
         (UIApplication.shared.delegate as! AppDelegate).userData.append(createTempUser)
         

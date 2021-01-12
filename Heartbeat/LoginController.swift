@@ -55,7 +55,13 @@ class LoginController: UIViewController, UITextFieldDelegate {
         
         // create test user account on first visit to login screen
         if loginViewCount == 1 {
-            let testAccount = userInfo(username: "admin", email: "test@test.com", password: "testtest", savedSongs: [], securityQuestion: "What is your mother's maiden name?", securityAnswer: "test")
+            let testAccount = userInfo()
+            testAccount.username = "admin"
+            testAccount.email = "test@test.com"
+            testAccount.password = "testtest"
+            testAccount.savedSongs = []
+            testAccount.securityQuestion = "What is your mother's maiden name?"
+            testAccount.securityAnswer = "test"
             (UIApplication.shared.delegate as! AppDelegate).userData.append(testAccount)
         }
         

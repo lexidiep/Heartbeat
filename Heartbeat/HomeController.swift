@@ -52,6 +52,11 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         var BPM:String?
     }
     var songList = [songInfo?]()
+    @IBOutlet weak var songDetailsView: UIView!
+    @IBOutlet weak var songDetailTitle: UILabel!
+    @IBOutlet weak var songDetailArtist: UILabel!
+    @IBOutlet weak var songDetailBPM: UILabel!
+    @IBOutlet weak var songDetailImage: UIImageView!
     
     
     // saved page
@@ -181,6 +186,13 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(HomeController.dismissKeyboard))
         tap.cancelsTouchesInView = false
         searchView.addGestureRecognizer(tap)
+        songDetailsView.layer.cornerRadius = 5
+        songDetailsView.layer.shadowColor = UIColor.black.cgColor
+        songDetailsView.layer.shadowOpacity = 1
+        songDetailsView.layer.shadowOffset = .zero
+        songDetailsView.layer.shadowRadius = 10
+        songDetailsView.layer.shadowPath = UIBezierPath(rect: songDetailsView.bounds).cgPath
+        songDetailsView.layer.shouldRasterize = true
         
 
         // saved page
@@ -272,7 +284,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     func searchSongs() {
         // API
         getData()
-    }
+    } // end searchSongs function
 
     
     
@@ -313,7 +325,17 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     // --------------- RETRIEVE SONG DATA FROM API ---------------
     
+    // session manager
+    static let sessionManager: URLSession = {
+            let configuration = URLSessionConfiguration.default
+            configuration.timeoutIntervalForRequest = 30 // seconds
+            configuration.timeoutIntervalForResource = 30 // seconds
+            return URLSession(configuration: configuration)
+    }()
+    
+    
     // api function
+    var songIDs:[String] = []
     private func getData() {
         let song = self.searchField.text
         let searchReplace1 = song?.replacingOccurrences(of: " ", with: "+")
@@ -321,14 +343,15 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         let searchReplace3 = searchReplace2?.replacingOccurrences(of: ",", with: "")
         let searchReplace4 = searchReplace3?.replacingOccurrences(of: "-", with: "+")
         let songToSearch = searchReplace4?.replacingOccurrences(of: ".", with: "")
+        
         let link = "https://api.getsongbpm.com/search/?api_key=c42bacc54624edfd4f3d4365f8025bab&type=song&lookup=\(songToSearch!)"
-        let config = URLSessionConfiguration.default
-        let session = URLSession(configuration: config)
+        //let config = URLSessionConfiguration.default
+        //let session = URLSession(configuration: config)
         
         guard let url = URL(string: link) else { print("found nil"); return }
         
         // first data grab
-        let task = session.dataTask(with: url, completionHandler:{ data, response, error in
+        let task = HomeController.sessionManager.dataTask(with: url, completionHandler:{ data, response, error in
             guard let data = data, error == nil else {
                 print("Something went wrong")
                 return
@@ -353,6 +376,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             }
 
             self.songList.removeAll()
+            self.songIDs.removeAll()
             if json.search?.count != nil {
                 self.songListCount = json.search!.count
             
@@ -363,57 +387,75 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     newSong.id = json.search![i].id!
                     newSong.BPM = ""
                     self.songList.append(newSong)
-                    //songID = json.search![i].id!
-                    //self.getSongBPM(id: songID)
+                    self.songIDs.append(json.search![i].id!)
                 }
             }
-        })
+            
+            // get the bpm's of the songs from search results
+            self.getSongBPM(ids: self.songIDs)
+            
+        }) // end task
+        
         task.resume()
         
     }   // end getData()
     
-    /*
+    
     // get bpm of song
-    func getSongBPM(id:String) {
-        let config2 = URLSessionConfiguration.default
-        let session2 = URLSession(configuration: config2)
-        //var songBPM: String = ""
+    func getSongBPM(ids:[String]) {
+
+        for i in 0...(ids.count-1) {
         
-        let url2 = "https://api.getsongbpm.com/song/?api_key=c42bacc54624edfd4f3d4365f8025bab&id=\(id)"
-        
-        //print(url2)
-        
-        // final data grab
-        let task2 = session2.dataTask(with: URL(string: url2)!, completionHandler:{ data, response, error in
-            guard let data = data, error == nil else {
-                print("Something went wrong")
-                return
-            }
+            // url for song details api
+            let url2 = "https://api.getsongbpm.com/song/?api_key=c42bacc54624edfd4f3d4365f8025bab&id=\(self.songIDs[i])"
+
             
-            // have data
-            var result:FinalResponse?
-            do {
-                result = try JSONDecoder().decode(FinalResponse.self, from: data)
-            }
-            catch {
-                print("Failed to convert \(error.localizedDescription)")
-            }
+            // task for bpm data grab
+            let task2 = HomeController.sessionManager.dataTask(with: URL(string: url2)!, completionHandler:{ data, response, error in
+                guard let data = data, error == nil else {
+                    print("Something went wrong")
+                    return
+                }
+                
+                // try to get data from api
+                var result:FinalResponse?
+                do {
+                    result = try JSONDecoder().decode(FinalResponse.self, from: data)
+                }
+                catch {
+                    print("Failed to convert \(error.localizedDescription)")
+                }
+                
+                guard let json = result else {
+                    return
+                }
+                
+                DispatchQueue.main.async{
+                    
+                    // if the song has a BPM in the json result
+                    if json.song!.tempo != nil {
+                        
+                        if let index = self.songList.firstIndex(where: {$0?.id == self.songIDs[i]}) {
+                            self.songList[index]?.BPM = json.song!.tempo!
+                        }
+                    }
+                    // if there is no BPM listed for the song in the json result
+                    else {
+                        
+                        if let index = self.songList.firstIndex(where: {$0?.id == self.songIDs[i]}) {
+                            self.songList[index]?.id = "Unavailable"
+                        }
+                    }
+                    
+                } // end dispatch queue
+            }) // end of task2
+
+            task2.resume()
             
-            guard let json = result else {
-                return
-            }
-            
-            if json.song!.tempo != nil {
-                //songBPM = json.song!.tempo!
-                //print("BPM: \(json.song!.tempo!)\n")
-            }
-            else {
-                //songBPM = "error"
-            }
-        })
-         task2.resume()
-    }
-    */
+        }// end for loop
+
+    } //end getSongBPM function
+    
 
     
     
@@ -550,6 +592,44 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     
     
+    // hides the song detail panel from view
+    @IBAction func exitSongDetail(_ sender: Any) {
+        
+        songDetailsView.isHidden = true
+        self.viewSlideCancel(view: songDetailsView)
+        searchField.alpha = 1.0
+        songTable.alpha = 1.0
+        
+    } // end exitSongDetail function
+    
+    
+    
+    
+    // -------------------- ANIMATIONS ----------------------
+    
+    // slide from top animation for forgot password
+    func viewSlideInFromTop(view: UIView) -> Void {
+        let transition:CATransition = CATransition()
+        transition.duration = 0.3
+        transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+        transition.type = CATransitionType.push
+        transition.subtype = CATransitionSubtype.fromBottom
+        view.layer.add(transition, forKey: kCATransition)
+    }   // end viewSlideInFromTop()
+    
+    
+    // slide from top animation for cancel create account
+    func viewSlideCancel(view: UIView) -> Void {
+        let transition:CATransition = CATransition()
+        transition.duration = 0.3
+        transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+        transition.type = CATransitionType.push
+        transition.subtype = CATransitionSubtype.fromTop
+        view.layer.add(transition, forKey: kCATransition)
+    }   // end viewSlideCancel()
+    
+    
+    
     
     
     // --------------- DATA SOURCE/DELEGATES ---------------
@@ -614,6 +694,21 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         if tableView == songTable {
             let indexPath = songTable.indexPathForSelectedRow!
             let selectedCell = songTable.cellForRow(at: indexPath) as! SearchTableViewCell
+            
+            self.songDetailTitle.text = songList[indexPath.row]?.Title!
+            self.songDetailArtist.text = songList[indexPath.row]?.Artist!
+            if (songList[indexPath.row]!.BPM! != "") {
+                self.songDetailBPM.text = "\(songList[indexPath.row]!.BPM!) BPM"
+            }
+            else {
+                self.songDetailBPM.text = "BPM Unavailable"
+            }
+                        
+            songDetailsView.isHidden = false
+            self.viewSlideInFromTop(view: songDetailsView)
+            searchField.alpha = 0.3
+            songTable.alpha = 0.3
+            
         }
         else if tableView == savedTable {
             let indexPath = savedTable.indexPathForSelectedRow!

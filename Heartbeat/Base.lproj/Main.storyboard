@@ -892,6 +892,50 @@ security question</string>
                                             </tableViewCell>
                                         </prototypes>
                                     </tableView>
+                                    <view hidden="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MgB-oI-7NN" userLabel="SongDetailsView">
+                                        <rect key="frame" x="22" y="250" width="369" height="327"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QNe-sM-qo2" userLabel="songImage">
+                                                <rect key="frame" x="84" y="10" width="200" height="200"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            </imageView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Song Title" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="aS2-uR-Age">
+                                                <rect key="frame" x="8" y="151" width="353" height="35"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="26"/>
+                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Song Artist" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Fwi-9a-IQK">
+                                                <rect key="frame" x="8" y="183" width="353" height="24"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="20"/>
+                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="BPM" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="UeV-gJ-bIT">
+                                                <rect key="frame" x="8" y="208" width="353" height="24"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="20"/>
+                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gWI-IP-3qa" userLabel="cancelSongDetail">
+                                                <rect key="frame" x="15" y="15" width="40" height="40"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <state key="normal">
+                                                    <imageReference key="image" image="xmark" catalog="system" symbolScale="large"/>
+                                                    <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large" weight="semibold"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="exitSongDetail:" destination="SF3-sz-NiH" eventType="touchUpInside" id="uGz-Hi-dUe"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" red="0.26051741839999998" green="0.2605243921" blue="0.260520637" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" red="0.12984204290000001" green="0.12984612579999999" blue="0.12984395030000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </view>
@@ -1179,6 +1223,11 @@ security question</string>
                         <outlet property="second_recomm" destination="mej-v5-uF5" id="tmX-Y5-Ayj"/>
                         <outlet property="slow_pageCtrl" destination="nP8-2d-Fff" id="XiO-8E-WUc"/>
                         <outlet property="slow_slide" destination="gC4-0m-22k" id="L9j-Hl-N1U"/>
+                        <outlet property="songDetailArtist" destination="Fwi-9a-IQK" id="CRt-I1-YDB"/>
+                        <outlet property="songDetailBPM" destination="UeV-gJ-bIT" id="v2f-oE-bVu"/>
+                        <outlet property="songDetailImage" destination="QNe-sM-qo2" id="xav-ge-ryX"/>
+                        <outlet property="songDetailTitle" destination="aS2-uR-Age" id="uCe-q1-qPu"/>
+                        <outlet property="songDetailsView" destination="MgB-oI-7NN" id="r9f-UP-RMT"/>
                         <outlet property="songTable" destination="PnU-J0-EdW" id="Uka-VJ-8YZ"/>
                         <outlet property="third_recomm" destination="52z-RL-0T8" id="WO5-Dn-Csz"/>
                         <outlet property="topLogo" destination="rn5-TH-Qrp" id="Szc-3l-VKD"/>

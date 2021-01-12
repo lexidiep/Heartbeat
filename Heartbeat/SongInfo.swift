@@ -8,15 +8,15 @@
 import Foundation
 
 
-struct Response1: Codable {
+class Response1: Codable {
     let search: [SongSearch]?
 }
 
-struct FinalResponse: Codable {
+class FinalResponse: Codable {
     let song: SongResult?
 }
 
-struct SongResult: Codable {
+class SongResult: Codable {
     let id: String?
     let title: String?
     let uri: String?
@@ -27,14 +27,14 @@ struct SongResult: Codable {
     let open_key: String?
 }
 
-struct SongSearch: Codable {
+class SongSearch: Codable {
     let id: String?
     let title: String?
     let uri: String?
     let artist: ArtistInfo?
 }
 
-struct ArtistInfo: Codable {
+class ArtistInfo: Codable {
     let id: String?
     let name: String?
     let uri: String?
