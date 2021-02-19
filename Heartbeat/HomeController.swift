@@ -46,10 +46,13 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var searchIcon: UIImageView!
     @IBOutlet weak var songTable: UITableView!
     var songListCount:Int = 0
-    struct songInfo {var Title:String?
+    struct songInfo {
+        var Title:String?
         var Artist:String?
         var id:String?
         var BPM:String?
+        var imageURL:String?
+        var artistImage:UIImage?
     }
     var songList = [songInfo?]()
     @IBOutlet weak var songDetailsView: UIView!
@@ -57,6 +60,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var songDetailArtist: UILabel!
     @IBOutlet weak var songDetailBPM: UILabel!
     @IBOutlet weak var songDetailImage: UIImageView!
+    @IBOutlet weak var loading: UIActivityIndicatorView!
     
     
     // saved page
@@ -193,6 +197,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         songDetailsView.layer.shadowRadius = 10
         songDetailsView.layer.shadowPath = UIBezierPath(rect: songDetailsView.bounds).cgPath
         songDetailsView.layer.shouldRasterize = true
+        songDetailImage.layer.cornerRadius = 5
+        loading.color = .lightGray
         
 
         // saved page
@@ -275,7 +281,9 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         searchField.resignFirstResponder()
         searchSongs();
-        songTable.isHidden = false
+        loading.isHidden = false
+        loading.startAnimating()
+        //songTable.isHidden = false
         return true;
     }   // end textFieldShouldReturn()
     
@@ -336,6 +344,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     // api function
     var songIDs:[String] = []
+    var imageURLs:[String] = []
     private func getData() {
         let song = self.searchField.text
         let searchReplace1 = song?.replacingOccurrences(of: " ", with: "+")
@@ -377,6 +386,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
 
             self.songList.removeAll()
             self.songIDs.removeAll()
+            self.imageURLs.removeAll()
+            
             if json.search?.count != nil {
                 self.songListCount = json.search!.count
             
@@ -384,16 +395,34 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     var newSong:songInfo! = songInfo()
                     newSong.Title = json.search![i].title!
                     newSong.Artist = json.search![i].artist!.name!
+                    
+                    // getting image url
+                    var imageCode = ""
+                    if (json.search![i].artist!.img != nil) {
+                        imageCode = json.search![i].artist!.img!
+                        //print(imageCode)
+                    }
+                    else {
+                        imageCode = ""
+                    }
+                    newSong.imageURL = imageCode
+                    
                     newSong.id = json.search![i].id!
                     newSong.BPM = ""
                     self.songList.append(newSong)
                     self.songIDs.append(json.search![i].id!)
+                    if (json.search![i].artist!.img != nil) {
+                        self.imageURLs.append(json.search![i].artist!.img!)
+                    }
                 }
             }
             
             // get the bpm's of the songs from search results
             self.getSongBPM(ids: self.songIDs)
             
+            // get the images of the songs from search results
+            self.getArtistImage(images: self.imageURLs)
+                        
         }) // end task
         
         task.resume()
@@ -447,6 +476,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                         }
                     }
                     
+                    self.songTable.reloadData()
                 } // end dispatch queue
             }) // end of task2
 
@@ -455,6 +485,39 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         }// end for loop
 
     } //end getSongBPM function
+    
+    
+    // get the image of artist to show in song details
+    func getArtistImage(images:[String]) {
+        
+        for i in 0...(images.count-1) {
+            
+            // url for image urls
+            let url3 = images[i]
+            
+            // task for bpm data grab
+            let task3 = HomeController.sessionManager.dataTask(with: URL(string: url3)!, completionHandler:{ data, response, error in
+                guard let data = data, let downloadedImg = UIImage(data: data), error == nil else {
+                    print("Something went wrong")
+                    return
+                }
+                
+                // try to get data from api
+                DispatchQueue.main.async{
+
+                        if let index = self.songList.firstIndex(where: {$0?.imageURL == self.imageURLs[i]}) {
+                            self.songList[index]?.artistImage = downloadedImg
+                        }
+
+                    self.songTable.reloadData()
+                } // end dispatch queue
+            }) // end of task2
+
+            task3.resume()
+            
+        } // end for loop
+        
+    } // end of getArtistImage
     
 
     
@@ -697,11 +760,19 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             
             self.songDetailTitle.text = songList[indexPath.row]?.Title!
             self.songDetailArtist.text = songList[indexPath.row]?.Artist!
+            // if there a BPM
             if (songList[indexPath.row]!.BPM! != "") {
                 self.songDetailBPM.text = "\(songList[indexPath.row]!.BPM!) BPM"
             }
             else {
                 self.songDetailBPM.text = "BPM Unavailable"
+            }
+            // if the song detail contains an actual image
+            if(songList[indexPath.row]!.imageURL! != "") {
+                self.songDetailImage.image = songList[indexPath.row]!.artistImage
+            }
+            else {
+                self.songDetailImage.image = UIImage(named: "image_unavailable")
             }
                         
             songDetailsView.isHidden = false
@@ -720,6 +791,9 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         var count:Int = 0
         if tableView == songTable {
             count = self.songListCount
+            self.loading.stopAnimating()
+            self.loading.isHidden = true
+            self.songTable.isHidden = false
         }
         else if tableView == savedTable {
             let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
@@ -742,14 +816,20 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         // if we are looking at the songTable
         if tableView == songTable {
             let cell = songTable.dequeueReusableCell(withIdentifier: "song_cell", for: indexPath) as! SearchTableViewCell
-            
+                     
+            self.songTable.beginUpdates()
             if songList.count != 0 {
-                cell.titleLabel?.text = songList[indexPath.row]?.Title!
-                cell.artistLabel?.text = songList[indexPath.row]?.Artist!
+                cell.titleLabel?.text = self.songList[indexPath.row]?.Title!
+                cell.artistLabel?.text = self.songList[indexPath.row]?.Artist!
             }
             else {
                 //show label for no songs found
+                
+                
+                
+                
             }
+            self.songTable.endUpdates()
             
             // get index of the user
             let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in

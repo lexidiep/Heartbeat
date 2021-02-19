@@ -15,6 +15,7 @@ class saved {
     var artist: String?
     var id:String?
     var bpm:String?
+    var image:String?
 }
 // struct for individual user data
 class userInfo {
