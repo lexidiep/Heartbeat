@@ -10,6 +10,10 @@ import iCarousel
 
 class HomeController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, iCarouselDataSource {
     
+    
+    // --------------- OUTLETS & VARIABLES ---------------
+    
+    // object for songs
     struct songInfo {
         var Title:String?
         var Artist:String?
@@ -19,6 +23,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         var artistImage:UIImage?
     }
 
+    
     // home page
     @IBOutlet weak var featured: UILabel!
     @IBOutlet weak var first_recomm: UILabel!
@@ -59,6 +64,12 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var recSongCancelButton: UIButton!
     @IBOutlet weak var recommendedView: UIView!
     @IBOutlet weak var recLoading: UIActivityIndicatorView!
+    // for details dismissal
+    @IBOutlet weak var temporaryView: UIView!
+    @IBOutlet weak var tempRecDetailCancel: UIButton!
+    var timer: Timer?
+    var currentIndex = 0
+    var currentIndex_upbeat = 0
     var slowRandBPMs = [Int](repeating: 0, count: 30)
     var slowPacedList = [songInfo?]()
     var moderateRandBPMs = [Int](repeating: 0, count: 30)
@@ -85,6 +96,9 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var songDetailBPM: UILabel!
     @IBOutlet weak var songDetailImage: UIImageView!
     @IBOutlet weak var loading: UIActivityIndicatorView!
+    // for details dismissal
+    @IBOutlet weak var tempSearchView: UIView!
+    @IBOutlet weak var tempSearchDetailCancel: UIButton!
     
     
     // saved page
@@ -116,14 +130,9 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var savedSongsLabel: UILabel!
     @IBOutlet weak var editProfilePicButton: UIButton!
     @IBOutlet weak var editProfileButton: UIButton!
+
     
-    
-    // variables for recommended section (home page)
-    var timer: Timer?
-    var currentIndex = 0
-    var currentIndex_upbeat = 0
-    
-    // image data for each panel
+    // image data for each recommended panel
     var slowImages = [UIImage(named:"antidote_travis_scott_66bpm") ,
                       UIImage(named:"congratulations_mac_miller_57bpm") ,
                       UIImage(named:"perfect_ed_sheeran_63bpm") ,
@@ -157,6 +166,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     
     
+    // --------------- VIEW DID LOAD ---------------
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -181,6 +192,13 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         recLoading.color = .lightGray
         recLoading.startAnimating()
         recSongImage.layer.cornerRadius = 5
+        recSongDetails.layer.cornerRadius = 5
+        recSongDetails.layer.shadowColor = UIColor.black.cgColor
+        recSongDetails.layer.shadowOpacity = 1
+        recSongDetails.layer.shadowOffset = .zero
+        recSongDetails.layer.shadowRadius = 10
+        recSongDetails.layer.shadowPath = UIBezierPath(rect: recSongDetails.bounds).cgPath
+        recSongDetails.layer.shouldRasterize = true
         
         // upbeat panel attributes
         first_recomm.layer.borderColor = UIColor.lightGray.cgColor
@@ -191,7 +209,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         upbeat_slide.dataSource = self
         upbeat_pageCtrl.numberOfPages = fastImages.count
         var fastBPMsgenerated:[Int] = []
-        
+        // fill upbeat BPM's array with random #'s [161, 220]
         for i in 0...29 {
             upbeatRandBPMs[i] = Int.random(in: 161...220)
             while (fastBPMsgenerated.contains(upbeatRandBPMs[i])) {
@@ -209,7 +227,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         slow_slide.dataSource = self
         slow_pageCtrl.numberOfPages = slowImages.count
         var slowBPMsgenerated:[Int] = []
-        
+        // fill slow BPM's array with random #'s [40, 100]
         for i in 0...29 {
             slowRandBPMs[i] = Int.random(in: 40...100)
             while (slowBPMsgenerated.contains(slowRandBPMs[i])) {
@@ -227,7 +245,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         moderate_slide.dataSource = self
         moderate_pageCtrl.numberOfPages = moderateImages.count
         var modBPMsgenerated:[Int] = []
-        
+        // fill moderate BPM's array with random #'s [101, 160]
         for i in 0...29 {
             moderateRandBPMs[i] = Int.random(in: 101...160)
             while (modBPMsgenerated.contains(moderateRandBPMs[i])) {
@@ -269,13 +287,12 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
             item?.username == users_name
         })
-        
+        // show no songs label if no songs saved
         if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs) != nil && ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! != 0  {
             self.noSongsLabel.isHidden = true
             self.savedTable.isHidden = false
         }
         else if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs) == nil || ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! == 0{
-            print("empty")
             self.noSongsLabel.isHidden = false
             self.savedView.bringSubviewToFront(noSongsLabel)
             self.savedTable.isHidden = true
@@ -323,6 +340,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     // --------------- KEYBOARD DISMISSAL ---------------
     
+    // when user taps outside of keyboard, dismiss keyboard
     @objc func dismissKeyboard() {
         //Causes the view (or one of its embedded text fields) to resign the first responder status.
         searchView.endEditing(true)
@@ -330,13 +348,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }
     
     
-    // testing to check if search button is functional
-    @IBAction func searchFieldAction(_ sender: Any) {
-        print("search was pressed")
-    }
-    
-    
-    // keyboard dismissal
+    // keyboard dismissal on "return" tapped (search page)
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         searchField.resignFirstResponder()
         searchSongs();
@@ -448,10 +460,10 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     // cancel recommended song details view
     @IBAction func cancelRecDetails(_ sender: Any) {
-        
+        viewSlideCancel(view: recSongDetails)
         recSongDetails.isHidden = true
+        temporaryView.isHidden = true
         recommendedTable.alpha = 1.0
-        
     } // end cancelRecDetails
     
     
@@ -474,7 +486,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     // --------------- RETRIEVE SONG DATA FROM API ---------------
     
-    // session manager
+    // session manager for URLSession
     static let sessionManager: URLSession = {
             let configuration = URLSessionConfiguration.default
             configuration.timeoutIntervalForRequest = 30 // seconds
@@ -483,7 +495,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }()
     
     
-    // api function
+    // api function to begin getting song data
     var songIDs:[String] = []
     var imageURLs:[String] = []
     private func getData() {
@@ -525,13 +537,16 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 return
             }
 
+            // remove all info from songList, songIDs and imageURLS for fresh search results
             self.songList.removeAll()
             self.songIDs.removeAll()
             self.imageURLs.removeAll()
             
+            // if there are results for song
             if json.search?.count != nil {
                 self.songListCount = json.search!.count
             
+                // for every song in json result, store song info
                 for i in 0...(self.songListCount-1) {
                     var newSong:songInfo! = songInfo()
                     newSong.Title = json.search![i].title!
@@ -541,7 +556,6 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     var imageCode = ""
                     if (json.search![i].artist!.img != nil) {
                         imageCode = json.search![i].artist!.img!
-                        //print(imageCode)
                     }
                     else {
                         imageCode = ""
@@ -555,10 +569,11 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     if (json.search![i].artist!.img != nil) {
                         self.imageURLs.append(json.search![i].artist!.img!)
                     }
-                }
-            }
+                } // end for
+            } // end if
             
             self.getSongFromWhere = "search"
+            
             // get the bpm's of the songs from search results
             self.getSongBPM(ids: self.songIDs)
             
@@ -572,7 +587,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }   // end getData()
     
     
-    // get bpm of song
+    // get bpm of song from api
     func getSongBPM(ids:[String]) {
 
         for i in 0...(ids.count-1) {
@@ -630,7 +645,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     } //end getSongBPM function
     
     
-    // get the image of artist to show in song details
+    // get the image of artist to show in song details from api
     func getArtistImage(images:[String]) {
         
         for i in 0...(images.count-1) {
@@ -1177,16 +1192,36 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }   // end profileClicked()
     
     
-    
     // hides the song detail panel from view
     @IBAction func exitSongDetail(_ sender: Any) {
         
         songDetailsView.isHidden = true
+        tempSearchView.isHidden = true
         self.viewSlideCancel(view: songDetailsView)
         searchField.alpha = 1.0
         songTable.alpha = 1.0
         
     } // end exitSongDetail function
+    
+    
+    // cancels song details in search
+    @IBAction func searchDetailDismissal(_ sender: Any) {
+        songDetailsView.isHidden = true
+        tempSearchView.isHidden = true
+        self.viewSlideCancel(view: songDetailsView)
+        searchField.alpha = 1.0
+        songTable.alpha = 1.0
+    } // end searchDetailDismissal function
+    
+    
+    // cancels song details in recommended songs
+    @IBAction func recDetailDismissal(_ sender: Any) {
+        recSongDetails.isHidden = true
+        temporaryView.isHidden = true
+        self.viewSlideCancel(view: recSongDetails)
+        recommendedTable.alpha = 1.0
+    } // end recDetailDismissal function
+    
     
     
     
@@ -1232,11 +1267,13 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     // --------------- DATA SOURCE/DELEGATES ---------------
     
     // COLLECTION VIEW
+    // hide table when user starts typing in search
     func textFieldDidBeginEditing(_ textField: UITextField) {
         self.songTable.isHidden = true
     }   // didBeginEditing (text field -> search page)
     
     
+    // number of items for recommended panel images
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         var count:Int = 0
         if collectionView == slow_slide {
@@ -1251,6 +1288,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         return count
     }   // numberOfItemsInSection (collectionView -> home page)
     
+    
+    // cell for item at for recommended panels
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         // slow-paced cells
@@ -1276,6 +1315,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         return UICollectionViewCell()
     }   // cellForItemAt (collectionView -> home page)
     
+    
+    // collection view size for recommended panels
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
     }   // collectionViewLayout (collectionView -> home page)
@@ -1286,7 +1327,10 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     
     
+    
+    
     // TABLEVIEW
+    // did select row at for all tables
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if tableView == songTable {
             let indexPath = songTable.indexPathForSelectedRow!
@@ -1310,6 +1354,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             }
                         
             songDetailsView.isHidden = false
+            tempSearchView.isHidden = false
             self.viewSlideInFromTop(view: songDetailsView)
             searchField.alpha = 0.3
             songTable.alpha = 0.3
@@ -1342,6 +1387,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 }
                             
                 recSongDetails.isHidden = false
+                temporaryView.isHidden = false
+                recLoading.isHidden = true
                 self.viewSlideInFromTop(view: recSongDetails)
                 recommendedTable.alpha = 0.3
             }
@@ -1363,8 +1410,9 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     self.recSongImage.image = UIImage(named: "image_unavailable")
                 }
                             
-                self.recLoading.stopAnimating()
+                recLoading.isHidden = true
                 recSongDetails.isHidden = false
+                temporaryView.isHidden = false
                 self.viewSlideInFromTop(view: recSongDetails)
                 recommendedTable.alpha = 0.3
             }
@@ -1387,12 +1435,16 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 }
 
                 recSongDetails.isHidden = false
+                recLoading.isHidden = true
+                temporaryView.isHidden = false
                 self.viewSlideInFromTop(view: recSongDetails)
                 recommendedTable.alpha = 0.3
             }
         }
     }   // end didSelectRowAt (tableView -> search page)
     
+    
+    // number of rows for all tables
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         var count:Int = 0
         if tableView == songTable {
@@ -1425,6 +1477,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         return count
     }   // numberOfRowsInSection (tableView -> search page)
     
+    
+    // cell for row for all tables
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // if we are looking at the songTable
         if tableView == songTable {
@@ -1759,7 +1813,6 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     /*
     // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destination.
         // Pass the selected object to the new view controller.

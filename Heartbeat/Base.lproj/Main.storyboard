@@ -686,6 +686,20 @@ security question</string>
                                             </tableViewCell>
                                         </prototypes>
                                     </tableView>
+                                    <view hidden="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hkm-Bd-Z6C">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="720"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bzp-Pt-Enh">
+                                                <rect key="frame" x="0.0" y="0.0" width="414" height="720"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <connections>
+                                                    <action selector="recDetailDismissal:" destination="SF3-sz-NiH" eventType="touchUpInside" id="lRf-wj-2fj"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </view>
                                     <view hidden="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6Hz-sS-T5K" userLabel="DetailsFromRec">
                                         <rect key="frame" x="22" y="140" width="369" height="327"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -725,7 +739,6 @@ security question</string>
                                                 </state>
                                                 <connections>
                                                     <action selector="cancelRecDetails:" destination="SF3-sz-NiH" eventType="touchUpInside" id="FlT-YP-biG"/>
-                                                    <action selector="exitSongDetail:" destination="SF3-sz-NiH" eventType="touchUpInside" id="F8F-D2-wH1"/>
                                                 </connections>
                                             </button>
                                         </subviews>
@@ -965,9 +978,6 @@ security question</string>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="20"/>
                                         <textInputTraits key="textInputTraits" returnKeyType="search" enablesReturnKeyAutomatically="YES"/>
-                                        <connections>
-                                            <action selector="searchFieldAction:" destination="SF3-sz-NiH" eventType="primaryActionTriggered" id="iLh-tF-E9V"/>
-                                        </connections>
                                     </textField>
                                     <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="P4z-Zr-cbY">
                                         <rect key="frame" x="190" y="150" width="40" height="40"/>
@@ -1036,6 +1046,20 @@ security question</string>
                                             </tableViewCell>
                                         </prototypes>
                                     </tableView>
+                                    <view hidden="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mGl-o6-n9z">
+                                        <rect key="frame" x="0.0" y="114" width="414" height="720"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FSs-p6-4zQ">
+                                                <rect key="frame" x="0.0" y="0.0" width="414" height="720"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <connections>
+                                                    <action selector="searchDetailDismissal:" destination="SF3-sz-NiH" eventType="touchUpInside" id="W5I-tK-rv7"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </view>
                                     <view hidden="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MgB-oI-7NN" userLabel="SongDetailsView">
                                         <rect key="frame" x="22" y="250" width="369" height="327"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -1397,6 +1421,10 @@ security question</string>
                         <outlet property="songDetailTitle" destination="aS2-uR-Age" id="uCe-q1-qPu"/>
                         <outlet property="songDetailsView" destination="MgB-oI-7NN" id="r9f-UP-RMT"/>
                         <outlet property="songTable" destination="PnU-J0-EdW" id="Uka-VJ-8YZ"/>
+                        <outlet property="tempRecDetailCancel" destination="Bzp-Pt-Enh" id="Pxl-PI-ZiD"/>
+                        <outlet property="tempSearchDetailCancel" destination="FSs-p6-4zQ" id="dzh-CZ-Mtj"/>
+                        <outlet property="tempSearchView" destination="mGl-o6-n9z" id="71c-Wd-OyS"/>
+                        <outlet property="temporaryView" destination="hkm-Bd-Z6C" id="SVn-1N-ktH"/>
                         <outlet property="third_recomm" destination="52z-RL-0T8" id="WO5-Dn-Csz"/>
                         <outlet property="topLogo" destination="rn5-TH-Qrp" id="Szc-3l-VKD"/>
                         <outlet property="topSplitBar" destination="r07-fj-ZPh" id="98n-Iy-KrV"/>
