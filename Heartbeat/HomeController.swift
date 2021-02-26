@@ -9,6 +9,15 @@ import UIKit
 import iCarousel
 
 class HomeController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, iCarouselDataSource {
+    
+    struct songInfo {
+        var Title:String?
+        var Artist:String?
+        var id:String?
+        var BPM:String?
+        var imageURL:String?
+        var artistImage:UIImage?
+    }
 
     // home page
     @IBOutlet weak var featured: UILabel!
@@ -37,6 +46,29 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var slow_pageCtrl: UIPageControl!
     @IBOutlet weak var moderate_slide: UICollectionView!
     @IBOutlet weak var moderate_pageCtrl: UIPageControl!
+    @IBOutlet weak var recommendedTable: UITableView!
+    @IBOutlet weak var upbeatButton: UIButton!
+    @IBOutlet weak var slowButton: UIButton!
+    @IBOutlet weak var moderateButton: UIButton!
+    @IBOutlet weak var backButton: UIButton!
+    @IBOutlet weak var recSongDetails: UIView!
+    @IBOutlet weak var recSongImage: UIImageView!
+    @IBOutlet weak var recSongTitle: UILabel!
+    @IBOutlet weak var recSongArtist: UILabel!
+    @IBOutlet weak var recSongBPM: UILabel!
+    @IBOutlet weak var recSongCancelButton: UIButton!
+    @IBOutlet weak var recommendedView: UIView!
+    @IBOutlet weak var recLoading: UIActivityIndicatorView!
+    var slowRandBPMs = [Int](repeating: 0, count: 30)
+    var slowPacedList = [songInfo?]()
+    var moderateRandBPMs = [Int](repeating: 0, count: 30)
+    var moderateList = [songInfo?]()
+    var upbeatRandBPMs = [Int](repeating: 0, count: 30)
+    var upbeatList = [songInfo?]()
+    var selectedRange:String = ""
+    var recommendedTableCount:Int = 0
+    var getSongFromWhere:String = ""
+    var onRecommended:Bool = false
     
     
     // search page
@@ -46,14 +78,6 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var searchIcon: UIImageView!
     @IBOutlet weak var songTable: UITableView!
     var songListCount:Int = 0
-    struct songInfo {
-        var Title:String?
-        var Artist:String?
-        var id:String?
-        var BPM:String?
-        var imageURL:String?
-        var artistImage:UIImage?
-    }
     var songList = [songInfo?]()
     @IBOutlet weak var songDetailsView: UIView!
     @IBOutlet weak var songDetailTitle: UILabel!
@@ -149,6 +173,15 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         featCarousel.dataSource = self
         featCarousel.frame = CGRect(x: 0, y: 80, width: self.view.frame.width, height: 283)
         
+        // recommended table
+        recommendedTable.delegate = self
+        recommendedTable.dataSource = self
+        recommendedTable.rowHeight = 65
+        self.recommendedTable.tableFooterView = UIView()
+        recLoading.color = .lightGray
+        recLoading.startAnimating()
+        recSongImage.layer.cornerRadius = 5
+        
         // upbeat panel attributes
         first_recomm.layer.borderColor = UIColor.lightGray.cgColor
         first_recomm.layer.borderWidth = 1.0
@@ -157,6 +190,15 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         upbeat_slide.delegate = self
         upbeat_slide.dataSource = self
         upbeat_pageCtrl.numberOfPages = fastImages.count
+        var fastBPMsgenerated:[Int] = []
+        
+        for i in 0...29 {
+            upbeatRandBPMs[i] = Int.random(in: 161...220)
+            while (fastBPMsgenerated.contains(upbeatRandBPMs[i])) {
+                upbeatRandBPMs[i] = Int.random(in: 161...220)
+            }
+            fastBPMsgenerated.append(upbeatRandBPMs[i])
+        }
         
         // slow-paced panel attributes
         second_recomm.layer.borderColor = UIColor.lightGray.cgColor
@@ -166,6 +208,15 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         slow_slide.delegate = self
         slow_slide.dataSource = self
         slow_pageCtrl.numberOfPages = slowImages.count
+        var slowBPMsgenerated:[Int] = []
+        
+        for i in 0...29 {
+            slowRandBPMs[i] = Int.random(in: 40...100)
+            while (slowBPMsgenerated.contains(slowRandBPMs[i])) {
+                slowRandBPMs[i] = Int.random(in: 40...100)
+            }
+            slowBPMsgenerated.append(slowRandBPMs[i])
+        }
         
         // moderate panel attributes
         third_recomm.layer.borderColor = UIColor.lightGray.cgColor
@@ -175,6 +226,15 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         moderate_slide.delegate = self
         moderate_slide.dataSource = self
         moderate_pageCtrl.numberOfPages = moderateImages.count
+        var modBPMsgenerated:[Int] = []
+        
+        for i in 0...29 {
+            moderateRandBPMs[i] = Int.random(in: 101...160)
+            while (modBPMsgenerated.contains(moderateRandBPMs[i])) {
+                moderateRandBPMs[i] = Int.random(in: 101...160)
+            }
+            modBPMsgenerated.append(moderateRandBPMs[i])
+        }
         
         startTimer() // begins auto scroll on each recommended panel
         
@@ -209,7 +269,6 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
             item?.username == users_name
         })
-        
         
         if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs) != nil && ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! != 0  {
             self.noSongsLabel.isHidden = true
@@ -331,6 +390,88 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     
     
+    // --------------- RECOMMENDED PANELS (ACTIONS) ---------------
+    
+    // user taps upbeat panel
+    @IBAction func upbeatClicked(_ sender: Any) {
+        selectedRange = "upbeat"
+        getUpbeatSongs()
+        self.recommendedView.isHidden = false
+        recommendedTable.isHidden = true
+        // bring recommended table to front
+        scrollView.isHidden = true
+        backButton.isHidden = false
+        onRecommended = true
+        topSplitBar.isHidden = true
+        topLogo.isHidden = true
+        recLoading.isHidden = false
+        recLoading.startAnimating()
+        self.recLoading.alpha = 1.0
+    } // end upbeatClicked
+    
+    
+    // user taps slow-paced panel
+    @IBAction func slowClicked(_ sender: Any) {
+        selectedRange = "slow"
+        getSlowSongs()
+        self.recommendedView.isHidden = false
+        recommendedTable.isHidden = true
+        // bring recommended table to front
+        scrollView.isHidden = true
+        backButton.isHidden = false
+        onRecommended = true
+        topSplitBar.isHidden = true
+        topLogo.isHidden = true
+        recLoading.isHidden = false
+        recLoading.startAnimating()
+        self.recLoading.alpha = 1.0
+    } // end slowClicked
+    
+    
+    // user taps moderate panel
+    @IBAction func moderateClicked(_ sender: Any) {
+        selectedRange = "moderate"
+        getModerateSongs()
+        self.recommendedView.isHidden = false
+        recommendedTable.isHidden = true
+        // bring recommended table to front
+        scrollView.isHidden = true
+        backButton.isHidden = false
+        onRecommended = true
+        topSplitBar.isHidden = true
+        topLogo.isHidden = true
+        recLoading.isHidden = false
+        recLoading.startAnimating()
+        self.recLoading.alpha = 1.0
+    } // end moderateClicked
+    
+    
+    // cancel recommended song details view
+    @IBAction func cancelRecDetails(_ sender: Any) {
+        
+        recSongDetails.isHidden = true
+        recommendedTable.alpha = 1.0
+        
+    } // end cancelRecDetails
+    
+    
+    
+    // slide back to home screen (out of recommended table)
+    @IBAction func backButtonClicked(_ sender: Any) {
+        
+        scrollView.isHidden = false
+        viewSlideInFromLeft(view: scrollView)
+        recommendedView.isHidden = true
+        backButton.isHidden = true
+        topLogo.isHidden = false
+        topSplitBar.isHidden = false
+        
+    } // end backButtonClicked
+    
+    
+    
+    
+    
     // --------------- RETRIEVE SONG DATA FROM API ---------------
     
     // session manager
@@ -417,6 +558,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 }
             }
             
+            self.getSongFromWhere = "search"
             // get the bpm's of the songs from search results
             self.getSongBPM(ids: self.songIDs)
             
@@ -436,7 +578,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         for i in 0...(ids.count-1) {
         
             // url for song details api
-            let url2 = "https://api.getsongbpm.com/song/?api_key=c42bacc54624edfd4f3d4365f8025bab&id=\(self.songIDs[i])"
+            let url2 = "https://api.getsongbpm.com/song/?api_key=c42bacc54624edfd4f3d4365f8025bab&id=\(ids[i])"
 
             
             // task for bpm data grab
@@ -477,6 +619,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     }
                     
                     self.songTable.reloadData()
+
                 } // end dispatch queue
             }) // end of task2
 
@@ -495,7 +638,9 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             // url for image urls
             let url3 = images[i]
             
-            // task for bpm data grab
+            print(images[i])
+            
+            // task for image data grab
             let task3 = HomeController.sessionManager.dataTask(with: URL(string: url3)!, completionHandler:{ data, response, error in
                 guard let data = data, let downloadedImg = UIImage(data: data), error == nil else {
                     print("Something went wrong")
@@ -505,13 +650,48 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 // try to get data from api
                 DispatchQueue.main.async{
 
+                    if (self.getSongFromWhere == "search") {
                         if let index = self.songList.firstIndex(where: {$0?.imageURL == self.imageURLs[i]}) {
                             self.songList[index]?.artistImage = downloadedImg
                         }
 
-                    self.songTable.reloadData()
+                        self.songTable.reloadData()
+                        
+                        let topIndex = IndexPath(row: 0, section: 0)
+                        self.songTable.scrollToRow(at: topIndex, at: .top, animated: false)
+                    }
+                    else if (self.getSongFromWhere == "slow") {
+                        if let index = self.slowPacedList.firstIndex(where: {$0?.imageURL == self.slowImgURLs[i]}) {
+                            self.slowPacedList[index]?.artistImage = downloadedImg
+                        }
+
+                        self.recommendedTable.reloadData()
+                        
+                        let topIndex = IndexPath(row: 0, section: 0)
+                        self.recommendedTable.scrollToRow(at: topIndex, at: .top, animated: false)
+                    }
+                    else if (self.getSongFromWhere == "upbeat") {
+                        if let index = self.upbeatList.firstIndex(where: {$0?.imageURL == self.upbeatImgURLs[i]}) {
+                            self.upbeatList[index]?.artistImage = downloadedImg
+                        }
+
+                        self.recommendedTable.reloadData()
+                        
+                        let topIndex = IndexPath(row: 0, section: 0)
+                        self.recommendedTable.scrollToRow(at: topIndex, at: .top, animated: false)
+                    }
+                    else if (self.getSongFromWhere == "moderate") {
+                        if let index = self.moderateList.firstIndex(where: {$0?.imageURL == self.moderateImgURLs[i]}) {
+                            self.moderateList[index]?.artistImage = downloadedImg
+                        }
+
+                        self.recommendedTable.reloadData()
+                        
+                        let topIndex = IndexPath(row: 0, section: 0)
+                        self.recommendedTable.scrollToRow(at: topIndex, at: .top, animated: false)
+                    }
                 } // end dispatch queue
-            }) // end of task2
+            }) // end of task3
 
             task3.resume()
             
@@ -519,6 +699,330 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         
     } // end of getArtistImage
     
+    
+    
+    
+    
+    // -------------- RECOMMENDED PANELS FUNCTIONS ---------------
+    
+    
+    var slowSongIDs:[String] = []
+    var slowImgURLs:[String] = []
+    // get songs for slow paced recommendations
+    func getSlowSongs() {
+        
+        // remove all lists for recommended table
+        self.upbeatList.removeAll()
+        self.upbeatSongIDs.removeAll()
+        self.upbeatImgURLs.removeAll()
+        self.slowPacedList.removeAll()
+        self.slowSongIDs.removeAll()
+        self.slowImgURLs.removeAll()
+        self.moderateList.removeAll()
+        self.moderateSongIDs.removeAll()
+        self.moderateImgURLs.removeAll()
+                
+        for i in 0...slowRandBPMs.count-1 {
+                        
+            let slowURL = "https://api.getsongbpm.com/tempo/?api_key=c42bacc54624edfd4f3d4365f8025bab&bpm=\(slowRandBPMs[i])"
+                        
+            // task for slow song data grab
+            let task4 = HomeController.sessionManager.dataTask(with: URL(string: slowURL)!, completionHandler:{ data, response, error in
+                guard let data = data, error == nil else {
+                    print("Something went wrong")
+                    return
+                }
+                     
+                
+                 // get data
+                 var result:Response2?
+                 do {
+                     result = try JSONDecoder().decode(Response2.self, from: data)
+                 }
+                 catch {
+                     print("Failed to convert \(error.localizedDescription)")
+                 }
+                 
+                 guard let json = result else {
+                     return
+                 }
+
+                 
+                 if json.tempo?.count != nil {
+                     //self.songListCount = json.search!.count
+                    
+                    var randomSong:Int = 0
+                    if (json.tempo!.count > 10) {
+                        randomSong = Int.random(in: 0...10)
+                    }
+                    else {
+                        randomSong = Int.random(in: 0..<json.tempo!.count)
+                    }
+                 
+                     var newSong:songInfo! = songInfo()
+                     newSong.Title = json.tempo![randomSong].song_title!
+                     newSong.Artist = json.tempo![randomSong].artist!.name!
+                     
+                     // getting image url
+                     var imageCode = ""
+                     if (json.tempo![randomSong].album!.img != nil) {
+                         imageCode = json.tempo![randomSong].album!.img!
+                     }
+                     else {
+                         imageCode = ""
+                     }
+                     newSong.imageURL = imageCode
+                     
+                     newSong.id = json.tempo![randomSong].song_id!
+                     newSong.BPM = json.tempo![randomSong].tempo!
+                     self.slowPacedList.append(newSong)
+
+                     self.slowSongIDs.append(json.tempo![randomSong].song_id!)
+                     if (json.tempo![randomSong].album!.img != nil) {
+                         self.slowImgURLs.append(json.tempo![randomSong].album!.img!)
+                     }
+                }
+                 else {
+                    print("Slow songs JSON returned nil")
+                 }
+                
+                print("slowPacedList count total: \(self.slowPacedList.count)")
+
+                
+                if (self.slowPacedList.count == 30 && self.slowSongIDs.count == 30) {
+                    print("\n\n\nEND TASKING\n\n\n")
+                    
+                    self.getSongFromWhere = "slow"
+                    
+                    // get the images of the songs from search results
+                    self.getArtistImage(images: self.slowImgURLs)
+                    
+                    self.recommendedTable.isHidden = false
+                    self.recLoading.isHidden = true
+                    self.recLoading.alpha = 0.0
+                }
+                
+            }) // end of task4
+
+            task4.resume()
+        } // end for
+                
+        DispatchQueue.main.async {
+            self.recommendedTableCount = 30
+            self.recommendedTable.reloadData()
+         }
+        
+    } // end getSlowSongs
+    
+    
+    var upbeatSongIDs:[String] = []
+    var upbeatImgURLs:[String] = []
+    // get songs for slow paced recommendations
+    func getUpbeatSongs() {
+        
+        self.upbeatList.removeAll()
+        self.upbeatSongIDs.removeAll()
+        self.upbeatImgURLs.removeAll()
+        self.slowPacedList.removeAll()
+        self.slowSongIDs.removeAll()
+        self.slowImgURLs.removeAll()
+        self.moderateList.removeAll()
+        self.moderateSongIDs.removeAll()
+        self.moderateImgURLs.removeAll()
+                
+        for i in 0...upbeatRandBPMs.count-1 {
+                        
+            let upbeatURL = "https://api.getsongbpm.com/tempo/?api_key=c42bacc54624edfd4f3d4365f8025bab&bpm=\(upbeatRandBPMs[i])"
+                        
+            // task for slow song data grab
+            let task5 = HomeController.sessionManager.dataTask(with: URL(string: upbeatURL)!, completionHandler:{ data, response, error in
+                guard let data = data, error == nil else {
+                    print("Something went wrong")
+                    return
+                }
+                     
+                
+                 // get data
+                 var result:Response2?
+                 do {
+                     result = try JSONDecoder().decode(Response2.self, from: data)
+                 }
+                 catch {
+                     print("Failed to convert \(error.localizedDescription)")
+                 }
+                 
+                 guard let json = result else {
+                     return
+                 }
+
+                 
+                 if json.tempo?.count != nil {
+                    
+                    var randomSong:Int = 0
+                    if (json.tempo!.count > 10) {
+                        randomSong = Int.random(in: 0...10)
+                    }
+                    else {
+                        randomSong = Int.random(in: 0..<json.tempo!.count)
+                    }
+                 
+                     var newSong:songInfo! = songInfo()
+                     newSong.Title = json.tempo![randomSong].song_title!
+                     newSong.Artist = json.tempo![randomSong].artist!.name!
+                     
+                     // getting image url
+                     var imageCode = ""
+                     if (json.tempo![randomSong].album!.img != nil) {
+                         imageCode = json.tempo![randomSong].album!.img!
+                     }
+                     else {
+                         imageCode = ""
+                     }
+                     newSong.imageURL = imageCode
+                     
+                     newSong.id = json.tempo![randomSong].song_id!
+                     newSong.BPM = json.tempo![randomSong].tempo!
+                     self.upbeatList.append(newSong)
+
+                     self.upbeatSongIDs.append(json.tempo![randomSong].song_id!)
+                     if (json.tempo![randomSong].album!.img != nil) {
+                         self.upbeatImgURLs.append(json.tempo![randomSong].album!.img!)
+                     }
+                }
+                 else {
+                    print("Upbeat songs JSON returned nil")
+                 }
+                
+                print("upbeatList count total: \(self.upbeatList.count)")
+                
+                if (self.upbeatList.count == 30 && self.upbeatSongIDs.count == 30) {
+                    print("\n\n\nEND TASKING\n\n\n")
+                    
+                    self.getSongFromWhere = "upbeat"
+                    
+                    // get the images of the songs from search results
+                    self.getArtistImage(images: self.upbeatImgURLs)
+                    self.recommendedTable.isHidden = false
+                    self.recLoading.isHidden = true
+                    self.recLoading.alpha = 0.0
+                }
+                
+            }) // end of task5
+
+            task5.resume()
+        } // end for
+                
+        DispatchQueue.main.async {
+            self.recommendedTableCount = 30
+            self.recommendedTable.reloadData()
+         }
+        
+    } // end getUpbeatSongs
+    
+    
+    var moderateSongIDs:[String] = []
+    var moderateImgURLs:[String] = []
+    // get songs for slow paced recommendations
+    func getModerateSongs() {
+        
+        self.upbeatList.removeAll()
+        self.upbeatSongIDs.removeAll()
+        self.upbeatImgURLs.removeAll()
+        self.slowPacedList.removeAll()
+        self.slowSongIDs.removeAll()
+        self.slowImgURLs.removeAll()
+        self.moderateList.removeAll()
+        self.moderateSongIDs.removeAll()
+        self.moderateImgURLs.removeAll()
+                
+        for i in 0...moderateRandBPMs.count-1 {
+                        
+            let moderateURL = "https://api.getsongbpm.com/tempo/?api_key=c42bacc54624edfd4f3d4365f8025bab&bpm=\(moderateRandBPMs[i])"
+                        
+            // task for moderate song data grab
+            let task6 = HomeController.sessionManager.dataTask(with: URL(string: moderateURL)!, completionHandler:{ data, response, error in
+                guard let data = data, error == nil else {
+                    print("Something went wrong")
+                    return
+                }
+                     
+                
+                 // get data
+                 var result:Response2?
+                 do {
+                     result = try JSONDecoder().decode(Response2.self, from: data)
+                 }
+                 catch {
+                     print("Failed to convert \(error.localizedDescription)")
+                 }
+                 
+                 guard let json = result else {
+                     return
+                 }
+
+                 
+                 if json.tempo?.count != nil {
+                    
+                    var randomSong:Int = 0
+                    if (json.tempo!.count > 10) {
+                        randomSong = Int.random(in: 0...10)
+                    }
+                    else {
+                        randomSong = Int.random(in: 0..<json.tempo!.count)
+                    }
+                 
+                     var newSong:songInfo! = songInfo()
+                     newSong.Title = json.tempo![randomSong].song_title!
+                     newSong.Artist = json.tempo![randomSong].artist!.name!
+                     
+                     // getting image url
+                     var imageCode = ""
+                     if (json.tempo![randomSong].album!.img != nil) {
+                         imageCode = json.tempo![randomSong].album!.img!
+                     }
+                     else {
+                         imageCode = ""
+                     }
+                     newSong.imageURL = imageCode
+                     
+                     newSong.id = json.tempo![randomSong].song_id!
+                     newSong.BPM = json.tempo![randomSong].tempo!
+                     self.moderateList.append(newSong)
+                     self.moderateSongIDs.append(json.tempo![randomSong].song_id!)
+                     if (json.tempo![randomSong].album!.img != nil) {
+                         self.moderateImgURLs.append(json.tempo![randomSong].album!.img!)
+                     }
+                }
+                 else {
+                    print("Moderate songs JSON returned nil")
+                 }
+                
+                print("moderateList count total: \(self.moderateList.count)")
+                
+                if (self.moderateList.count == 30 && self.moderateSongIDs.count == 30) {
+                    print("\n\n\nEND TASKING\n\n\n")
+                    
+                    self.getSongFromWhere = "moderate"
+                    
+                    // get the images of the songs from search results
+                    self.getArtistImage(images: self.moderateImgURLs)
+                    self.recommendedTable.isHidden = false
+                    self.recLoading.isHidden = true
+                    self.recLoading.alpha = 0.0
+                }
+                
+            }) // end of task6
+
+            task6.resume()
+        } // end for
+                
+        DispatchQueue.main.async {
+            self.recommendedTableCount = 30
+            self.recommendedTable.reloadData()
+         }
+        
+    } // end getModerateSongs
+
 
     
     
@@ -531,9 +1035,17 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         // hide/show pages
         searchView.isHidden = true
         savedView.isHidden = true
-        scrollView.isHidden = false
-        topLogo.isHidden = false
-        topSplitBar.isHidden = false
+        if (!onRecommended) {
+            scrollView.isHidden = false
+            topLogo.isHidden = false
+            topSplitBar.isHidden = false
+            backButton.isHidden = true
+            recommendedView.isHidden = true
+        }
+        else {
+            recommendedView.isHidden = false
+            backButton.isHidden = false
+        }
         profileView.isHidden = true
         
         // tints of other icons
@@ -559,6 +1071,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         topLogo.isHidden = true
         topSplitBar.isHidden = true
         profileView.isHidden = true
+        backButton.isHidden = true
+        recommendedView.isHidden = true
         
         // tints of other icons
         searchIcon.tintColor = UIColor(red: 25/255, green: 197/255, blue: 255/255, alpha: 1.0)
@@ -576,6 +1090,11 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     // action for heartRate nav button clicked
     @IBAction func heartRateClicked(_ sender: Any) {
+        
+        backButton.isHidden = true
+        recommendedView.isHidden = true
+        
+        
         //tints of heartRate Icon
         heartIcon.tintColor = UIColor(red: 25/255, green: 197/255, blue: 255/255, alpha: 1.0)
         musicIcon.tintColor = UIColor(red: 25/255, green: 197/255, blue: 255/255, alpha: 1.0)
@@ -599,6 +1118,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         topLogo.isHidden = false
         topSplitBar.isHidden = true
         profileView.isHidden = true
+        backButton.isHidden = true
+        recommendedView.isHidden = true
         
         let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
             item?.username == users_name
@@ -650,6 +1171,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         topLogo.isHidden = false
         topSplitBar.isHidden = true
         profileView.isHidden = false
+        backButton.isHidden = true
+        recommendedView.isHidden = true
                 
     }   // end profileClicked()
     
@@ -681,13 +1204,24 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }   // end viewSlideInFromTop()
     
     
-    // slide from top animation for cancel create account
+    // slide to bottom animation for cancel create account
     func viewSlideCancel(view: UIView) -> Void {
         let transition:CATransition = CATransition()
         transition.duration = 0.3
         transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
         transition.type = CATransitionType.push
         transition.subtype = CATransitionSubtype.fromTop
+        view.layer.add(transition, forKey: kCATransition)
+    }   // end viewSlideCancel()
+    
+    
+    // slide to right animation for going back to home page
+    func viewSlideInFromLeft(view: UIScrollView) -> Void {
+        let transition:CATransition = CATransition()
+        transition.duration = 0.3
+        transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+        transition.type = CATransitionType.push
+        transition.subtype = CATransitionSubtype.fromLeft
         view.layer.add(transition, forKey: kCATransition)
     }   // end viewSlideCancel()
     
@@ -785,7 +1319,79 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             let indexPath = savedTable.indexPathForSelectedRow!
             let selectedCell = savedTable.cellForRow(at: indexPath) as! SearchTableViewCell
         }
-    }   // didSelectRowAt (tableView -> search page)
+        else if tableView == recommendedTable {
+            let indexPath = recommendedTable.indexPathForSelectedRow!
+            let selectedCell = recommendedTable.cellForRow(at: indexPath) as! SearchTableViewCell
+            
+            if (selectedRange == "slow") {
+                self.recSongTitle.text = slowPacedList[indexPath.row]?.Title!
+                self.recSongArtist.text = slowPacedList[indexPath.row]?.Artist!
+                // if there a BPM
+                if (slowPacedList[indexPath.row]!.BPM! != "") {
+                    self.recSongBPM.text = "\(slowPacedList[indexPath.row]!.BPM!) BPM"
+                }
+                else {
+                    self.recSongBPM.text = "BPM Unavailable"
+                }
+                // if the song detail contains an actual image
+                if(slowPacedList[indexPath.row]!.imageURL! != "") {
+                    self.recSongImage.image = slowPacedList[indexPath.row]!.artistImage
+                }
+                else {
+                    self.recSongImage.image = UIImage(named: "image_unavailable")
+                }
+                            
+                recSongDetails.isHidden = false
+                self.viewSlideInFromTop(view: recSongDetails)
+                recommendedTable.alpha = 0.3
+            }
+            else if (selectedRange == "upbeat") {
+                self.recSongTitle.text = upbeatList[indexPath.row]?.Title!
+                self.recSongArtist.text = upbeatList[indexPath.row]?.Artist!
+                // if there a BPM
+                if (upbeatList[indexPath.row]!.BPM! != "") {
+                    self.recSongBPM.text = "\(upbeatList[indexPath.row]!.BPM!) BPM"
+                }
+                else {
+                    self.recSongBPM.text = "BPM Unavailable"
+                }
+                // if the song detail contains an actual image
+                if(upbeatList[indexPath.row]!.imageURL! != "") {
+                    self.recSongImage.image = upbeatList[indexPath.row]!.artistImage
+                }
+                else {
+                    self.recSongImage.image = UIImage(named: "image_unavailable")
+                }
+                            
+                self.recLoading.stopAnimating()
+                recSongDetails.isHidden = false
+                self.viewSlideInFromTop(view: recSongDetails)
+                recommendedTable.alpha = 0.3
+            }
+            else if (selectedRange == "moderate") {
+                self.recSongTitle.text = moderateList[indexPath.row]?.Title!
+                self.recSongArtist.text = moderateList[indexPath.row]?.Artist!
+                // if there a BPM
+                if (moderateList[indexPath.row]!.BPM! != "") {
+                    self.recSongBPM.text = "\(moderateList[indexPath.row]!.BPM!) BPM"
+                }
+                else {
+                    self.recSongBPM.text = "BPM Unavailable"
+                }
+                // if the song detail contains an actual image
+                if(moderateList[indexPath.row]!.imageURL! != "") {
+                    self.recSongImage.image = moderateList[indexPath.row]!.artistImage
+                }
+                else {
+                    self.recSongImage.image = UIImage(named: "image_unavailable")
+                }
+
+                recSongDetails.isHidden = false
+                self.viewSlideInFromTop(view: recSongDetails)
+                recommendedTable.alpha = 0.3
+            }
+        }
+    }   // end didSelectRowAt (tableView -> search page)
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         var count:Int = 0
@@ -808,6 +1414,13 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 noSongsLabel.isHidden = false
                 savedTable.isHidden = true
             }
+        }
+        else if tableView == recommendedTable {
+            count = self.recommendedTableCount
+            //self.recLoading.stopAnimating()
+            //self.recLoading.isHidden = true
+            //self.recommendedTable.isHidden = false
+            
         }
         return count
     }   // numberOfRowsInSection (tableView -> search page)
@@ -974,6 +1587,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     
                     self.savedTable.reloadData()
                     self.songTable.reloadData()
+                    self.recommendedTable.reloadData()
                     
                     if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs) == nil || ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! == 0{
                         print("User's saved songs list is now empty (savedTable)")
@@ -986,6 +1600,135 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             } // end of actionBlock
             return cell
         } // end if savedTable
+        else if tableView == recommendedTable {
+            var recommendedList = [songInfo?]()
+            if(selectedRange == "slow") {
+                recommendedList = slowPacedList
+            }
+            else if (selectedRange == "moderate") {
+                recommendedList = moderateList
+            }
+            else if (selectedRange == "upbeat") {
+                recommendedList = upbeatList
+            }
+            
+            let cell = recommendedTable.dequeueReusableCell(withIdentifier: "slow_cell", for: indexPath) as! SearchTableViewCell
+                     
+            self.recommendedTable.beginUpdates()
+            if recommendedList.count != 0 {
+                cell.titleLabel?.text = recommendedList[indexPath.row]?.Title!
+                cell.artistLabel?.text = recommendedList[indexPath.row]?.Artist!
+            }
+            self.recommendedTable.endUpdates()
+            //self.recommendedTable.isHidden = false
+            //self.recLoading.isHidden = true
+            
+            // get index of the user
+            let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
+                item?.username == users_name
+            })
+            
+            // if song is saved, filled bookmark should show
+            if (((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count) != 0) {
+                if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs)!.firstIndex(where: { (item) -> Bool in
+                    item?.id != recommendedList[indexPath.row]?.id!
+                }) != nil {
+                    cell.bookmarkIcon.image = UIImage(systemName: "bookmark")
+                }
+                else {
+                    cell.bookmarkIcon.image
+                        = UIImage(systemName: "bookmark.fill")
+                }
+            }
+            // if user has an empty saved songs list
+            else {
+                cell.bookmarkIcon.image = UIImage(systemName: "bookmark")
+            }
+
+            // if the song is already saved, upon search, make the bookmark filled
+            if (((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count) != 0) {
+                let saved = ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs)
+                if saved!.firstIndex(where: { (item) -> Bool in
+                    item?.id == recommendedList[indexPath.row]?.id!
+                }) != nil {
+                    cell.bookmarkIcon.image = UIImage(systemName: "bookmark.fill")
+                }
+            }
+            
+            
+            // save/unsave songs from the recommended table
+            cell.actionBlock = {
+                // make the bookmark empty if the song is not saved already
+                let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
+                    item?.username == self.users_name
+                })
+                
+                if (((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count) != 0) {
+                    if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs)!.firstIndex(where: { (item) -> Bool in
+                        item?.id == recommendedList[indexPath.row]?.id!
+                    }) != nil {
+                        cell.bookmarkIcon.image = UIImage(systemName: "bookmark")
+                        
+                        // get index of the song in the user's saved song list
+                        if let songIndex = ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs)!.firstIndex(where: { (item) -> Bool in
+                            item?.id == recommendedList[indexPath.row]?.id!
+                        }) {
+                            self.savedTable.beginUpdates()
+                            
+                            // delete the song from the saved songs table
+                            self.savedTable.deleteRows(at: [(IndexPath(row: songIndex, section:0))], with: .automatic)
+                            ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.deleteSavedSong(id: recommendedList[indexPath.row]?.id!))
+                            
+                            self.savedTable.endUpdates()
+                            
+                            if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs) == nil || ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! == 0{
+                                print("User's saved songs list is now empty")
+                                self.noSongsLabel.isHidden = false
+                                self.savedView.bringSubviewToFront(self.noSongsLabel)
+                                self.savedTable.isHidden = true
+                            }
+                        }
+                    }
+                    else {
+                        cell.bookmarkIcon.image = UIImage(systemName: "bookmark.fill")
+                        
+                        // create saved object to append to user's saved songs list
+                        var newSaved = saved()
+                        newSaved.title = recommendedList[indexPath.row]?.Title!
+                        newSaved.artist = recommendedList[indexPath.row]?.Artist!
+                        newSaved.id = recommendedList[indexPath.row]?.id!
+                        //get bpm from api
+                        ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.addSavedSong(song: newSaved))
+                        self.savedTable.beginUpdates()
+                        
+                        // insert the new saved song to the saved songs page
+                        self.savedTable.insertRows(at: [IndexPath(row:  ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! - 1, section: 0)], with: .automatic)
+                        self.savedTable.endUpdates()
+                    }
+                }
+                // savedSongs is empty
+                else {
+                    cell.bookmarkIcon.image = UIImage(systemName: "bookmark.fill")
+                    
+                    // create saved object to append to user's saved songs list
+                    var newSaved = saved()
+                    newSaved.title = recommendedList[indexPath.row]?.Title!
+                    newSaved.artist = recommendedList[indexPath.row]?.Artist!
+                    newSaved.id = recommendedList[indexPath.row]?.id!
+                    //get bpm from api
+                    ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.addSavedSong(song: newSaved))
+                    self.savedTable.beginUpdates()
+                    
+                    // insert the new saved song to the saved songs page
+                    self.savedTable.insertRows(at: [IndexPath(row:  ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! - 1, section: 0)], with: .automatic)
+                    self.savedTable.endUpdates()
+                }
+                
+            } // end actionblock
+            
+            return cell
+            
+        } // end if recommendedTable
                         
         
         return UITableViewCell()

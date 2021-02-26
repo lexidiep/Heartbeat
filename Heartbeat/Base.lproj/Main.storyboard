@@ -615,6 +615,125 @@ security question</string>
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <view hidden="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zMs-Fm-obv" userLabel="RecommendedView">
+                                <rect key="frame" x="0.0" y="110" width="414" height="720"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="bDS-Je-SrI">
+                                        <rect key="frame" x="190" y="40" width="40" height="40"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </activityIndicatorView>
+                                    <tableView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" keyboardDismissMode="onDrag" dataMode="prototypes" style="plain" separatorStyle="singleLineEtched" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="PCE-HA-6d5" userLabel="RecommendedTable">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="713"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="backgroundColor" red="0.12984204290000001" green="0.12984612579999999" blue="0.12984395030000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="tintColor" red="0.12984204290000001" green="0.12984612579999999" blue="0.12984395030000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="separatorColor" red="0.57045853140000002" green="0.57047235969999999" blue="0.57046490910000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <prototypes>
+                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="slow_cell" rowHeight="43.5" id="dWr-1l-sTW" customClass="SearchTableViewCell" customModule="Heartbeat" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="28" width="414" height="43.5"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="dWr-1l-sTW" id="LI7-9F-Ked">
+                                                    <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <subviews>
+                                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="VWc-sl-Pig" userLabel="Title/Artist">
+                                                            <rect key="frame" x="20" y="8" width="300" height="46"/>
+                                                            <subviews>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lJh-Dd-TYE">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="300" height="24"/>
+                                                                    <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="20"/>
+                                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Artist" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1QE-JX-mL6">
+                                                                    <rect key="frame" x="0.0" y="29" width="300" height="17"/>
+                                                                    <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="14"/>
+                                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                            </subviews>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" constant="300" id="7UE-UA-LUH"/>
+                                                            </constraints>
+                                                        </stackView>
+                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="bookmark" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="vjP-jE-yEe">
+                                                            <rect key="frame" x="359" y="7" width="35" height="45"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        </imageView>
+                                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gh6-Mc-tuV">
+                                                            <rect key="frame" x="359" y="7" width="35" height="45"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <connections>
+                                                                <action selector="bookmarkClicked:" destination="dWr-1l-sTW" eventType="touchUpInside" id="lAf-iR-On4"/>
+                                                            </connections>
+                                                        </button>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstItem="VWc-sl-Pig" firstAttribute="top" secondItem="LI7-9F-Ked" secondAttribute="top" constant="8" id="oX3-RN-ncF"/>
+                                                        <constraint firstItem="VWc-sl-Pig" firstAttribute="leading" secondItem="LI7-9F-Ked" secondAttribute="leading" constant="20" symbolic="YES" id="tJP-VG-VCa"/>
+                                                    </constraints>
+                                                </tableViewCellContentView>
+                                                <color key="backgroundColor" red="0.12984204290000001" green="0.12984612579999999" blue="0.12984395030000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <color key="tintColor" red="0.12984204290000001" green="0.12984612579999999" blue="0.12984395030000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <connections>
+                                                    <outlet property="artistLabel" destination="1QE-JX-mL6" id="A4d-hB-9Ge"/>
+                                                    <outlet property="bookmarkButton" destination="Gh6-Mc-tuV" id="KDq-yC-ZQh"/>
+                                                    <outlet property="bookmarkIcon" destination="vjP-jE-yEe" id="o3A-vy-zLO"/>
+                                                    <outlet property="titleLabel" destination="lJh-Dd-TYE" id="z0q-iJ-Rxm"/>
+                                                </connections>
+                                            </tableViewCell>
+                                        </prototypes>
+                                    </tableView>
+                                    <view hidden="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6Hz-sS-T5K" userLabel="DetailsFromRec">
+                                        <rect key="frame" x="22" y="140" width="369" height="327"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dXg-FB-vpn" userLabel="songImage">
+                                                <rect key="frame" x="120" y="10" width="135" height="135"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            </imageView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Song Title" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="zPw-d0-2xC">
+                                                <rect key="frame" x="8" y="151" width="353" height="35"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="26"/>
+                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Song Artist" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="v5q-rs-7zj">
+                                                <rect key="frame" x="8" y="183" width="353" height="24"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="20"/>
+                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="BPM" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="D4I-5H-YHq">
+                                                <rect key="frame" x="8" y="208" width="353" height="24"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="20"/>
+                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c4c-ap-s8h" userLabel="cancelSongDetail">
+                                                <rect key="frame" x="15" y="15" width="40" height="40"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <state key="normal">
+                                                    <imageReference key="image" image="xmark" catalog="system" symbolScale="large"/>
+                                                    <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large" weight="semibold"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="cancelRecDetails:" destination="SF3-sz-NiH" eventType="touchUpInside" id="FlT-YP-biG"/>
+                                                    <action selector="exitSongDetail:" destination="SF3-sz-NiH" eventType="touchUpInside" id="F8F-D2-wH1"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" red="0.26051741839999998" green="0.2605243921" blue="0.260520637" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" red="0.12984204290000001" green="0.12984612579999999" blue="0.12984395030000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </view>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="voy-go-ELE">
                                 <rect key="frame" x="0.0" y="114" width="414" height="713"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -668,15 +787,15 @@ security question</string>
                                         <color key="textColor" systemColor="systemGray4Color"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Upbeat" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ReU-PZ-jQu">
-                                        <rect key="frame" x="20" y="453" width="56" height="22"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Slow-paced" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0hu-DP-TWR">
+                                        <rect key="frame" x="217" y="453" width="91" height="22"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="18"/>
                                         <color key="textColor" systemColor="systemGray4Color"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Slow-paced" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0hu-DP-TWR">
-                                        <rect key="frame" x="217" y="453" width="91" height="22"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Upbeat" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ReU-PZ-jQu">
+                                        <rect key="frame" x="20" y="453" width="56" height="22"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="18"/>
                                         <color key="textColor" systemColor="systemGray4Color"/>
@@ -784,6 +903,27 @@ security question</string>
                                             <outlet property="delegate" destination="SF3-sz-NiH" id="fDf-Xm-aHY"/>
                                         </connections>
                                     </collectionView>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3kE-Dl-1jf" userLabel="moderateButton">
+                                        <rect key="frame" x="25" y="691" width="369" height="160"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <connections>
+                                            <action selector="moderateClicked:" destination="SF3-sz-NiH" eventType="touchUpInside" id="8N9-IK-Ugb"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iRl-7l-Xrh" userLabel="upBeatButton">
+                                        <rect key="frame" x="20" y="483" width="177" height="160"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <connections>
+                                            <action selector="upbeatClicked:" destination="SF3-sz-NiH" eventType="touchUpInside" id="Ke3-yw-XvZ"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IAU-Zp-KZ2" userLabel="SlowButton">
+                                        <rect key="frame" x="217" y="483" width="177" height="160"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <connections>
+                                            <action selector="slowClicked:" destination="SF3-sz-NiH" eventType="touchUpInside" id="h1G-hg-vCY"/>
+                                        </connections>
+                                    </button>
                                     <pageControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="3" translatesAutoresizingMaskIntoConstraints="NO" id="4hX-4G-h4T" userLabel="Upbeat Page Control">
                                         <rect key="frame" x="20" y="609" width="177" height="28"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -1095,6 +1235,17 @@ security question</string>
                                 <rect key="frame" x="151" y="47" width="113" height="59"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HzW-qL-FcW" userLabel="Back Button">
+                                <rect key="frame" x="20" y="70" width="25" height="25"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <state key="normal" backgroundImage="chevron.left" catalog="system">
+                                    <color key="titleShadowColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="backButtonClicked:" destination="SF3-sz-NiH" eventType="touchUpInside" id="mxg-5h-x7a"/>
+                                </connections>
+                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="sdf" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="r07-fj-ZPh" userLabel="split bar">
                                 <rect key="frame" x="20" y="114" width="374" height="2"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -1192,6 +1343,7 @@ security question</string>
                     </view>
                     <navigationItem key="navigationItem" id="GPk-Zt-fl4"/>
                     <connections>
+                        <outlet property="backButton" destination="HzW-qL-FcW" id="LbE-BO-Y5W"/>
                         <outlet property="deleteAccountButton" destination="kKa-jd-nAt" id="s7v-YX-LEu"/>
                         <outlet property="editProfileButton" destination="9gx-Tw-iSt" id="XJb-0b-1ac"/>
                         <outlet property="editProfilePicButton" destination="kjG-XM-aws" id="KmC-Qk-ODj"/>
@@ -1205,6 +1357,7 @@ security question</string>
                         <outlet property="leftWaveIcon" destination="bYX-LP-R5V" id="2gR-OP-Gj5"/>
                         <outlet property="loading" destination="P4z-Zr-cbY" id="Vu9-xt-7MG"/>
                         <outlet property="logOutButton" destination="129-IW-ggZ" id="SZh-uz-gNa"/>
+                        <outlet property="moderateButton" destination="3kE-Dl-1jf" id="uVR-Py-QSq"/>
                         <outlet property="moderate_pageCtrl" destination="1wd-1s-OFl" id="fc9-Mj-S2E"/>
                         <outlet property="moderate_slide" destination="osM-e3-lFf" id="AqA-Mr-B2B"/>
                         <outlet property="musicIcon" destination="djh-tE-lZh" id="aMD-id-6Se"/>
@@ -1214,6 +1367,15 @@ security question</string>
                         <outlet property="profileIcon" destination="hQ3-06-UdB" id="woJ-dI-hzQ"/>
                         <outlet property="profilePic" destination="O5m-7L-eJS" id="r10-AY-d37"/>
                         <outlet property="profileView" destination="jbf-UB-oj5" id="0xP-Mh-GYP"/>
+                        <outlet property="recLoading" destination="bDS-Je-SrI" id="qvc-IQ-fcN"/>
+                        <outlet property="recSongArtist" destination="v5q-rs-7zj" id="HMe-WI-oUE"/>
+                        <outlet property="recSongBPM" destination="D4I-5H-YHq" id="f5k-1u-fO3"/>
+                        <outlet property="recSongCancelButton" destination="c4c-ap-s8h" id="MDN-xo-Ux8"/>
+                        <outlet property="recSongDetails" destination="6Hz-sS-T5K" id="cUd-Vs-M8J"/>
+                        <outlet property="recSongImage" destination="dXg-FB-vpn" id="bIQ-qs-7IV"/>
+                        <outlet property="recSongTitle" destination="zPw-d0-2xC" id="OMZ-nX-1ds"/>
+                        <outlet property="recommendedTable" destination="PCE-HA-6d5" id="k4m-WN-pLs"/>
+                        <outlet property="recommendedView" destination="zMs-Fm-obv" id="20m-f8-K9o"/>
                         <outlet property="rightWaveIcon" destination="Y2p-ln-MTd" id="WeI-8e-jHb"/>
                         <outlet property="savedButton" destination="zZQ-BZ-9hM" id="l2U-FV-GA6"/>
                         <outlet property="savedIcon" destination="AcW-82-A8s" id="ntq-iO-GYh"/>
@@ -1226,6 +1388,7 @@ security question</string>
                         <outlet property="searchIcon" destination="ruK-RU-WH4" id="SRD-6p-GT9"/>
                         <outlet property="searchView" destination="XV3-Qd-hSA" id="4ti-7V-69C"/>
                         <outlet property="second_recomm" destination="mej-v5-uF5" id="tmX-Y5-Ayj"/>
+                        <outlet property="slowButton" destination="IAU-Zp-KZ2" id="Ks4-H9-f4y"/>
                         <outlet property="slow_pageCtrl" destination="nP8-2d-Fff" id="XiO-8E-WUc"/>
                         <outlet property="slow_slide" destination="gC4-0m-22k" id="L9j-Hl-N1U"/>
                         <outlet property="songDetailArtist" destination="Fwi-9a-IQK" id="CRt-I1-YDB"/>
@@ -1237,6 +1400,7 @@ security question</string>
                         <outlet property="third_recomm" destination="52z-RL-0T8" id="WO5-Dn-Csz"/>
                         <outlet property="topLogo" destination="rn5-TH-Qrp" id="Szc-3l-VKD"/>
                         <outlet property="topSplitBar" destination="r07-fj-ZPh" id="98n-Iy-KrV"/>
+                        <outlet property="upbeatButton" destination="iRl-7l-Xrh" id="233-ua-Nds"/>
                         <outlet property="upbeat_pageCtrl" destination="4hX-4G-h4T" id="Src-Aj-cxp"/>
                         <outlet property="upbeat_slide" destination="OIg-Nf-17l" id="42j-UQ-yRP"/>
                         <outlet property="usernameLabel" destination="FEw-JA-G7M" id="gZR-Pv-6Wc"/>
@@ -1253,6 +1417,7 @@ security question</string>
         <image name="bookmark" catalog="system" width="112" height="128"/>
         <image name="bookmark.circle" catalog="system" width="128" height="121"/>
         <image name="chevron.backward" catalog="system" width="96" height="128"/>
+        <image name="chevron.left" catalog="system" width="96" height="128"/>
         <image name="general_profile" width="640" height="640"/>
         <image name="heart" catalog="system" width="128" height="109"/>
         <image name="house" catalog="system" width="128" height="106"/>
