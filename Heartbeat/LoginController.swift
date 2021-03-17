@@ -95,13 +95,17 @@ class LoginController: UIViewController, UITextFieldDelegate {
         // text field delegates/targets
         usernameEmailField.delegate = self
         usernameEmailField.addTarget(self, action: #selector(CreateAccountController.textFieldDidChange(_:)), for: UIControl.Event.editingChanged)
+        usernameEmailField.attributedPlaceholder = NSAttributedString(string: "Username or Email", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         securityAnswerField.delegate = self
         securityAnswerField.addTarget(self, action: #selector(CreateAccountController.textFieldDidChange(_:)), for: UIControl.Event.editingChanged)
+        securityAnswerField.attributedPlaceholder = NSAttributedString(string: "Answer to Security Question", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         createPasswordField
             .delegate = self
         createPasswordField.addTarget(self, action: #selector(CreateAccountController.textFieldDidChange(_:)), for: UIControl.Event.editingChanged)
+        createPasswordField.attributedPlaceholder = NSAttributedString(string: "Create a New Password", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         confirmPasswordField.delegate = self
         confirmPasswordField.addTarget(self, action: #selector(CreateAccountController.textFieldDidChange(_:)), for: UIControl.Event.editingChanged)
+        confirmPasswordField.attributedPlaceholder = NSAttributedString(string: "Confirm Password", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         
         
         

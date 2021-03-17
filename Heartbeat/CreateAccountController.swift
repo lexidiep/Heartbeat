@@ -77,7 +77,7 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
         questionPicker.delegate = self
         questionPicker.dataSource = self
         pickerData = [ "What is your mother's maiden name?", "What is the name of your first pet?", "What was your first car?", "What elementary school did you attend?", "What city were you born in?" ]
-        securityField.attributedPlaceholder = NSAttributedString(string: "Answer", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
+        securityField.attributedPlaceholder = NSAttributedString(string: "Answer to Security Question", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         securityField.delegate = self
         securityField.addTarget(self, action: #selector(CreateAccountController.textFieldDidChange(_:)), for: UIControl.Event.editingChanged)
         securityNextButton.layer.cornerRadius = 5
@@ -398,7 +398,7 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
     }   // numberOfRowsInComponents (pickerView -> security page)
         
     
-    // The data to return fopr the row and component (column) that's being passed in
+    // The data to return for the row and component (column) that's being passed in
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return self.pickerData[row]
     }   // titleForRow (pickerView -> security page)
@@ -407,6 +407,25 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
     // Capture the picker view selection
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
     }   // didSelectRow (pickerView -> security page)
+    
+    
+    func pickerView(pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusingView view: UIView!) -> UIView {
+
+        var pickerLabel = view as? UILabel;
+
+        if (pickerLabel == nil)
+        {
+            pickerLabel = UILabel()
+
+            if (row == 0 || row == 3) {
+                pickerLabel?.font = UIFont.systemFont(ofSize: 5)
+            }
+            pickerLabel?.textAlignment = NSTextAlignment.center
+        }
+        pickerLabel?.text = self.pickerData[row]
+        
+        return pickerLabel!;
+    }
 
 
 }   // end CreateAccountController

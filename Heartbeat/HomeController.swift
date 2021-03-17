@@ -64,6 +64,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var recSongCancelButton: UIButton!
     @IBOutlet weak var recommendedView: UIView!
     @IBOutlet weak var recLoading: UIActivityIndicatorView!
+    @IBOutlet weak var spotifyButton: UIButton!
+    @IBOutlet weak var appleMusicButton: UIButton!
     // for details dismissal
     @IBOutlet weak var temporaryView: UIView!
     @IBOutlet weak var tempRecDetailCancel: UIButton!
@@ -1221,6 +1223,42 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         self.viewSlideCancel(view: recSongDetails)
         recommendedTable.alpha = 1.0
     } // end recDetailDismissal function
+    
+    
+    // links to spotify app if downloaded, if not downloaded, link to apple store for spotify
+    @IBAction func goToSpotify(_ sender: Any) {
+        
+        let spotifyUrl = URL(string: "spotify://app")
+        
+        if UIApplication.shared.canOpenURL(spotifyUrl! as URL) {
+            UIApplication.shared.open(spotifyUrl!)
+        }
+        else {
+            print("Spotify not installed")
+            if let url = URL(string: "https://apps.apple.com/us/app/spotify-music-and-podcasts/id324684580") {
+                  UIApplication.shared.open(url, options: [:], completionHandler: nil)
+               }
+        }
+        
+    } // end goToSpotify
+    
+    
+    // links to apple music app if downloaded, if not downloaded, link to apple store for apple music
+    @IBAction func goToAppleMusic(_ sender: Any) {
+        
+        let appleMusicURL = URL(string: "apple-music://app")
+        
+        if UIApplication.shared.canOpenURL(appleMusicURL! as URL) {
+            UIApplication.shared.open(appleMusicURL!)
+        }
+        else {
+            print("Apple Music not installed")
+            if let url = URL(string: "https://apps.apple.com/us/app/apple-music/id1108187390") {
+                  UIApplication.shared.open(url, options: [:], completionHandler: nil)
+               }
+        }
+        
+    } // end goToAppleMusic
     
     
     
