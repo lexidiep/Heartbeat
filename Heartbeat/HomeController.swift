@@ -25,6 +25,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
 
     
     // home page
+    @IBOutlet weak var navBar: UILabel!
     @IBOutlet weak var featured: UILabel!
     @IBOutlet weak var first_recomm: UILabel!
     @IBOutlet weak var second_recomm: UILabel!
@@ -45,6 +46,10 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     
     // for recommended panels (home page)
+    @IBOutlet weak var recommendedLabel: UILabel!
+    @IBOutlet weak var moderateLabel: UILabel!
+    @IBOutlet weak var slowLabel: UILabel!
+    @IBOutlet weak var upbeatLabel: UILabel!
     @IBOutlet weak var upbeat_slide: UICollectionView!
     @IBOutlet weak var upbeat_pageCtrl: UIPageControl!
     @IBOutlet weak var slow_slide: UICollectionView!
@@ -99,6 +104,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var songDetailImage: UIImageView!
     @IBOutlet weak var loading: UIActivityIndicatorView!
     // for details dismissal
+    @IBOutlet weak var tempColorBlock: UIView!
     @IBOutlet weak var tempSearchView: UIView!
     @IBOutlet weak var tempSearchDetailCancel: UIButton!
     
@@ -109,6 +115,12 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var savedIcon: UIImageView!
     @IBOutlet weak var savedButton: UIButton!
     @IBOutlet weak var noSongsLabel: UILabel!
+    @IBOutlet weak var savedDetailsView: UIView!
+    @IBOutlet weak var savedSongImg: UIImageView!
+    @IBOutlet weak var savedTitle: UILabel!
+    @IBOutlet weak var savedArtist: UILabel!
+    @IBOutlet weak var savedBPM: UILabel!
+    @IBOutlet weak var tempSavedView: UIView!
     
     
     // heartRate page
@@ -174,6 +186,10 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         super.viewDidLoad()
         
         welcomeLabel.text = "Hi, \(users_name!)"
+        welcomeLabel.textColor = .lightGray
+        
+        navBar.backgroundColor = .lightGray
+        navBar.text = ""
         
         // featured panel attributes
         featured.layer.borderColor = UIColor.lightGray.cgColor
@@ -191,8 +207,13 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         recommendedTable.dataSource = self
         recommendedTable.rowHeight = 65
         self.recommendedTable.tableFooterView = UIView()
+        recommendedLabel.textColor = .lightGray
+        moderateLabel.textColor = .lightGray
+        slowLabel.textColor = .lightGray
+        upbeatLabel.textColor = .lightGray
         recLoading.color = .lightGray
         recLoading.startAnimating()
+        tempColorBlock.layer.cornerRadius = 5
         recSongImage.layer.cornerRadius = 5
         recSongDetails.layer.cornerRadius = 5
         recSongDetails.layer.shadowColor = UIColor.black.cgColor
@@ -299,6 +320,14 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             self.savedView.bringSubviewToFront(noSongsLabel)
             self.savedTable.isHidden = true
         }
+        savedSongImg.layer.cornerRadius = 5
+        savedDetailsView.layer.cornerRadius = 5
+        savedDetailsView.layer.shadowColor = UIColor.black.cgColor
+        savedDetailsView.layer.shadowOpacity = 1
+        savedDetailsView.layer.shadowOffset = .zero
+        savedDetailsView.layer.shadowRadius = 10
+        savedDetailsView.layer.shadowPath = UIBezierPath(rect: savedDetailsView.bounds).cgPath
+        savedDetailsView.layer.shouldRasterize = true
         
         
         // profile page
@@ -309,8 +338,12 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         profilePic.clipsToBounds = true
         
         // username/email Label
+        usernameLabel.textColor = .lightGray
         usernameLabel.text = "\(users_name!)"
+        emailLabel.textColor = .lightGray
         emailLabel.text?.append("   \(users_email!)")
+        nameLabel.textColor = .lightGray
+        savedSongsLabel.textColor = .lightGray
         
         // buttons
         deleteAccountButton.layer.cornerRadius = 5
@@ -462,9 +495,9 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     // cancel recommended song details view
     @IBAction func cancelRecDetails(_ sender: Any) {
-        viewSlideCancel(view: recSongDetails)
         recSongDetails.isHidden = true
         temporaryView.isHidden = true
+        self.viewSlideCancel(view: recSongDetails)
         recommendedTable.alpha = 1.0
     } // end cancelRecDetails
     
@@ -479,6 +512,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         backButton.isHidden = true
         topLogo.isHidden = false
         topSplitBar.isHidden = false
+        onRecommended = false
         
     } // end backButtonClicked
     
@@ -1225,10 +1259,28 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     } // end recDetailDismissal function
     
     
+    // cancels song details in saved songs
+    @IBAction func exitSavedDetail(_ sender: Any) {
+        savedDetailsView.isHidden = true
+        tempSavedView.isHidden = true
+        self.viewSlideCancel(view: savedDetailsView)
+        savedTable.alpha = 1.0
+    } // end savedDetailDismissal
+    
+    
+    // cancels the saved song details when user taps outside of details box
+    @IBAction func cancelSavedDetail(_ sender: Any) {
+        savedDetailsView.isHidden = true
+        tempSavedView.isHidden = true
+        self.viewSlideCancel(view: savedDetailsView)
+        savedTable.alpha = 1.0
+    } // end cancelSavedDetail
+    
+    
     // links to spotify app if downloaded, if not downloaded, link to apple store for spotify
     @IBAction func goToSpotify(_ sender: Any) {
         
-        let spotifyUrl = URL(string: "spotify://app")
+        let spotifyUrl = URL(string: "https://www.spotify.com/us/")
         
         if UIApplication.shared.canOpenURL(spotifyUrl! as URL) {
             UIApplication.shared.open(spotifyUrl!)
@@ -1246,7 +1298,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     // links to apple music app if downloaded, if not downloaded, link to apple store for apple music
     @IBAction func goToAppleMusic(_ sender: Any) {
         
-        let appleMusicURL = URL(string: "apple-music://app")
+        let appleMusicURL = URL(string: "https://music.apple.com/us/browse")
         
         if UIApplication.shared.canOpenURL(appleMusicURL! as URL) {
             UIApplication.shared.open(appleMusicURL!)
@@ -1401,6 +1453,33 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         else if tableView == savedTable {
             let indexPath = savedTable.indexPathForSelectedRow!
             let selectedCell = savedTable.cellForRow(at: indexPath) as! SearchTableViewCell
+            let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
+                item?.username == users_name
+            })
+            
+            self.savedTitle.text = ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs[indexPath.row]?.title)
+            self.savedArtist.text = ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs[indexPath.row]?.artist)
+            
+            
+            // if there a BPM
+            if (((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs[indexPath.row]?.bpm) != nil && ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs[indexPath.row]?.bpm) != "") {
+                self.savedBPM.text = "\(((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs[indexPath.row]?.bpm!)!) BPM"
+            }
+            else {
+                self.savedBPM.text = "BPM Unavailable"
+            }
+            // if the song detail contains an actual image
+            if(((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs[indexPath.row]?.imagePreview) != nil) {
+                self.savedSongImg.image = ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs[indexPath.row]?.imagePreview!)
+            }
+            else {
+                self.savedSongImg.image = UIImage(named: "image_unavailable")
+            }
+                        
+            savedDetailsView.isHidden = false
+            tempSavedView.isHidden = false
+            self.viewSlideInFromTop(view: savedDetailsView)
+            savedTable.alpha = 0.3
         }
         else if tableView == recommendedTable {
             let indexPath = recommendedTable.indexPathForSelectedRow!
@@ -1609,6 +1688,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                         newSaved.title = self.songList[indexPath.row]?.Title!
                         newSaved.artist = self.songList[indexPath.row]?.Artist!
                         newSaved.id = self.songList[indexPath.row]?.id!
+                        newSaved.bpm = self.songList[indexPath.row]?.BPM!
+                        newSaved.imagePreview = self.songList[indexPath.row]?.artistImage!
                         //get bpm from api
                         ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.addSavedSong(song: newSaved))
                         self.savedTable.beginUpdates()
@@ -1627,6 +1708,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     newSaved.title = self.songList[indexPath.row]?.Title!
                     newSaved.artist = self.songList[indexPath.row]?.Artist!
                     newSaved.id = self.songList[indexPath.row]?.id!
+                    newSaved.bpm = self.songList[indexPath.row]?.BPM!
+                    newSaved.imagePreview = self.songList[indexPath.row]?.artistImage
                     //get bpm from api
                     ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.addSavedSong(song: newSaved))
                     self.savedTable.beginUpdates()
@@ -1789,6 +1872,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                         newSaved.title = recommendedList[indexPath.row]?.Title!
                         newSaved.artist = recommendedList[indexPath.row]?.Artist!
                         newSaved.id = recommendedList[indexPath.row]?.id!
+                        newSaved.bpm = self.songList[indexPath.row]?.BPM!
+                        newSaved.imagePreview = self.songList[indexPath.row]?.artistImage
                         //get bpm from api
                         ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.addSavedSong(song: newSaved))
                         self.savedTable.beginUpdates()
@@ -1807,6 +1892,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     newSaved.title = recommendedList[indexPath.row]?.Title!
                     newSaved.artist = recommendedList[indexPath.row]?.Artist!
                     newSaved.id = recommendedList[indexPath.row]?.id!
+                    newSaved.bpm = self.songList[indexPath.row]?.BPM!
+                    newSaved.imagePreview = self.songList[indexPath.row]?.artistImage
                     //get bpm from api
                     ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.addSavedSong(song: newSaved))
                     self.savedTable.beginUpdates()

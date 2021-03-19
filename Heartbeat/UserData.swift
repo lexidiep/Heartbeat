@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 
 
@@ -16,6 +17,7 @@ class saved {
     var id:String?
     var bpm:String?
     var image:String?
+    var imagePreview: UIImage?
 }
 // struct for individual user data
 class userInfo {
@@ -25,6 +27,8 @@ class userInfo {
     var savedSongs:[saved?] = []
     var securityQuestion:String?
     var securityAnswer: String?
+    var name: String?
+    var profilePic: UIImage?
     
     func addSavedSong(song:saved?) {
         savedSongs.append(song)
