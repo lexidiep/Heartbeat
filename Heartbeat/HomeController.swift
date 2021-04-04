@@ -43,6 +43,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }()
     var users_name: String?
     var users_email: String?
+    var users_password_count:Int?
     
     
     // for recommended panels (home page)
@@ -141,7 +142,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var emailLabel: UILabel!
     @IBOutlet weak var logOutButton: UIButton!
     @IBOutlet weak var deleteAccountButton: UIButton!
-    @IBOutlet weak var savedSongsLabel: UILabel!
+    @IBOutlet weak var passwordLabel: UILabel!
     @IBOutlet weak var editProfilePicButton: UIButton!
     @IBOutlet weak var editProfileButton: UIButton!
 
@@ -337,13 +338,17 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         profilePic.layer.cornerRadius = profilePic.frame.height/2
         profilePic.clipsToBounds = true
         
-        // username/email Label
+        // username/email/password Label
         usernameLabel.textColor = .lightGray
         usernameLabel.text = "\(users_name!)"
         emailLabel.textColor = .lightGray
         emailLabel.text?.append("   \(users_email!)")
         nameLabel.textColor = .lightGray
-        savedSongsLabel.textColor = .lightGray
+        passwordLabel.textColor = .lightGray
+        passwordLabel.text?.append("   ")
+        for _ in 0...users_password_count!-1 {
+            passwordLabel.text?.append("*")
+        }
         
         // buttons
         deleteAccountButton.layer.cornerRadius = 5
@@ -1157,6 +1162,15 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         homeIcon.tintColor = UIColor(red: 33/255, green: 33/255, blue: 33/255, alpha: 1.0)
         searchIcon.tintColor = UIColor(red: 33/255, green: 33/255, blue: 33/255, alpha: 1.0)
         profileIcon.tintColor = UIColor(red: 33/255, green: 33/255, blue: 33/255, alpha: 1.0)
+        
+        
+        // show heart rate detector
+        // Register Xib
+        let pulseVC = PulseViewController()
+
+        // Present VC "Modally" style
+        self.present(pulseVC, animated: true, completion: nil)
+        
     }   // end heartRateClicked()
     
     
@@ -1311,6 +1325,50 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         }
         
     } // end goToAppleMusic
+    
+    
+    // if user tries to log out, confirm logout and segue to login screen
+    @IBAction func logoutTapped(_ sender: Any) {
+        let alert = UIAlertController(title: "Are you sure you want to logout?", message: "Once you log out, you are required to log in again to access your account.", preferredStyle: .alert)
+
+        alert.addAction(UIAlertAction(title: "Log Out", style: .default, handler: segueToLogin))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+
+        self.present(alert, animated: true)
+    } // end logoutTapped
+    
+    
+    // if user tries to delete account, confirm delete, delete from database, and segue to login screen
+    @IBAction func deleteAccountTapped(_ sender: Any) {
+        let alert = UIAlertController(title: "Are you sure you want to delete your account?", message: "This action cannot be undone and everything saved will be lost.", preferredStyle: .alert)
+
+        alert.addAction(UIAlertAction(title: "Delete Account", style: .default, handler: deleteAccount))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+
+        self.present(alert, animated: true)
+    } // end deleteAccountTapped
+    
+    
+    // delete account permanently
+    func deleteAccount(action: UIAlertAction) {
+        // go to login screen first
+        self.performSegue(withIdentifier: "toLoginScreen", sender: self)
+        
+        // delete the account from database
+        if let index = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
+            item?.username == usernameLabel.text
+        }) {
+            
+            ((UIApplication.shared.delegate as! AppDelegate).userData).remove(at: index)
+        }
+
+    } //end deleteAccount
+    
+    
+    // function to handle segue back to the login screen
+    func segueToLogin(action: UIAlertAction) {
+        self.performSegue(withIdentifier: "toLoginScreen", sender: self)
+    } // end segueToLogin
     
     
     
@@ -1551,6 +1609,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     self.recSongImage.image = UIImage(named: "image_unavailable")
                 }
 
+                // hide recommended song details
                 recSongDetails.isHidden = false
                 recLoading.isHidden = true
                 temporaryView.isHidden = false
@@ -1571,14 +1630,17 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             self.songTable.isHidden = false
         }
         else if tableView == savedTable {
+            // get user index
             let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
                 item?.username == users_name
             })
+            // show songs if there are saved songs
             if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs) != nil || ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count) != 0  {
                 noSongsLabel.isHidden = true
                 savedTable.isHidden = false
                 count = ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)!
             }
+            // show no songs saved label if there are no songs saved
             else if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs) == nil || ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count) == 0{
                 noSongsLabel.isHidden = false
                 savedTable.isHidden = true
@@ -1672,6 +1734,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                             
                             self.savedTable.endUpdates()
                             
+                            // user deletes last and only song in saved songs
                             if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs) == nil || ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! == 0{
                                 print("User's saved songs list is now empty")
                                 self.noSongsLabel.isHidden = false
@@ -1681,6 +1744,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                         }
                     }
                     else {
+                        // change bookmark to fill to represent saved
                         cell.bookmarkIcon.image = UIImage(systemName: "bookmark.fill")
                         
                         // create saved object to append to user's saved songs list
@@ -1689,8 +1753,11 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                         newSaved.artist = self.songList[indexPath.row]?.Artist!
                         newSaved.id = self.songList[indexPath.row]?.id!
                         newSaved.bpm = self.songList[indexPath.row]?.BPM!
-                        newSaved.imagePreview = self.songList[indexPath.row]?.artistImage!
-                        //get bpm from api
+                        if (self.songList[indexPath.row]?.artistImage != nil) {
+                            newSaved.imagePreview = self.songList[indexPath.row]?.artistImage!
+                        }
+                        
+                        // add new song to users data
                         ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.addSavedSong(song: newSaved))
                         self.savedTable.beginUpdates()
                         
@@ -1701,6 +1768,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 }
                 // savedSongs is empty
                 else {
+                    // change bookmark to fill to represent saved
                     cell.bookmarkIcon.image = UIImage(systemName: "bookmark.fill")
                     
                     // create saved object to append to user's saved songs list
@@ -1710,7 +1778,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     newSaved.id = self.songList[indexPath.row]?.id!
                     newSaved.bpm = self.songList[indexPath.row]?.BPM!
                     newSaved.imagePreview = self.songList[indexPath.row]?.artistImage
-                    //get bpm from api
+                    
+                    // add new song to users data
                     ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.addSavedSong(song: newSaved))
                     self.savedTable.beginUpdates()
                     
@@ -1760,10 +1829,12 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.deleteSavedSong(id: idToDelete))
                     self.savedTable.deleteRows(at: [(IndexPath(row: indexPath.row, section:0))], with: .automatic)
                     
+                    // reload all data in all tables
                     self.savedTable.reloadData()
                     self.songTable.reloadData()
                     self.recommendedTable.reloadData()
                     
+                    // if user's saved songs list is empty
                     if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs) == nil || ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! == 0{
                         print("User's saved songs list is now empty (savedTable)")
                         self.noSongsLabel.isHidden = false
@@ -1838,10 +1909,13 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     item?.username == self.users_name
                 })
                 
+                // if there are saved songs
                 if (((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count) != 0) {
+                    // check for song in both recommended and user data
                     if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs)!.firstIndex(where: { (item) -> Bool in
                         item?.id == recommendedList[indexPath.row]?.id!
                     }) != nil {
+                        // bookmark should be empty to represent not saved
                         cell.bookmarkIcon.image = UIImage(systemName: "bookmark")
                         
                         // get index of the song in the user's saved song list
@@ -1856,6 +1930,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                             
                             self.savedTable.endUpdates()
                             
+                            // if the user unsaves the only song in the table
                             if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs) == nil || ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! == 0{
                                 print("User's saved songs list is now empty")
                                 self.noSongsLabel.isHidden = false
@@ -1864,7 +1939,9 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                             }
                         }
                     }
+                    // else there exists saved songs
                     else {
+                        // cahnge bookmark to fill to represent saved
                         cell.bookmarkIcon.image = UIImage(systemName: "bookmark.fill")
                         
                         // create saved object to append to user's saved songs list
@@ -1874,7 +1951,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                         newSaved.id = recommendedList[indexPath.row]?.id!
                         newSaved.bpm = self.songList[indexPath.row]?.BPM!
                         newSaved.imagePreview = self.songList[indexPath.row]?.artistImage
-                        //get bpm from api
+                        
+                        // add new song to user data
                         ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.addSavedSong(song: newSaved))
                         self.savedTable.beginUpdates()
                         
@@ -1883,8 +1961,9 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                         self.savedTable.endUpdates()
                     }
                 }
-                // savedSongs is empty
+                // else savedSongs is empty
                 else {
+                    // show the bookmark as filled to represent saved
                     cell.bookmarkIcon.image = UIImage(systemName: "bookmark.fill")
                     
                     // create saved object to append to user's saved songs list
@@ -1894,7 +1973,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     newSaved.id = recommendedList[indexPath.row]?.id!
                     newSaved.bpm = self.songList[indexPath.row]?.BPM!
                     newSaved.imagePreview = self.songList[indexPath.row]?.artistImage
-                    //get bpm from api
+
+                    // add new song to user data
                     ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.addSavedSong(song: newSaved))
                     self.savedTable.beginUpdates()
                     
@@ -1924,6 +2004,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         return 6
     }
     
+    // featured panel uses cocoapods for iCarousel
     func carousel(_ carousel: iCarousel, viewForItemAt index: Int, reusing view: UIView?) -> UIView {
         let view = UIView(frame:CGRect(x: 0, y: 80, width: 374, height: 283))
         let imageView = UIImageView()

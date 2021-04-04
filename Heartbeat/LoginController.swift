@@ -570,6 +570,7 @@ class LoginController: UIViewController, UITextFieldDelegate {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         var name:String = ""
         var email:String = ""
+        var passwordCount:Int = 0
         loginViewCount = -999
         
         print("(\((UIApplication.shared.delegate as! AppDelegate).userData.count))")
@@ -578,6 +579,7 @@ class LoginController: UIViewController, UITextFieldDelegate {
             if (user?.username)?.lowercased() == (usernameField.text)?.lowercased() || (user?.email)?.lowercased() == (usernameField.text?.lowercased()) {
                 name = user!.username!
                 email = user!.email!
+                passwordCount = user!.password!.count
             }
         }
         
@@ -585,6 +587,7 @@ class LoginController: UIViewController, UITextFieldDelegate {
             let destination = segue.destination as! HomeController
             destination.users_name = name
             destination.users_email = email
+            destination.users_password_count = passwordCount
         }
         
     } // end prepare for segue

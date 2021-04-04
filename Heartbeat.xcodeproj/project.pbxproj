@@ -12,7 +12,14 @@
 		8A15D15A255F430D00A06B7E /* CreateAccountController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A15D159255F430D00A06B7E /* CreateAccountController.swift */; };
 		8A15D162255FA0F000A06B7E /* UserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A15D161255FA0EF00A06B7E /* UserData.swift */; };
 		8A15D1682561D63300A06B7E /* FeaturedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A15D1672561D63200A06B7E /* FeaturedCollectionViewCell.swift */; };
+		8A15D35F26199B2C00768443 /* ColorUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A15D35E26199B2C00768443 /* ColorUtils.swift */; };
+		8A15D36E26199BC800768443 /* AVCaptureDevice+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A15D36D26199BC800768443 /* AVCaptureDevice+Extensions.swift */; };
+		8A15D37526199C2600768443 /* HeartRateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A15D37426199C2600768443 /* HeartRateManager.swift */; };
+		8A15D37B26199C8500768443 /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A15D37A26199C8500768443 /* Filter.swift */; };
+		8A15D38326199CCD00768443 /* PulseDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A15D38226199CCD00768443 /* PulseDetector.swift */; };
+		8A15D38926199DA500768443 /* PulseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A15D38826199DA500768443 /* PulseViewController.swift */; };
 		8AB939532557C82800F2F02D /* HomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AB939522557C82800F2F02D /* HomeController.swift */; };
+		8AC58CD526199F9C00370ECD /* PulseViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8AC58CD426199F9C00370ECD /* PulseViewController.xib */; };
 		8AD1014425440F220087773C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AD1014325440F220087773C /* AppDelegate.swift */; };
 		8AD1014625440F220087773C /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AD1014525440F220087773C /* SceneDelegate.swift */; };
 		8AD1014825440F220087773C /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AD1014725440F220087773C /* LoginController.swift */; };
@@ -52,7 +59,14 @@
 		8A15D159255F430D00A06B7E /* CreateAccountController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountController.swift; sourceTree = "<group>"; };
 		8A15D161255FA0EF00A06B7E /* UserData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserData.swift; sourceTree = "<group>"; };
 		8A15D1672561D63200A06B7E /* FeaturedCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturedCollectionViewCell.swift; sourceTree = "<group>"; };
+		8A15D35E26199B2C00768443 /* ColorUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorUtils.swift; sourceTree = "<group>"; };
+		8A15D36D26199BC800768443 /* AVCaptureDevice+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVCaptureDevice+Extensions.swift"; sourceTree = "<group>"; };
+		8A15D37426199C2600768443 /* HeartRateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateManager.swift; sourceTree = "<group>"; };
+		8A15D37A26199C8500768443 /* Filter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
+		8A15D38226199CCD00768443 /* PulseDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulseDetector.swift; sourceTree = "<group>"; };
+		8A15D38826199DA500768443 /* PulseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulseViewController.swift; sourceTree = "<group>"; };
 		8AB939522557C82800F2F02D /* HomeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeController.swift; sourceTree = "<group>"; };
+		8AC58CD426199F9C00370ECD /* PulseViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PulseViewController.xib; sourceTree = "<group>"; };
 		8AD1014025440F220087773C /* Heartbeat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Heartbeat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8AD1014325440F220087773C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8AD1014525440F220087773C /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -130,6 +144,48 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		8A15D36626199B3700768443 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				8A15D35E26199B2C00768443 /* ColorUtils.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		8A15D37226199BEB00768443 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				8A15D36D26199BC800768443 /* AVCaptureDevice+Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		8A15D37326199C0600768443 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				8A15D37426199C2600768443 /* HeartRateManager.swift */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		8A15D37926199C5D00768443 /* Pulse Detector Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				8A15D37A26199C8500768443 /* Filter.swift */,
+				8A15D38226199CCD00768443 /* PulseDetector.swift */,
+			);
+			path = "Pulse Detector Helpers";
+			sourceTree = "<group>";
+		};
+		8A15D38726199D6F00768443 /* Pulse View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				8A15D38826199DA500768443 /* PulseViewController.swift */,
+				8AC58CD426199F9C00370ECD /* PulseViewController.xib */,
+			);
+			path = "Pulse View Controllers";
+			sourceTree = "<group>";
+		};
 		8AD1013725440F220087773C = {
 			isa = PBXGroup;
 			children = (
@@ -155,6 +211,11 @@
 		8AD1014225440F220087773C /* Heartbeat */ = {
 			isa = PBXGroup;
 			children = (
+				8A15D36626199B3700768443 /* Utilities */,
+				8A15D37226199BEB00768443 /* Extensions */,
+				8A15D37326199C0600768443 /* Managers */,
+				8A15D37926199C5D00768443 /* Pulse Detector Helpers */,
+				8A15D38726199D6F00768443 /* Pulse View Controllers */,
 				8AD1014325440F220087773C /* AppDelegate.swift */,
 				8AD1014525440F220087773C /* SceneDelegate.swift */,
 				8AD1014725440F220087773C /* LoginController.swift */,
@@ -300,6 +361,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8AC58CD526199F9C00370ECD /* PulseViewController.xib in Resources */,
 				8AD1015325440F250087773C /* LaunchScreen.storyboard in Resources */,
 				8AD1015025440F250087773C /* Assets.xcassets in Resources */,
 				8AD1014B25440F230087773C /* Main.storyboard in Resources */,
@@ -430,14 +492,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8A15D36E26199BC800768443 /* AVCaptureDevice+Extensions.swift in Sources */,
+				8A15D38326199CCD00768443 /* PulseDetector.swift in Sources */,
+				8A15D37B26199C8500768443 /* Filter.swift in Sources */,
 				8AD1014825440F220087773C /* LoginController.swift in Sources */,
 				8AD1014425440F220087773C /* AppDelegate.swift in Sources */,
 				8A15D1682561D63300A06B7E /* FeaturedCollectionViewCell.swift in Sources */,
+				8A15D37526199C2600768443 /* HeartRateManager.swift in Sources */,
+				8A15D35F26199B2C00768443 /* ColorUtils.swift in Sources */,
 				8AD1014E25440F230087773C /* Heartbeat.xcdatamodeld in Sources */,
 				8A15D15A255F430D00A06B7E /* CreateAccountController.swift in Sources */,
 				8AD1014625440F220087773C /* SceneDelegate.swift in Sources */,
 				8AF3C4D4255E8FBD00E85397 /* SongInfo.swift in Sources */,
 				8AB939532557C82800F2F02D /* HomeController.swift in Sources */,
+				8A15D38926199DA500768443 /* PulseViewController.swift in Sources */,
 				8AF3C4C2255D18D700E85397 /* HomeCollectionViewCell.swift in Sources */,
 				8A15D162255FA0F000A06B7E /* UserData.swift in Sources */,
 				8AF3C4CD255E58C100E85397 /* SearchTableViewCell.swift in Sources */,
