@@ -159,7 +159,13 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var passwordLabel: UILabel!
     @IBOutlet weak var editProfilePicButton: UIButton!
     @IBOutlet weak var editProfileButton: UIButton!
-
+    @IBOutlet weak var editUsernameField: UITextField!
+    @IBOutlet weak var editNameField: UITextField!
+    @IBOutlet weak var editEmailField: UITextField!
+    @IBOutlet weak var editPasswordField: UITextField!
+    @IBOutlet weak var editConfirmField: UITextField!
+    @IBOutlet weak var editErrorMessage: UILabel!
+    
     
     // image data for each recommended panel
     var slowImages = [UIImage(named:"antidote_travis_scott_66bpm") ,
@@ -368,20 +374,41 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         profilePic.clipsToBounds = true
         
         // username/email/password Label
+        // get user index
+        let tempIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
+            item?.username == users_name
+        })!
         usernameLabel.textColor = .lightGray
         usernameLabel.text = "\(users_name!)"
         emailLabel.textColor = .lightGray
         emailLabel.text?.append("   \(users_email!)")
         nameLabel.textColor = .lightGray
+        // check if user has a name
+        if (UIApplication.shared.delegate as! AppDelegate).userData[tempIndex]!.name != nil && (UIApplication.shared.delegate as! AppDelegate).userData[tempIndex]!.name != "" {
+            nameLabel.text = "Name:   \((UIApplication.shared.delegate as! AppDelegate).userData[tempIndex]!.name!)"
+        }
         passwordLabel.textColor = .lightGray
         passwordLabel.text?.append("   ")
         for _ in 0...users_password_count!-1 {
             passwordLabel.text?.append("*")
         }
         
-        // profile action buttons
+        // profile action buttons and text fields
         deleteAccountButton.layer.cornerRadius = 5
         logOutButton.layer.cornerRadius = 5
+        editUsernameField.isHidden = true
+        editNameField.isHidden = true
+        editEmailField.isHidden = true
+        editPasswordField.isHidden = true
+        editConfirmField.isHidden = true
+        editProfilePicButton.isHidden = true
+        editProfileButton.setImage(UIImage(systemName: "square.and.pencil"), for: .normal)
+        profileView.addGestureRecognizer(tap)
+        editUsernameField.addTarget(self, action: #selector(self.changeEditButton(_:)), for: UIControl.Event.editingChanged)
+        editNameField.addTarget(self, action: #selector(self.changeEditButton(_:)), for: UIControl.Event.editingChanged)
+        editEmailField.addTarget(self, action: #selector(self.changeEditButton(_:)), for: UIControl.Event.editingChanged)
+        editPasswordField.addTarget(self, action: #selector(self.changeEditButton(_:)), for: UIControl.Event.editingChanged)
+        editConfirmField.addTarget(self, action: #selector(self.changeEditButton(_:)), for: UIControl.Event.editingChanged)
         
     }   // end viewDidLoad()
     
@@ -413,6 +440,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @objc func dismissKeyboard() {
         //Causes the view (or one of its embedded text fields) to resign the first responder status.
         searchView.endEditing(true)
+        profileView.endEditing(true)
         self.songTable.isHidden = false
     }
     
@@ -1309,6 +1337,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             topSplitBar.isHidden = false
             backButton.isHidden = true
             recommendedView.isHidden = true
+            selectedPlaylistLabel.isHidden = true
         }
         else {
             recommendedView.isHidden = false
@@ -1505,14 +1534,20 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         heartRateView.isHidden = true
         scrollView.isHidden = true
         topLogo.isHidden = false
-        topSplitBar.isHidden = true
+        topSplitBar.isHidden = false
         profileView.isHidden = false
         backButton.isHidden = true
         recommendedView.isHidden = true
         selectedPlaylistLabel.isHidden = true
+        
                 
     }   // end profileClicked()
     
+    
+    
+    
+    
+    // -------------- SONG DETAIL ACTIONS ---------------
     
     // hides the song detail panel from view
     @IBAction func exitSongDetail(_ sender: Any) {
@@ -1579,6 +1614,11 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     } // end exitBPMdetail
     
     
+    
+    
+    
+    // -------------- EXTERNAL SONG-LISTENING MEDIA BUTTONS ---------------
+    
     // links to spotify app if downloaded, if not downloaded, link to apple store for spotify
     @IBAction func goToSpotify(_ sender: Any) {
         
@@ -1613,6 +1653,115 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         }
         
     } // end goToAppleMusic
+    
+    
+    
+    
+    
+    // -------------- ACCOUNT ACTION BUTTONS ---------------
+    
+    // enables profile editing
+    @IBAction func startEditProfile(_ sender: Any) {
+        
+        editUsernameField.layer.borderWidth = 0.0
+        editNameField.layer.borderWidth = 0.0
+        editEmailField.layer.borderWidth = 0.0
+        editPasswordField.layer.borderWidth = 0.0
+        editConfirmField.layer.borderWidth = 0.0
+        
+        let buttonTitle = (sender as AnyObject).title(for: .normal)
+        
+        // user is in edit mode
+        if (buttonTitle != "Save" && buttonTitle != "Cancel") {
+            editUsernameField.text = ""
+            editNameField.text = ""
+            editEmailField.text = ""
+            editPasswordField.text = ""
+            editConfirmField.text = ""
+            
+            // get user index
+            let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
+                item?.username == users_name
+            })!
+            
+            // get placeholders for text fields
+            editUsernameField.placeholder = users_name
+            if (((UIApplication.shared.delegate as! AppDelegate).userData)[userIndex]?.name != nil && ((UIApplication.shared.delegate as! AppDelegate).userData)[userIndex]?.name != "") {
+                editNameField.placeholder = ((UIApplication.shared.delegate as! AppDelegate).userData)[userIndex]?.name!
+            }
+            editEmailField.placeholder = ((UIApplication.shared.delegate as! AppDelegate).userData)[userIndex]?.email!
+            
+            editUsernameField.isHidden = false
+            editNameField.isHidden = false
+            editEmailField.isHidden = false
+            editPasswordField.isHidden = false
+            editConfirmField.isHidden = false
+            editProfilePicButton.isHidden = false
+            editProfileButton.setImage(nil, for: .normal)
+            
+            // if user made no edits
+            if (editUsernameField.text == "" && editNameField.text == "" && editEmailField.text == "" && editPasswordField.text == "" && editConfirmField.text == "") {
+                
+                editProfileButton.setTitle("Cancel", for: .normal)
+                editProfileButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+                editProfileButton.setTitleColor(UIColor.systemBlue, for: .normal)
+            }
+            
+        }
+        // user is in view mode
+        else {
+            editUsernameField.isHidden = true
+            editNameField.isHidden = true
+            editEmailField.isHidden = true
+            editPasswordField.isHidden = true
+            editConfirmField.isHidden = true
+            editProfilePicButton.isHidden = true
+            let largeConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .bold, scale: .large)
+            let originalSymbol = UIImage(systemName: "square.and.pencil", withConfiguration: largeConfig)
+            editProfileButton.setImage(originalSymbol, for: .normal)
+            editProfileButton.setTitle(nil, for: .normal)
+            
+            // get user index
+            let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
+                item?.username == users_name
+            })!
+
+            // update username
+            if editUsernameField.text != "" {
+                users_name = editUsernameField.text!
+                ((UIApplication.shared.delegate as! AppDelegate).userData)[userIndex]?.username = editUsernameField.text!
+                welcomeLabel.text = "Hi, \(((UIApplication.shared.delegate as! AppDelegate).userData)[userIndex]!.username!)"
+                usernameLabel.text = ((UIApplication.shared.delegate as! AppDelegate).userData)[userIndex]!.username!
+            }
+            
+            // update name
+            if editNameField.text != "" {
+                nameLabel.text = "Name:   \(editNameField.text!)"
+                ((UIApplication.shared.delegate as! AppDelegate).userData)[userIndex]?.name = editNameField.text!
+            }
+            
+            // update email
+            if editEmailField.text != "" {
+                users_email = editEmailField.text!
+                ((UIApplication.shared.delegate as! AppDelegate).userData)[userIndex]?.email = editEmailField.text!
+                emailLabel.text = "Email:   \(users_email!)"
+            }
+            
+            // update password
+            if editPasswordField.text != "" && editConfirmField.text != "" {
+                users_password_count = editPasswordField.text?.count
+                ((UIApplication.shared.delegate as! AppDelegate).userData)[userIndex]?.password = editPasswordField.text!
+                passwordLabel.text = "Password:"
+                passwordLabel.text?.append("   ")
+                for _ in 0...users_password_count!-1 {
+                    passwordLabel.text?.append("*")
+                }
+            }
+            
+        }
+        
+        
+    } // end startEditProfile
     
     
     // if user tries to log out, confirm logout and segue to login screen
@@ -1702,11 +1851,256 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     // --------------- DATA SOURCE/DELEGATES ---------------
     
-    // COLLECTION VIEW
     // hide table when user starts typing in search
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        self.songTable.isHidden = true
+        if textField == searchField {
+            self.songTable.isHidden = true
+        }
     }   // didBeginEditing (text field -> search page)
+    
+    
+    // for live text change
+    @objc func changeEditButton(_ textField : UITextField) {
+        var usernameTaken:Bool = false
+        var currentUsername:Bool = false
+        var emailTaken:Bool = false
+        var currentEmail:Bool = false
+        var currentName:Bool = false
+        var currentPassword:Bool = false
+        // get user index
+        let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
+            item?.username == users_name
+        })!
+        
+        if editUsernameField.text == "" && editNameField.text == "" && editEmailField.text == "" && editPasswordField.text == "" && editConfirmField.text == "" {
+            
+            editProfileButton.setTitle("Cancel", for: .normal)
+            editProfileButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+            editProfileButton.setTitleColor(UIColor.systemBlue, for: .normal)
+        }
+        else {
+            editProfileButton.setTitle("Save", for: .normal)
+            editProfileButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+            editProfileButton.setTitleColor(UIColor.systemBlue, for: .normal)
+        }
+        
+        switch (textField) {
+        case editUsernameField:
+            // if current username
+            if (users_name == editUsernameField.text!) {
+                currentUsername = true
+            }
+            
+            // if not current username but username is in use
+            for user in (UIApplication.shared.delegate as! AppDelegate).userData {
+                if (user?.username)?.lowercased() == (editUsernameField.text)?.lowercased() && !currentUsername {
+                    usernameTaken = true
+                }
+            }
+            
+            // if username is original
+            if editUsernameField.text != "" && !usernameTaken && !currentUsername {
+                editProfileButton.alpha = 1.0
+                editErrorMessage.isHidden = true
+                editUsernameField.layer.borderWidth = 0.0
+                usernameTaken = false
+                currentUsername = false
+                editProfileButton.isEnabled = true
+            }
+            else if usernameTaken {
+                editErrorMessage.isHidden = false
+                editErrorMessage.text = "That username is taken"
+                editProfileButton.alpha = 0.7
+                editProfileButton.isEnabled = false
+                editUsernameField.layer.borderWidth = 1.0
+                editUsernameField.layer.cornerRadius = 5.0
+                editUsernameField.layer.borderColor = UIColor.red.cgColor
+            }
+            else if currentUsername {
+                editErrorMessage.isHidden = false
+                editErrorMessage.text = "Try a username that is not your current username"
+                editProfileButton.alpha = 0.7
+                editProfileButton.isEnabled = false
+                editUsernameField.layer.borderWidth = 1.0
+                editUsernameField.layer.cornerRadius = 5.0
+                editUsernameField.layer.borderColor = UIColor.red.cgColor
+            }
+            else if editUsernameField.text == "" {
+                editProfileButton.alpha = 1.0
+                editErrorMessage.isHidden = true
+                editUsernameField.layer.borderWidth = 0.0
+                usernameTaken = false
+                currentUsername = false
+                editProfileButton.isEnabled = true
+            }
+
+            
+        case editNameField:
+            break
+        
+        case editEmailField:
+            // if current email
+            if (((UIApplication.shared.delegate as! AppDelegate).userData)[userIndex]?.email == editEmailField.text!) {
+                currentEmail = true
+            }
+            
+            for user in (UIApplication.shared.delegate as! AppDelegate).userData {
+                if (user?.email)?.lowercased() == (editEmailField.text)?.lowercased() && !currentEmail {
+                    emailTaken = true
+                }
+            }
+            
+            if emailTaken {
+                editProfileButton.alpha = 0.7
+                editProfileButton.isEnabled = false
+                editErrorMessage.text = "That email address is already in use"
+                editErrorMessage.isHidden = false
+                editEmailField.layer.borderWidth = 1.0
+                editEmailField.layer.cornerRadius = 5.0
+                editEmailField.layer.borderColor = UIColor.red.cgColor
+            }
+            else if currentEmail {
+                editProfileButton.alpha = 0.7
+                editProfileButton.isEnabled = false
+                editErrorMessage.text = "Try an email that is not your current email"
+                editErrorMessage.isHidden = false
+                editEmailField.layer.borderWidth = 1.0
+                editEmailField.layer.cornerRadius = 5.0
+                editEmailField.layer.borderColor = UIColor.red.cgColor
+            }
+            // if email is original
+            else if editEmailField.text != "" && editEmailField.text!.contains("@") && (editEmailField.text!.suffix(4) == ".com" || editEmailField.text!.suffix(4) == ".net" || editEmailField.text!.suffix(4) == ".org" || editEmailField.text!.suffix(4) == ".edu" || editEmailField.text!.suffix(4) == ".gov" && !emailTaken && !currentEmail) {
+                editProfileButton.alpha = 1.0
+                editProfileButton.isEnabled = true
+                editErrorMessage.isHidden = true
+                editEmailField.layer.borderWidth = 0.0
+                emailTaken = false
+                currentEmail = false
+            }
+            else if editEmailField.text == "" {
+                editProfileButton.alpha = 1.0
+                editProfileButton.isEnabled = true
+                editErrorMessage.isHidden = true
+                editEmailField.layer.borderWidth = 0.0
+                emailTaken = false
+                currentEmail = false
+            }
+            else {
+                editProfileButton.alpha = 0.7
+                editProfileButton.isEnabled = false
+                editErrorMessage.text = "Please enter a valid email address"
+                editErrorMessage.isHidden = false
+                editEmailField.layer.borderWidth = 1.0
+                editEmailField.layer.cornerRadius = 5.0
+                editEmailField.layer.borderColor = UIColor.red.cgColor
+            }
+ 
+        case editPasswordField:
+            //if current password
+            if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex]?.password! == editPasswordField.text!) {
+                currentPassword = true
+            }
+            
+            // if password is original and matches the confirmed password
+            if editPasswordField.text == editConfirmField.text && editPasswordField.text!.count >= 8 && editConfirmField.text!.count >= 8 && !currentPassword{
+                editProfileButton.alpha = 1.0
+                editProfileButton.isEnabled = true
+                editErrorMessage.isHidden = true
+                editConfirmField.layer.borderWidth = 0.0
+                editPasswordField.layer.borderWidth = 0.0
+                currentPassword = false
+            }
+            else if editPasswordField.text != editConfirmField.text {
+                editProfileButton.alpha = 0.7
+                editProfileButton.isEnabled = false
+                editErrorMessage.isHidden = false
+                editErrorMessage.text = "Passwords do not match"
+                editConfirmField.layer.borderWidth = 1.0
+                editConfirmField.layer.cornerRadius = 5.0
+                editConfirmField.layer.borderColor = UIColor.red.cgColor
+            }
+            else if currentPassword {
+                editProfileButton.alpha = 0.7
+                editProfileButton.isEnabled = false
+                editErrorMessage.isHidden = false
+                editErrorMessage.text = "Try a password that is not your current password"
+                editPasswordField.layer.borderWidth = 1.0
+                editPasswordField.layer.cornerRadius = 5.0
+                editPasswordField.layer.borderColor = UIColor.red.cgColor
+            }
+            else if editPasswordField.text == "" && editConfirmField.text == ""{
+                editProfileButton.alpha = 1.0
+                editProfileButton.isEnabled = true
+                editErrorMessage.isHidden = true
+                editPasswordField.layer.borderWidth = 0.0
+                editConfirmField.layer.borderWidth = 0.0
+                currentPassword = false
+            }
+            else if editPasswordField.text!.count >= 8 {
+                editProfileButton.alpha = 0.7
+                editProfileButton.isEnabled = false
+                editErrorMessage.isHidden = true
+                editPasswordField.layer.borderWidth = 0.0
+                currentPassword = false
+            }
+            else if editPasswordField.text!.count > 0 && editPasswordField.text!.count < 8 {
+                editProfileButton.alpha = 0.7
+                editProfileButton.isEnabled = false
+                editErrorMessage.isHidden = false
+                editErrorMessage.text = "Password is too weak."
+                editPasswordField.layer.borderWidth = 1.0
+                editPasswordField.layer.cornerRadius = 5.0
+                editPasswordField.layer.borderColor = UIColor.red.cgColor
+            }
+
+        
+        case editConfirmField:
+            //if current password
+            if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex]?.password! == editConfirmField.text!) {
+                currentPassword = true
+            }
+            
+            // if passwords match and is original
+            if editPasswordField.text == editConfirmField.text && editPasswordField.text!.count >= 8 && editConfirmField.text!.count >= 8 && !currentPassword{
+                editProfileButton.alpha = 1.0
+                editProfileButton.isEnabled = true
+                editErrorMessage.isHidden = true
+                editConfirmField.layer.borderWidth = 0.0
+                currentPassword = false
+            }
+            else if editPasswordField.text != editConfirmField.text {
+                editProfileButton.alpha = 0.7
+                editProfileButton.isEnabled = false
+                editErrorMessage.isHidden = false
+                editErrorMessage.text = "Passwords do not match"
+                editConfirmField.layer.borderWidth = 1.0
+                editConfirmField.layer.cornerRadius = 5.0
+                editConfirmField.layer.borderColor = UIColor.red.cgColor
+            }
+            else if currentPassword {
+                editProfileButton.alpha = 0.7
+                editProfileButton.isEnabled = false
+                editErrorMessage.isHidden = false
+                editErrorMessage.text = "Try a password that is not your current password"
+                editPasswordField.layer.borderWidth = 1.0
+                editPasswordField.layer.cornerRadius = 5.0
+                editPasswordField.layer.borderColor = UIColor.red.cgColor
+            }
+            else if editPasswordField.text == "" && editConfirmField.text == ""{
+                editProfileButton.alpha = 1.0
+                editProfileButton.isEnabled = true
+                editErrorMessage.isHidden = true
+                editPasswordField.layer.borderWidth = 0.0
+                editConfirmField.layer.borderWidth = 0.0
+                currentPassword = false
+            }
+
+        
+        default: fatalError("Unknown field: \(textField)")
+            
+        } // end textField switch
+        
+    } // end changeEditButton
     
     
     // number of items for recommended panel images

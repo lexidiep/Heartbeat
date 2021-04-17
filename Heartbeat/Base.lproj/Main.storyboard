@@ -1867,18 +1867,16 @@ Apple Music</string>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="username" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FEw-JA-G7M" userLabel="Username">
-                                        <rect key="frame" x="8" y="317" width="398" height="34"/>
+                                        <rect key="frame" x="8" y="307" width="398" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="32"/>
                                         <color key="textColor" systemColor="systemGray4Color"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="yad-7L-gxA" userLabel="UsernameField">
-                                        <rect key="frame" x="81" y="317" width="252" height="34"/>
+                                    <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="yad-7L-gxA" userLabel="UsernameField">
+                                        <rect key="frame" x="81" y="351" width="252" height="34"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" red="0.1285711527" green="0.12859603759999999" blue="0.1285656989" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="252" id="Ynr-oX-c6Z"/>
-                                        </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits" textContentType="username"/>
                                     </textField>
@@ -1889,14 +1887,12 @@ Apple Music</string>
                                         <color key="textColor" systemColor="systemGray4Color"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="hDb-IT-5Uc" userLabel="NameField">
-                                        <rect key="frame" x="55" y="386" width="176" height="34"/>
+                                    <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="hDb-IT-5Uc" userLabel="NameField">
+                                        <rect key="frame" x="67" y="433" width="176" height="34"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" red="0.1285711527" green="0.12859603759999999" blue="0.1285656989" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="176" id="Gjg-qG-tgS"/>
-                                        </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits" textContentType="username"/>
+                                        <textInputTraits key="textInputTraits" textContentType="name"/>
                                     </textField>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Email:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BqV-ZA-cv1" userLabel="Email">
                                         <rect key="frame" x="8" y="428" width="385" height="24"/>
@@ -1905,14 +1901,12 @@ Apple Music</string>
                                         <color key="textColor" systemColor="systemGray4Color"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="fuy-ph-aTC" userLabel="EmailField">
-                                        <rect key="frame" x="55" y="428" width="176" height="34"/>
+                                    <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="fuy-ph-aTC" userLabel="EmailField">
+                                        <rect key="frame" x="63" y="481" width="176" height="34"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" red="0.1285711527" green="0.12859603759999999" blue="0.1285656989" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="176" id="xW4-ZX-tfn"/>
-                                        </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits" textContentType="username"/>
+                                        <textInputTraits key="textInputTraits" keyboardType="emailAddress" textContentType="email"/>
                                     </textField>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Password:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QId-Vf-0M8" userLabel="Password">
                                         <rect key="frame" x="8" y="468" width="385" height="24"/>
@@ -1921,37 +1915,43 @@ Apple Music</string>
                                         <color key="textColor" systemColor="systemGray4Color"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="5HF-QX-5fB" userLabel="PasswordField">
-                                        <rect key="frame" x="93" y="468" width="176" height="34"/>
+                                    <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="5HF-QX-5fB" userLabel="PasswordField">
+                                        <rect key="frame" x="101" y="527" width="176" height="34"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" red="0.1285711527" green="0.12859603759999999" blue="0.1285656989" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="176" id="2v3-AG-x4c"/>
-                                        </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits" textContentType="username"/>
+                                        <textInputTraits key="textInputTraits" secureTextEntry="YES" textContentType="new-password"/>
                                     </textField>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="cdd-mq-hy4" userLabel="ConfirmPasswordField">
-                                        <rect key="frame" x="93" y="508" width="176" height="34"/>
+                                    <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="cdd-mq-hy4" userLabel="ConfirmPasswordField">
+                                        <rect key="frame" x="101" y="570" width="176" height="34"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" red="0.1285711527" green="0.12859603759999999" blue="0.1285656989" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="176" id="04a-ov-EhW"/>
-                                        </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits" textContentType="username"/>
+                                        <textInputTraits key="textInputTraits" secureTextEntry="YES" textContentType="new-password"/>
                                     </textField>
-                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kjG-XM-aws" userLabel="Edit Picture">
-                                        <rect key="frame" x="190" y="256" width="38" height="36"/>
+                                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Error Message" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zej-mG-FkA">
+                                        <rect key="frame" x="23" y="398" width="367" height="22"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
+                                        <color key="textColor" systemColor="systemRedColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kjG-XM-aws" userLabel="Edit Picture">
+                                        <rect key="frame" x="190" y="294" width="38" height="36"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="20"/>
                                         <state key="normal" title="Edit"/>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9gx-Tw-iSt" userLabel="Edit Profile Button">
-                                        <rect key="frame" x="354" y="47" width="39" height="43"/>
+                                        <rect key="frame" x="334" y="47" width="59" height="43"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                         <state key="normal">
                                             <imageReference key="image" image="square.and.pencil" catalog="system" symbolScale="large"/>
                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large" weight="bold"/>
                                         </state>
+                                        <connections>
+                                            <action selector="startEditProfile:" destination="SF3-sz-NiH" eventType="touchUpInside" id="yEl-iR-8X4"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="129-IW-ggZ">
                                         <rect key="frame" x="52" y="689" width="315" height="35"/>
@@ -1979,18 +1979,6 @@ Apple Music</string>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstItem="hDb-IT-5Uc" firstAttribute="leading" secondItem="jbf-UB-oj5" secondAttribute="leading" constant="55" id="1tH-MZ-JUx"/>
-                                    <constraint firstItem="5HF-QX-5fB" firstAttribute="top" secondItem="jbf-UB-oj5" secondAttribute="top" constant="468" id="8Ys-Nl-tKF"/>
-                                    <constraint firstItem="yad-7L-gxA" firstAttribute="centerX" secondItem="jbf-UB-oj5" secondAttribute="centerX" id="G5e-TG-yE9"/>
-                                    <constraint firstItem="fuy-ph-aTC" firstAttribute="top" secondItem="jbf-UB-oj5" secondAttribute="top" constant="428" id="Nir-7a-ltc"/>
-                                    <constraint firstItem="hDb-IT-5Uc" firstAttribute="top" secondItem="jbf-UB-oj5" secondAttribute="top" constant="386" id="PS1-kF-6KH"/>
-                                    <constraint firstItem="cdd-mq-hy4" firstAttribute="top" secondItem="jbf-UB-oj5" secondAttribute="top" constant="508" id="aRV-dJ-cee"/>
-                                    <constraint firstItem="5HF-QX-5fB" firstAttribute="leading" secondItem="jbf-UB-oj5" secondAttribute="leading" constant="93" id="gnq-v9-cKI"/>
-                                    <constraint firstItem="fuy-ph-aTC" firstAttribute="leading" secondItem="jbf-UB-oj5" secondAttribute="leading" constant="55" id="hw8-jC-Lyy"/>
-                                    <constraint firstItem="cdd-mq-hy4" firstAttribute="leading" secondItem="jbf-UB-oj5" secondAttribute="leading" constant="93" id="iHe-AU-l4u"/>
-                                    <constraint firstItem="yad-7L-gxA" firstAttribute="top" secondItem="jbf-UB-oj5" secondAttribute="top" constant="317" id="reW-Xq-FVA"/>
-                                </constraints>
                             </view>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo_neon" translatesAutoresizingMaskIntoConstraints="NO" id="rn5-TH-Qrp">
                                 <rect key="frame" x="0.0" y="47" width="414" height="59"/>
@@ -2235,8 +2223,14 @@ Apple Music</string>
                         <outlet property="appleMusicButton" destination="tCB-hp-v4z" id="zYn-GV-lNF"/>
                         <outlet property="backButton" destination="HzW-qL-FcW" id="LbE-BO-Y5W"/>
                         <outlet property="deleteAccountButton" destination="kKa-jd-nAt" id="s7v-YX-LEu"/>
+                        <outlet property="editConfirmField" destination="cdd-mq-hy4" id="1ci-Mx-WtV"/>
+                        <outlet property="editEmailField" destination="fuy-ph-aTC" id="6am-nP-k4V"/>
+                        <outlet property="editErrorMessage" destination="Zej-mG-FkA" id="CmW-Da-abd"/>
+                        <outlet property="editNameField" destination="hDb-IT-5Uc" id="Gzw-xs-0HW"/>
+                        <outlet property="editPasswordField" destination="5HF-QX-5fB" id="DQu-1L-7M1"/>
                         <outlet property="editProfileButton" destination="9gx-Tw-iSt" id="XJb-0b-1ac"/>
                         <outlet property="editProfilePicButton" destination="kjG-XM-aws" id="KmC-Qk-ODj"/>
+                        <outlet property="editUsernameField" destination="yad-7L-gxA" id="QZf-M3-Tuu"/>
                         <outlet property="emailLabel" destination="BqV-ZA-cv1" id="vGr-Ge-l3w"/>
                         <outlet property="featured" destination="QWz-0a-ovb" id="GYf-lI-BxT"/>
                         <outlet property="first_recomm" destination="kPm-xM-78M" id="IdL-CO-eIK"/>
