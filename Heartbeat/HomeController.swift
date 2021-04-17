@@ -46,7 +46,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     var users_password_count:Int?
     
     
-    // for recommended panels (home page)
+    // for recommended panels (in home page)
     @IBOutlet weak var recommendedLabel: UILabel!
     @IBOutlet weak var moderateLabel: UILabel!
     @IBOutlet weak var slowLabel: UILabel!
@@ -72,6 +72,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var recLoading: UIActivityIndicatorView!
     @IBOutlet weak var spotifyButton: UIButton!
     @IBOutlet weak var appleMusicButton: UIButton!
+    @IBOutlet weak var selectedPlaylistLabel: UILabel!
     // for details dismissal
     @IBOutlet weak var temporaryView: UIView!
     @IBOutlet weak var tempRecDetailCancel: UIButton!
@@ -199,9 +200,11 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // welcome username label
         welcomeLabel.text = "Hi, \(users_name!)"
         welcomeLabel.textColor = .lightGray
         
+        // navigation menu bar
         navBar.backgroundColor = .lightGray
         navBar.text = ""
         
@@ -359,7 +362,6 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         
         
         // profile page
-        // profile pic
         profilePic.layer.borderWidth = 1
         profilePic.layer.masksToBounds = false
         profilePic.layer.cornerRadius = profilePic.frame.height/2
@@ -377,7 +379,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             passwordLabel.text?.append("*")
         }
         
-        // buttons
+        // profile action buttons
         deleteAccountButton.layer.cornerRadius = 5
         logOutButton.layer.cornerRadius = 5
         
@@ -428,7 +430,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     // searches for songs through api
     func searchSongs() {
-        // API
+        // API for song search
         getData()
     } // end searchSongs function
 
@@ -457,12 +459,19 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         else {
             currentIndex_upbeat = 0
         }
+        
+        // slow panel control
         slow_slide.scrollToItem(at: IndexPath(item: currentIndex, section: 0), at: .centeredHorizontally, animated: true)
         slow_pageCtrl.currentPage = currentIndex
+        
+        //upbeat panel control
         upbeat_slide.scrollToItem(at: IndexPath(item: currentIndex_upbeat, section: 0), at: .centeredHorizontally, animated: true)
         upbeat_pageCtrl.currentPage = currentIndex_upbeat
+        
+        // moderate panel control
         moderate_slide.scrollToItem(at: IndexPath(item: currentIndex, section: 0), at: .centeredHorizontally, animated: true)
         moderate_pageCtrl.currentPage = currentIndex
+        
     }   // end moveToNextIndex()
     
     
@@ -483,6 +492,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         onRecommended = true
         topSplitBar.isHidden = true
         topLogo.isHidden = true
+        selectedPlaylistLabel.text = "Upbeat Playlist"
+        selectedPlaylistLabel.isHidden = false
         recLoading.isHidden = false
         recLoading.startAnimating()
         self.recLoading.alpha = 1.0
@@ -501,6 +512,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         onRecommended = true
         topSplitBar.isHidden = true
         topLogo.isHidden = true
+        selectedPlaylistLabel.text = "Slow-Paced Playlist"
+        selectedPlaylistLabel.isHidden = false
         recLoading.isHidden = false
         recLoading.startAnimating()
         self.recLoading.alpha = 1.0
@@ -519,6 +532,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         onRecommended = true
         topSplitBar.isHidden = true
         topLogo.isHidden = true
+        selectedPlaylistLabel.text = "Moderate Playlist"
+        selectedPlaylistLabel.isHidden = false
         recLoading.isHidden = false
         recLoading.startAnimating()
         self.recLoading.alpha = 1.0
@@ -543,6 +558,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         recommendedView.isHidden = true
         backButton.isHidden = true
         topLogo.isHidden = false
+        selectedPlaylistLabel.isHidden = true
         topSplitBar.isHidden = false
         onRecommended = false
         
@@ -567,7 +583,9 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     var songIDs:[String] = []
     var imageURLs:[String] = []
     private func getData() {
-        let song = self.searchField.text
+        let song = self.searchField.text    // get user search input
+        
+        // text manipulation for proper API lookup
         let searchReplace1 = song?.replacingOccurrences(of: " ", with: "+")
         let searchReplace2 = searchReplace1?.replacingOccurrences(of: "’", with: "")
         let searchReplace3 = searchReplace2?.replacingOccurrences(of: ",", with: "")
@@ -575,8 +593,6 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         let songToSearch = searchReplace4?.replacingOccurrences(of: ".", with: "")
         
         let link = "https://api.getsongbpm.com/search/?api_key=c42bacc54624edfd4f3d4365f8025bab&type=song&lookup=\(songToSearch!)"
-        //let config = URLSessionConfiguration.default
-        //let session = URLSession(configuration: config)
         
         guard let url = URL(string: link) else { print("found nil"); return }
         
@@ -587,7 +603,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 return
             }
             
-            // have data
+            // get data
             var result:Response1?
             do {
                 result = try JSONDecoder().decode(Response1.self, from: data)
@@ -598,6 +614,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 
             }
             catch {
+                // error
                 print("Failed to convert \(error.localizedDescription)")
             }
             
@@ -677,6 +694,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     result = try JSONDecoder().decode(FinalResponse.self, from: data)
                 }
                 catch {
+                    // error
                     print("Failed to convert \(error.localizedDescription)")
                 }
                 
@@ -716,13 +734,12 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     // get the image of artist to show in song details from api
     func getArtistImage(images:[String]) {
         
+        // for every image that was obtained from previous data grab
         for i in 0...(images.count-1) {
             
             // url for image urls
             let url3 = images[i]
-            
-            //print(images[i])
-            
+                        
             // task for image data grab
             let task3 = HomeController.sessionManager.dataTask(with: URL(string: url3)!, completionHandler:{ data, response, error in
                 guard let data = data, let downloadedImg = UIImage(data: data), error == nil else {
@@ -733,6 +750,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 // try to get data from api
                 DispatchQueue.main.async{
 
+                    // get artist images for search results
                     if (self.getSongFromWhere == "search") {
                         if let index = self.songList.firstIndex(where: {$0?.imageURL == self.imageURLs[i]}) {
                             self.songList[index]?.artistImage = downloadedImg
@@ -743,6 +761,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                         let topIndex = IndexPath(row: 0, section: 0)
                         self.songTable.scrollToRow(at: topIndex, at: .top, animated: false)
                     }
+                    
+                    // get artist images for heart rate results
                     else if (self.getSongFromWhere == "heart rate") {
                         if let index = self.suggestedList.firstIndex(where: {$0?.imageURL == self.suggestedImgURLs[i]}) {
                             self.suggestedList[index]?.artistImage = downloadedImg
@@ -753,6 +773,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                         let topIndex = IndexPath(row: 0, section: 0)
                         self.BPMtable.scrollToRow(at: topIndex, at: .top, animated: false)
                     }
+                    
+                    // get images for slow paced results
                     else if (self.getSongFromWhere == "slow") {
                         if let index = self.slowPacedList.firstIndex(where: {$0?.imageURL == self.slowImgURLs[i]}) {
                             self.slowPacedList[index]?.artistImage = downloadedImg
@@ -763,6 +785,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                         let topIndex = IndexPath(row: 0, section: 0)
                         self.recommendedTable.scrollToRow(at: topIndex, at: .top, animated: false)
                     }
+                    
+                    // get images for upbeat results
                     else if (self.getSongFromWhere == "upbeat") {
                         if let index = self.upbeatList.firstIndex(where: {$0?.imageURL == self.upbeatImgURLs[i]}) {
                             self.upbeatList[index]?.artistImage = downloadedImg
@@ -773,6 +797,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                         let topIndex = IndexPath(row: 0, section: 0)
                         self.recommendedTable.scrollToRow(at: topIndex, at: .top, animated: false)
                     }
+                    
+                    // get images for moderate results
                     else if (self.getSongFromWhere == "moderate") {
                         if let index = self.moderateList.firstIndex(where: {$0?.imageURL == self.moderateImgURLs[i]}) {
                             self.moderateList[index]?.artistImage = downloadedImg
@@ -961,7 +987,6 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
 
                  
                  if json.tempo?.count != nil {
-                     //self.songListCount = json.search!.count
                     
                     var randomSong:Int = 0
                     if (json.tempo!.count > 10) {
@@ -1288,6 +1313,17 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         else {
             recommendedView.isHidden = false
             backButton.isHidden = false
+            topLogo.isHidden = true
+            selectedPlaylistLabel.isHidden = false
+            if (selectedRange == "slow") {
+                selectedPlaylistLabel.text = "Slow-Paced Playlist"
+            }
+            else if (selectedRange == "upbeat"){
+                selectedPlaylistLabel.text = "Upbeat Playlist"
+            }
+            else if (selectedRange == "moderate") {
+                selectedPlaylistLabel.text = "Moderate Playlist"
+            }
         }
         profileView.isHidden = true
         
@@ -1317,6 +1353,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         profileView.isHidden = true
         backButton.isHidden = true
         recommendedView.isHidden = true
+        selectedPlaylistLabel.isHidden = true
         
         // tints of other icons
         searchIcon.tintColor = UIColor(red: 25/255, green: 197/255, blue: 255/255, alpha: 1.0)
@@ -1344,6 +1381,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         profileView.isHidden = true
         backButton.isHidden = true
         recommendedView.isHidden = true
+        selectedPlaylistLabel.isHidden = true
         
         backButton.isHidden = true
         recommendedView.isHidden = true
@@ -1409,11 +1447,14 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         searchView.isHidden = true
         heartRateView.isHidden = true
         scrollView.isHidden = true
-        topLogo.isHidden = false
+        topLogo.isHidden = true
         topSplitBar.isHidden = true
         profileView.isHidden = true
         backButton.isHidden = true
         recommendedView.isHidden = true
+        selectedPlaylistLabel.isHidden = false
+        
+        selectedPlaylistLabel.text = "Saved Songs"
         
         let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
             item?.username == users_name
@@ -1468,6 +1509,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         profileView.isHidden = false
         backButton.isHidden = true
         recommendedView.isHidden = true
+        selectedPlaylistLabel.isHidden = true
                 
     }   // end profileClicked()
     
@@ -1935,10 +1977,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             }
         }
         else if tableView == recommendedTable {
+            
             count = self.recommendedTableCount
-            //self.recLoading.stopAnimating()
-            //self.recLoading.isHidden = true
-            //self.recommendedTable.isHidden = false
             
         }
         return count
@@ -2099,7 +2139,6 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 
             }
             self.BPMtable.endUpdates()
-            //self.BPMtable.isHidden = false
             
             // get index of the user
             let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
@@ -2302,8 +2341,6 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 cell.artistLabel?.text = recommendedList[indexPath.row]?.Artist!
             }
             self.recommendedTable.endUpdates()
-            //self.recommendedTable.isHidden = false
-            //self.recLoading.isHidden = true
             
             // get index of the user
             let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
@@ -2369,7 +2406,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     }
                     // else there exists saved songs
                     else {
-                        // cahnge bookmark to fill to represent saved
+                        // change bookmark to fill to represent saved
                         cell.bookmarkIcon.image = UIImage(systemName: "bookmark.fill")
                         
                         // create saved object to append to user's saved songs list
@@ -2431,26 +2468,34 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     
     
-    // --------------- FEATURED PANEL ---------------
+    // --------------- FEATURED PANEL (iCAROUSEL) ---------------
     
     // Featured Panel Carousel
     func numberOfItems(in carousel: iCarousel) -> Int {
-        return 6
-    }
+        return 6    // 6 images to display
+    } // end numberOfItems
     
     // featured panel uses cocoapods for iCarousel
     func carousel(_ carousel: iCarousel, viewForItemAt index: Int, reusing view: UIView?) -> UIView {
+        
+        // create a uiview to contain the image
         let view = UIView(frame:CGRect(x: 7, y: 80, width: self.view.frame.size.width/1.05, height: 225))
         view.layer.cornerRadius = 5
+        
+        // create imageview to put inside view
         let imageView = UIImageView(frame: view.bounds)
         imageView.layer.cornerRadius = 5
+        
+        // add imageview to the view
         view.addSubview(imageView)
+        
+        // characteristics of carousel look
         //imageView.contentMode = .scaleToFill
-        imageView.clipsToBounds = true
-        imageView.image = featImages[index]
+        imageView.clipsToBounds = true  // causes the image to have round corners
+        imageView.image = featImages[index] // displays the image in the imageview
         
         return view
-    }
+    } // end viewForItemAt
     
     
     /*
