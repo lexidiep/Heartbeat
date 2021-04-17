@@ -2,9 +2,12 @@
 //  PulseViewController.swift
 //  Pulse
 //
-//  Created by Athanasios Papazoglou on 18/7/20.
-//  Copyright © 2020 Athanasios Papazoglou. All rights reserved.
+//  Edited by Lexi Diep on 4/3/21.
 //
+
+// Original credits go to Athanasios Papazoglou.
+// Papazoglou created the original code.
+// Copyright © 2020 Athanasios Papazoglou. All rights reserved.
 
 //  All files within Pulse group are used under the MIT copyright guidelines for proper use
 //  under the Heartbeat application development.
@@ -19,6 +22,7 @@ class PulseViewController: UIViewController {
     @IBOutlet weak var previewLayer: UIView!
     @IBOutlet weak var pulseLabel: UILabel!
     @IBOutlet weak var thresholdLabel: UILabel!
+    @IBOutlet weak var progressBar: UIProgressView!
     
     private var validFrameCounter = 0
     private var heartRateManager: HeartRateManager!
@@ -27,6 +31,11 @@ class PulseViewController: UIViewController {
     private var inputs: [CGFloat] = []
     private var measurementStartedFlag = false
     private var timer = Timer()
+    private var BPMarray: [Int] = []
+    private var finalArray: [Int] = []
+    private var MAX_COUNT: Float = 25.0
+    private var currentCount: Float = 0.0
+    var onDoneBlock : ((Bool) -> Void)?
     
     init() {
         super.init(nibName: "PulseViewController", bundle: nil)
@@ -39,10 +48,9 @@ class PulseViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         initVideoCapture()
-        
-        //thresholdLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
+
         thresholdLabel.numberOfLines = 0
-        thresholdLabel.text = "Cover the back camera until\nthe image turns red 🟥"
+        thresholdLabel.text = "Cover the back camera until\nthe image turns red"
     }
 
     override func viewWillLayoutSubviews() {
@@ -99,30 +107,71 @@ class PulseViewController: UIViewController {
     
     // MARK: - Measurement
     private func startMeasurement() {
-        DispatchQueue.main.async {
-            self.toggleTorch(status: true)
-            self.timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self] (timer) in
-                guard let self = self else { return }
-                let average = self.pulseDetector.getAverage()
-                let pulse = 60.0/average
-                if pulse == -60 {
-                    UIView.animate(withDuration: 0.2, animations: {
-                        self.pulseLabel.alpha = 0
-                    }) { (finished) in
-                        self.pulseLabel.isHidden = finished
+        if (BPMarray.count < 25) {
+            if (self.BPMarray.count == 25) {
+                self.toggleTorch(status: false)
+                self.dismiss(animated: true, completion: {
+                    self.presentingViewController?.dismiss(animated: true, completion: nil)
+                })
+                return
+            }
+
+            DispatchQueue.main.async {
+                self.toggleTorch(status: true)
+            
+                self.progressBar.setProgress(self.currentCount, animated: true)
+                
+            
+                self.timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self] (timer) in
+                    guard let self = self else { return }
+                    let average = self.pulseDetector.getAverage()
+                    let pulse = 60.0/average
+                    if pulse == -60 {
+                        UIView.animate(withDuration: 0.2, animations: {
+                            self.pulseLabel.alpha = 0
+                        }) { (finished) in
+                            self.pulseLabel.isHidden = finished
+                        }
+                    } else {
+                        UIView.animate(withDuration: 0.2, animations: {
+                            self.pulseLabel.alpha = 1.0
+                        }) { (_) in
+                            self.pulseLabel.isHidden = false
+                            self.pulseLabel.text = "\(lroundf(pulse)) BPM"
+                            if (self.BPMarray.count < 25) {
+                                self.BPMarray.append(lroundf(pulse))
+                            }
+                            
+                            self.currentCount += 1
+                            if (self.currentCount < 25) {
+                                self.perform(#selector(self.updateProgress), with:nil, afterDelay: 1.0)
+                            }
+                    
+                            if (self.BPMarray.count == 25) {
+                                self.toggleTorch(status: false)
+
+                                self.onDoneBlock!(true)
+                                self.dismiss(animated: true, completion: {
+                                    self.presentingViewController?.dismiss(animated: true, completion: nil)
+                                })
+                                self.toggleTorch(status: false)
+                                return
+                            }
+                        }
                     }
-                } else {
-                    UIView.animate(withDuration: 0.2, animations: {
-                        self.pulseLabel.alpha = 1.0
-                    }) { (_) in
-                        self.pulseLabel.isHidden = false
-                        self.pulseLabel.text = "\(lroundf(pulse)) BPM"
-                    }
-                }
+                })
+            }
+        } // end if BPMarray count is less than 25
+        else {
+            self.toggleTorch(status: false)
+            self.dismiss(animated: true, completion: {
+                self.presentingViewController?.dismiss(animated: true, completion: nil)
             })
+            return
         }
     }
 }
+
 
 //MARK: - Handle Image Buffer
 extension PulseViewController {
@@ -167,10 +216,13 @@ extension PulseViewController {
         // Do a sanity check to see if a finger is placed over the camera
         if (hsv.1 > 0.5 && hsv.2 > 0.5) {
             DispatchQueue.main.async {
-                self.thresholdLabel.text = "Hold your index finger ☝️ still."
+                self.thresholdLabel.text = "Try to hold your index finger still\nwhile we calculate your heart rate."
                 self.toggleTorch(status: true)
                 if !self.measurementStartedFlag {
-                    self.startMeasurement()
+                    if (self.BPMarray.count <= 25) {
+                        self.startMeasurement()
+                    }
+                    self.toggleTorch(status: false)
                     self.measurementStartedFlag = true
                 }
             }
@@ -186,8 +238,23 @@ extension PulseViewController {
             measurementStartedFlag = false
             pulseDetector.reset()
             DispatchQueue.main.async {
-                self.thresholdLabel.text = "Cover the back camera until the image turns red 🟥"
+                self.thresholdLabel.text = "Cover the back camera until the image turns red."
             }
         }
     }
+    
+    @objc func updateProgress() {
+
+        if BPMarray.count == 25 {
+            self.toggleTorch(status: false)
+            finalArray = BPMarray
+            ((UIApplication.shared.delegate as! AppDelegate).collectedBPM) = finalArray
+            currentCount = 0.0
+            //return
+        }
+        else {
+            progressBar.progress = currentCount/MAX_COUNT
+        }
+    }
+    
 }

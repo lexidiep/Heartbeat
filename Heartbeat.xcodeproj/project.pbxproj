@@ -186,6 +186,18 @@
 			path = "Pulse View Controllers";
 			sourceTree = "<group>";
 		};
+		8AC58CD92619ABE500370ECD /* Pulse */ = {
+			isa = PBXGroup;
+			children = (
+				8A15D36626199B3700768443 /* Utilities */,
+				8A15D37226199BEB00768443 /* Extensions */,
+				8A15D37326199C0600768443 /* Managers */,
+				8A15D37926199C5D00768443 /* Pulse Detector Helpers */,
+				8A15D38726199D6F00768443 /* Pulse View Controllers */,
+			);
+			path = Pulse;
+			sourceTree = "<group>";
+		};
 		8AD1013725440F220087773C = {
 			isa = PBXGroup;
 			children = (
@@ -211,11 +223,7 @@
 		8AD1014225440F220087773C /* Heartbeat */ = {
 			isa = PBXGroup;
 			children = (
-				8A15D36626199B3700768443 /* Utilities */,
-				8A15D37226199BEB00768443 /* Extensions */,
-				8A15D37326199C0600768443 /* Managers */,
-				8A15D37926199C5D00768443 /* Pulse Detector Helpers */,
-				8A15D38726199D6F00768443 /* Pulse View Controllers */,
+				8AC58CD92619ABE500370ECD /* Pulse */,
 				8AD1014325440F220087773C /* AppDelegate.swift */,
 				8AD1014525440F220087773C /* SceneDelegate.swift */,
 				8AD1014725440F220087773C /* LoginController.swift */,
@@ -698,7 +706,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = HeartbeatCo.Heartbeat;
+				PRODUCT_BUNDLE_IDENTIFIER = HeartbeatTeam.Heartbeat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -722,7 +730,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = HeartbeatCo.Heartbeat;
+				PRODUCT_BUNDLE_IDENTIFIER = HeartbeatTeam.Heartbeat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

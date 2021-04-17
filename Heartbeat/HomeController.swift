@@ -130,6 +130,18 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var leftWaveIcon: UIImageView!
     @IBOutlet weak var rightWaveIcon: UIImageView!
     @IBOutlet weak var heartRateButton: UIButton!
+    @IBOutlet weak var heartRateView: UIView!
+    @IBOutlet weak var BPMtable: UITableView!
+    @IBOutlet weak var tempBPMview: UIView!
+    @IBOutlet weak var BPMdetailsView: UIView!
+    @IBOutlet weak var BPMimage: UIImageView!
+    @IBOutlet weak var BPMtitle: UILabel!
+    @IBOutlet weak var BPMartist: UILabel!
+    @IBOutlet weak var BPMlabel: UILabel!
+    @IBOutlet weak var suggestedLoading: UIActivityIndicatorView!
+    @IBOutlet weak var heartRateLabel: UILabel!
+    var BPMtableCount:Int = 0
+    var firstBPMcalculation:Bool = true
     
     
     // profile page
@@ -301,6 +313,22 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         songDetailsView.layer.shouldRasterize = true
         songDetailImage.layer.cornerRadius = 5
         loading.color = .lightGray
+        
+        
+        // heart rate page
+        BPMtable.delegate = self
+        BPMtable.dataSource = self
+        BPMtable.rowHeight = 65
+        self.BPMtable.tableFooterView = UIView()
+        BPMdetailsView.layer.cornerRadius = 5
+        BPMdetailsView.layer.shadowColor = UIColor.black.cgColor
+        BPMdetailsView.layer.shadowOpacity = 1
+        BPMdetailsView.layer.shadowOffset = .zero
+        BPMdetailsView.layer.shadowRadius = 10
+        BPMdetailsView.layer.shadowPath = UIBezierPath(rect: BPMdetailsView.bounds).cgPath
+        BPMdetailsView.layer.shouldRasterize = true
+        BPMimage.layer.cornerRadius = 5
+        suggestedLoading.color = .lightGray
         
 
         // saved page
@@ -694,7 +722,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             // url for image urls
             let url3 = images[i]
             
-            print(images[i])
+            //print(images[i])
             
             // task for image data grab
             let task3 = HomeController.sessionManager.dataTask(with: URL(string: url3)!, completionHandler:{ data, response, error in
@@ -715,6 +743,16 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                         
                         let topIndex = IndexPath(row: 0, section: 0)
                         self.songTable.scrollToRow(at: topIndex, at: .top, animated: false)
+                    }
+                    else if (self.getSongFromWhere == "heart rate") {
+                        if let index = self.suggestedList.firstIndex(where: {$0?.imageURL == self.suggestedImgURLs[i]}) {
+                            self.suggestedList[index]?.artistImage = downloadedImg
+                        }
+
+                        self.BPMtable.reloadData()
+                        
+                        let topIndex = IndexPath(row: 0, section: 0)
+                        self.BPMtable.scrollToRow(at: topIndex, at: .top, animated: false)
                     }
                     else if (self.getSongFromWhere == "slow") {
                         if let index = self.slowPacedList.firstIndex(where: {$0?.imageURL == self.slowImgURLs[i]}) {
@@ -754,6 +792,125 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         } // end for loop
         
     } // end of getArtistImage
+    
+    
+    
+    
+    // -------------- HEART RATE SONGS SUGGESTION FUNCTIONS ---------------
+    
+    var suggestedList = [songInfo?]()
+    var suggestedSongIDs:[String] = []
+    var suggestedImgURLs:[String] = []
+    
+    func getSuggestedSongs() {
+        self.suggestedList.removeAll()
+        self.suggestedSongIDs.removeAll()
+        self.suggestedImgURLs.removeAll()
+        
+        var sumOfBPMs = 0
+        var avgBPM = 0
+        
+        // get the sum of all the heart rate calculations
+        for i in ((UIApplication.shared.delegate as! AppDelegate).collectedBPM) {
+            sumOfBPMs += i
+        }
+        
+        avgBPM = Int(sumOfBPMs/25)
+        
+        let suggestedURL = "https://api.getsongbpm.com/tempo/?api_key=c42bacc54624edfd4f3d4365f8025bab&bpm=\(avgBPM)"
+                    
+        // task for slow song data grab
+        let bpmTask = HomeController.sessionManager.dataTask(with: URL(string: suggestedURL)!, completionHandler:{ data, response, error in
+            guard let data = data, error == nil else {
+                print("Something went wrong")
+                return
+            }
+            
+            
+             // get data
+             var result:Response2?
+             do {
+                 result = try JSONDecoder().decode(Response2.self, from: data)
+             }
+             catch {
+                 print("Failed to convert \(error.localizedDescription)")
+             }
+             
+             guard let json = result else {
+                 return
+             }
+            
+            self.suggestedList.removeAll()
+            self.suggestedSongIDs.removeAll()
+            self.suggestedImgURLs.removeAll()
+
+             
+             if json.tempo?.count != nil {
+                for i in 0...self.BPMtableCount-1 {
+
+                     var newSong:songInfo! = songInfo()
+                     newSong.Title = json.tempo![i].song_title!
+                     newSong.Artist = json.tempo![i].artist!.name!
+                     
+                     // getting image url
+                     var imageCode = ""
+                     if (json.tempo![i].album!.img != nil) {
+                         imageCode = json.tempo![i].album!.img!
+                     }
+                     else {
+                         imageCode = ""
+                     }
+                     newSong.imageURL = imageCode
+                     
+                     newSong.id = json.tempo![i].song_id!
+                     newSong.BPM = json.tempo![i].tempo!
+                     self.suggestedList.append(newSong)
+
+                     self.suggestedSongIDs.append(json.tempo![i].song_id!)
+                     if (json.tempo![i].album!.img != nil) {
+                         self.suggestedImgURLs.append(json.tempo![i].album!.img!)
+                     }
+                }
+                DispatchQueue.main.async {
+                    self.BPMtable.beginUpdates()
+                    self.BPMtable.endUpdates()
+                    self.BPMtable.isHidden = false
+                }
+            }
+             else {
+                print("Suggested songs JSON returned nil")
+             }
+            
+
+            
+            if (self.suggestedList.count == 30 && self.suggestedSongIDs.count == 30) {
+                print("\n\n\nEND TASKING\n\n\n")
+                print("suggestedList count total: \(self.suggestedList.count)")
+                print("SUM OF BPMs CALCULATED: \(sumOfBPMs)")
+                print("AVERAGE BPM CALCULATED: \(avgBPM)")
+                
+                self.getSongFromWhere = "heart rate"
+                
+                // get the images of the songs from search results
+                self.getArtistImage(images: self.suggestedImgURLs)
+                
+                //self.BPMtable.isHidden = false
+                //self.suggestedLoading.isHidden = true
+                DispatchQueue.main.async {
+                    self.suggestedLoading.alpha = 0.0
+                }
+            }
+            
+        }) // end of task4
+
+        bpmTask.resume()
+
+
+        DispatchQueue.main.async {
+            self.BPMtableCount = 30
+            self.BPMtable.reloadData()
+         }
+    } // end getSuggestedSongs()
     
     
     
@@ -1091,6 +1248,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         // hide/show pages
         searchView.isHidden = true
         savedView.isHidden = true
+        heartRateView.isHidden = true
         if (!onRecommended) {
             scrollView.isHidden = false
             topLogo.isHidden = false
@@ -1123,6 +1281,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         // hide/show pages
         searchView.isHidden = false
         savedView.isHidden = true
+        heartRateView.isHidden = true
         scrollView.isHidden = true
         topLogo.isHidden = true
         topSplitBar.isHidden = true
@@ -1146,9 +1305,21 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     // action for heartRate nav button clicked
     @IBAction func heartRateClicked(_ sender: Any) {
+        // hide/show pages
+        savedView.isHidden = true
+        searchView.isHidden = true
+        heartRateView.isHidden = false
+        scrollView.isHidden = true
+        topLogo.isHidden = false
+        topSplitBar.isHidden = true
+        profileView.isHidden = true
+        backButton.isHidden = true
+        recommendedView.isHidden = true
         
         backButton.isHidden = true
         recommendedView.isHidden = true
+        
+        self.heartRateLabel.text = "Heart rate not found!"
         
         
         //tints of heartRate Icon
@@ -1170,6 +1341,34 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
 
         // Present VC "Modally" style
         self.present(pulseVC, animated: true, completion: nil)
+
+        
+        if !firstBPMcalculation {
+            self.BPMtable.beginUpdates()
+            self.BPMtable.endUpdates()
+            self.BPMtable.isHidden = false
+        }
+        else {
+            self.BPMtable.isHidden = true
+        }
+        
+        self.suggestedLoading.isHidden = false
+        self.suggestedLoading.startAnimating()
+        
+        pulseVC.onDoneBlock = { result in
+            print("Passed count of BPMarray: \(((UIApplication.shared.delegate as! AppDelegate).collectedBPM).count)")
+            if ((UIApplication.shared.delegate as! AppDelegate).collectedBPM).count == 25 {
+                self.heartRateLabel.text = "Finding songs..."
+                self.BPMtable.beginUpdates()
+                self.BPMtable.endUpdates()
+                self.getSuggestedSongs()
+                self.firstBPMcalculation = false
+            }
+            else {
+                self.heartRateLabel.text = "Not enough data! Try again!"
+            }
+        }
+        
         
     }   // end heartRateClicked()
     
@@ -1179,6 +1378,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         // hide/show pages
         savedView.isHidden = false
         searchView.isHidden = true
+        heartRateView.isHidden = true
         scrollView.isHidden = true
         topLogo.isHidden = false
         topSplitBar.isHidden = true
@@ -1232,6 +1432,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         // hide/show pages
         savedView.isHidden = true
         searchView.isHidden = true
+        heartRateView.isHidden = true
         scrollView.isHidden = true
         topLogo.isHidden = false
         topSplitBar.isHidden = true
@@ -1289,6 +1490,22 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         self.viewSlideCancel(view: savedDetailsView)
         savedTable.alpha = 1.0
     } // end cancelSavedDetail
+    
+    
+    @IBAction func cancelBPMdetail(_ sender: Any) {
+        BPMdetailsView.isHidden = true
+        tempBPMview.isHidden = true
+        self.viewSlideCancel(view: BPMdetailsView)
+        BPMtable.alpha = 1.0
+    } // end cancelBPMdetail
+    
+    
+    @IBAction func exitBPMdetail(_ sender: Any) {
+        BPMdetailsView.isHidden = true
+        tempBPMview.isHidden = true
+        self.viewSlideCancel(view: BPMdetailsView)
+        BPMtable.alpha = 1.0
+    } // end exitBPMdetail
     
     
     // links to spotify app if downloaded, if not downloaded, link to apple store for spotify
@@ -1508,6 +1725,44 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             songTable.alpha = 0.3
             
         }
+        else if tableView == BPMtable {
+            let indexPath = BPMtable.indexPathForSelectedRow!
+            let selectedCell = BPMtable.cellForRow(at: indexPath) as! SearchTableViewCell
+            
+            // checking selected path
+            print("Row selected: \(indexPath.row)")
+            print("On select, suggestedList count = \(self.suggestedList.count)")
+            
+            
+            if self.suggestedList.count == 30 {
+                if self.suggestedList[indexPath.row]?.Title! != nil {
+                    self.BPMtitle.text = self.suggestedList[indexPath.row]?.Title!
+                }
+                if self.suggestedList[indexPath.row]?.Artist! != nil {
+                    self.BPMartist.text = self.suggestedList[indexPath.row]?.Artist!
+                }
+                // if there a BPM
+                if (self.suggestedList[indexPath.row]!.BPM! != "") {
+                    self.BPMlabel.text = "\(self.suggestedList[indexPath.row]!.BPM!) BPM"
+                }
+                else {
+                    self.BPMlabel.text = "BPM Unavailable"
+                }
+                // if the song detail contains an actual image
+                if(self.suggestedList[indexPath.row]!.imageURL! != "") {
+                    self.BPMimage.image = self.suggestedList[indexPath.row]!.artistImage
+                }
+                else {
+                    self.BPMimage.image = UIImage(named: "image_unavailable")
+                }
+                            
+                BPMdetailsView.isHidden = false
+                tempBPMview.isHidden = false
+                suggestedLoading.isHidden = true
+                self.viewSlideInFromTop(view: BPMdetailsView)
+                BPMtable.alpha = 0.3
+            }
+        }
         else if tableView == savedTable {
             let indexPath = savedTable.indexPathForSelectedRow!
             let selectedCell = savedTable.cellForRow(at: indexPath) as! SearchTableViewCell
@@ -1628,6 +1883,10 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             self.loading.stopAnimating()
             self.loading.isHidden = true
             self.songTable.isHidden = false
+        }
+        else if tableView == BPMtable {
+            count = self.BPMtableCount
+ 
         }
         else if tableView == savedTable {
             // get user index
@@ -1792,6 +2051,143 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             return cell
         } // end if songTable
         
+        else if tableView == BPMtable {
+            let cell = BPMtable.dequeueReusableCell(withIdentifier: "bpm_cell", for: indexPath) as! SearchTableViewCell
+                     
+            self.BPMtable.beginUpdates()
+            if suggestedList.count != 0 {
+                if self.suggestedList[indexPath.row]?.Title! != nil {
+                    cell.titleLabel?.text = self.suggestedList[indexPath.row]?.Title!
+                }
+                if self.suggestedList[indexPath.row]?.Artist! != nil {
+                    cell.artistLabel?.text = self.suggestedList[indexPath.row]?.Artist!
+                }
+            }
+            else {
+                //show label for no songs found
+                
+                
+                
+                
+            }
+            self.BPMtable.endUpdates()
+            //self.BPMtable.isHidden = false
+            
+            // get index of the user
+            let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
+                item?.username == users_name
+            })
+            
+            // if song is saved, filled bookmark should show on search
+            if (((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count) != 0) {
+                if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs)!.firstIndex(where: { (item) -> Bool in
+                    item?.id != self.suggestedList[indexPath.row]?.id!
+                }) != nil {
+                    cell.bookmarkIcon.image = UIImage(systemName: "bookmark")
+                }
+                else {
+                    cell.bookmarkIcon.image
+                        = UIImage(systemName: "bookmark.fill")
+                }
+            }
+            // if user has an empty saved songs list
+            else {
+                cell.bookmarkIcon.image = UIImage(systemName: "bookmark")
+            }
+
+            // if the song is already saved, upon search, make the bookmark filled
+            if (((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count) != 0) {
+                let saved = ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs)
+                if saved!.firstIndex(where: { (item) -> Bool in
+                    item?.id == suggestedList[indexPath.row]?.id!
+                }) != nil {
+                    cell.bookmarkIcon.image = UIImage(systemName: "bookmark.fill")
+                }
+            }
+                       
+            // save/unsave songs from the search page
+            cell.actionBlock = {
+                // make the bookmark empty if the song is not saved already
+                let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
+                    item?.username == self.users_name
+                })
+                
+                if (((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count) != 0) {
+                    if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs)!.firstIndex(where: { (item) -> Bool in
+                        item?.id == self.suggestedList[indexPath.row]?.id!
+                    }) != nil {
+                        cell.bookmarkIcon.image = UIImage(systemName: "bookmark")
+                        
+                        // get index of the song in the user's saved song list
+                        if let songIndex = ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs)!.firstIndex(where: { (item) -> Bool in
+                            item?.id == self.suggestedList[indexPath.row]?.id!
+                        }) {
+                            self.savedTable.beginUpdates()
+                            
+                            // delete the song from the saved songs table
+                            self.savedTable.deleteRows(at: [(IndexPath(row: songIndex, section:0))], with: .automatic)
+                            ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.deleteSavedSong(id: self.suggestedList[indexPath.row]?.id!))
+                            
+                            self.savedTable.endUpdates()
+                            
+                            // user deletes last and only song in saved songs
+                            if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs) == nil || ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! == 0{
+                                print("User's saved songs list is now empty")
+                                self.noSongsLabel.isHidden = false
+                                self.savedView.bringSubviewToFront(self.noSongsLabel)
+                                self.savedTable.isHidden = true
+                            }
+                        }
+                    }
+                    else {
+                        // change bookmark to fill to represent saved
+                        cell.bookmarkIcon.image = UIImage(systemName: "bookmark.fill")
+                        
+                        // create saved object to append to user's saved songs list
+                        var newSaved = saved()
+                        newSaved.title = self.suggestedList[indexPath.row]?.Title!
+                        newSaved.artist = self.suggestedList[indexPath.row]?.Artist!
+                        newSaved.id = self.suggestedList[indexPath.row]?.id!
+                        newSaved.bpm = self.suggestedList[indexPath.row]?.BPM!
+                        if (self.suggestedList[indexPath.row]?.artistImage != nil) {
+                            newSaved.imagePreview = self.suggestedList[indexPath.row]?.artistImage!
+                        }
+                        
+                        // add new song to users data
+                        ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.addSavedSong(song: newSaved))
+                        self.savedTable.beginUpdates()
+                        
+                        // insert the new saved song to the saved songs page
+                        self.savedTable.insertRows(at: [IndexPath(row:  ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! - 1, section: 0)], with: .automatic)
+                        self.savedTable.endUpdates()
+                    }
+                }
+                // savedSongs is empty
+                else {
+                    // change bookmark to fill to represent saved
+                    cell.bookmarkIcon.image = UIImage(systemName: "bookmark.fill")
+                    
+                    // create saved object to append to user's saved songs list
+                    var newSaved = saved()
+                    newSaved.title = self.suggestedList[indexPath.row]?.Title!
+                    newSaved.artist = self.suggestedList[indexPath.row]?.Artist!
+                    newSaved.id = self.suggestedList[indexPath.row]?.id!
+                    newSaved.bpm = self.suggestedList[indexPath.row]?.BPM!
+                    newSaved.imagePreview = self.suggestedList[indexPath.row]?.artistImage
+                    
+                    // add new song to users data
+                    ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.addSavedSong(song: newSaved))
+                    self.savedTable.beginUpdates()
+                    
+                    // insert the new saved song to the saved songs page
+                    self.savedTable.insertRows(at: [IndexPath(row:  ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! - 1, section: 0)], with: .automatic)
+                    self.savedTable.endUpdates()
+                }
+            } // end actionblock
+
+            return cell
+        }
+        
         else if tableView == savedTable {
             // get the index of the current user
             let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
@@ -1833,6 +2229,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     self.savedTable.reloadData()
                     self.songTable.reloadData()
                     self.recommendedTable.reloadData()
+                    self.BPMtable.reloadData()
                     
                     // if user's saved songs list is empty
                     if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs) == nil || ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! == 0{

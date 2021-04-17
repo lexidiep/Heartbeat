@@ -1,15 +1,14 @@
 //
 //  PulseDetector.swift
 //  Pulse
-//
-//  Created by Athanasios Papazoglou on 18/7/20.
-//  Copyright © 2020 Athanasios Papazoglou. All rights reserved.
-//
 
 //  Original credits go to Gurpreet Singh.
 //  He created Filter.h & Filter.m on 31/10/2013.
 //  Copyright (c) 2015 Pubnub. All rights reserved.
 //
+// Original credits go to Athanasios Papazoglou.
+// Papazoglou created the original code.
+// Copyright © 2020 Athanasios Papazoglou. All rights reserved.
 
 //  All files within Pulse group are used under the MIT copyright guidelines for proper use
 //  under the Heartbeat application development.
