@@ -1973,23 +1973,6 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             })
             
             if (self.songList.count == 30) {
-                
-                // if song is saved, filled bookmark should show on search
-                if (((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count) != 0) {
-                    if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs)!.firstIndex(where: { (item) -> Bool in
-                        item?.id != self.songList[indexPath.row]?.id!
-                    }) != nil {
-                        cell.bookmarkIcon.image = UIImage(systemName: "bookmark")
-                    }
-                    else {
-                        cell.bookmarkIcon.image
-                            = UIImage(systemName: "bookmark.fill")
-                    }
-                }
-                // if user has an empty saved songs list
-                else {
-                    cell.bookmarkIcon.image = UIImage(systemName: "bookmark")
-                }
 
                 // if the song is already saved, upon search, make the bookmark filled
                 if (((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count) != 0) {
@@ -1998,6 +1981,9 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                         item?.id == songList[indexPath.row]?.id!
                     }) != nil {
                         cell.bookmarkIcon.image = UIImage(systemName: "bookmark.fill")
+                    }
+                    else {
+                        cell.bookmarkIcon.image = UIImage(systemName: "bookmark")
                     }
                 }
             }
@@ -2060,6 +2046,10 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                         // insert the new saved song to the saved songs page
                         self.savedTable.insertRows(at: [IndexPath(row:  ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! - 1, section: 0)], with: .automatic)
                         self.savedTable.endUpdates()
+                        self.songTable.reloadData()
+                        self.recommendedTable.reloadData()
+                        self.BPMtable.reloadData()
+                        
                     }
                 }
                 // savedSongs is empty
@@ -2082,6 +2072,9 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     // insert the new saved song to the saved songs page
                     self.savedTable.insertRows(at: [IndexPath(row:  ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! - 1, section: 0)], with: .automatic)
                     self.savedTable.endUpdates()
+                    self.songTable.reloadData()
+                    self.recommendedTable.reloadData()
+                    self.BPMtable.reloadData()
                 }
             } // end actionblock
 
@@ -2116,23 +2109,6 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             })
             
             if (self.suggestedList.count == 30) {
-            
-                // if song is saved, filled bookmark should show on search
-                if (((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count) != 0) {
-                    if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs)!.firstIndex(where: { (item) -> Bool in
-                        item?.id != self.suggestedList[indexPath.row]?.id!
-                    }) != nil {
-                        cell.bookmarkIcon.image = UIImage(systemName: "bookmark")
-                    }
-                    else {
-                        cell.bookmarkIcon.image
-                            = UIImage(systemName: "bookmark.fill")
-                    }
-                }
-                // if user has an empty saved songs list
-                else {
-                    cell.bookmarkIcon.image = UIImage(systemName: "bookmark")
-                }
 
                 // if the song is already saved, upon search, make the bookmark filled
                 if (((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count) != 0) {
@@ -2141,6 +2117,9 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                         item?.id == suggestedList[indexPath.row]?.id!
                     }) != nil {
                         cell.bookmarkIcon.image = UIImage(systemName: "bookmark.fill")
+                    }
+                    else {
+                        cell.bookmarkIcon.image = UIImage(systemName: "bookmark")
                     }
                 }
             }
@@ -2202,6 +2181,9 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                         // insert the new saved song to the saved songs page
                         self.savedTable.insertRows(at: [IndexPath(row:  ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! - 1, section: 0)], with: .automatic)
                         self.savedTable.endUpdates()
+                        self.songTable.reloadData()
+                        self.recommendedTable.reloadData()
+                        self.BPMtable.reloadData()
                     }
                 }
                 // savedSongs is empty
@@ -2209,21 +2191,27 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     // change bookmark to fill to represent saved
                     cell.bookmarkIcon.image = UIImage(systemName: "bookmark.fill")
                     
-                    // create saved object to append to user's saved songs list
-                    var newSaved = saved()
-                    newSaved.title = self.suggestedList[indexPath.row]?.Title!
-                    newSaved.artist = self.suggestedList[indexPath.row]?.Artist!
-                    newSaved.id = self.suggestedList[indexPath.row]?.id!
-                    newSaved.bpm = self.suggestedList[indexPath.row]?.BPM!
-                    newSaved.imagePreview = self.suggestedList[indexPath.row]?.artistImage
+                    if (self.suggestedList.count == 30) {
                     
-                    // add new song to users data
-                    ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.addSavedSong(song: newSaved))
-                    self.savedTable.beginUpdates()
-                    
-                    // insert the new saved song to the saved songs page
-                    self.savedTable.insertRows(at: [IndexPath(row:  ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! - 1, section: 0)], with: .automatic)
-                    self.savedTable.endUpdates()
+                        // create saved object to append to user's saved songs list
+                        var newSaved = saved()
+                        newSaved.title = self.suggestedList[indexPath.row]?.Title!
+                        newSaved.artist = self.suggestedList[indexPath.row]?.Artist!
+                        newSaved.id = self.suggestedList[indexPath.row]?.id!
+                        newSaved.bpm = self.suggestedList[indexPath.row]?.BPM!
+                        newSaved.imagePreview = self.suggestedList[indexPath.row]?.artistImage
+                        
+                        // add new song to users data
+                        ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.addSavedSong(song: newSaved))
+                        self.savedTable.beginUpdates()
+                        
+                        // insert the new saved song to the saved songs page
+                        self.savedTable.insertRows(at: [IndexPath(row:  ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! - 1, section: 0)], with: .automatic)
+                        self.savedTable.endUpdates()
+                        self.songTable.reloadData()
+                        self.recommendedTable.reloadData()
+                        self.BPMtable.reloadData()
+                    }
                 }
             } // end actionblock
 
@@ -2325,20 +2313,6 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             })
             
             if (self.recommendedList.count == 30) {
-                
-                // if song is saved, filled bookmark should show
-                if (((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count) != 0) {
-                    
-                    if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs)!.firstIndex(where: { (item) -> Bool in
-                        item?.id != recommendedList[indexPath.row]?.id!
-                    }) != nil {
-                        cell.bookmarkIcon.image = UIImage(systemName: "bookmark")
-                    }
-                }
-                // if user has an empty saved songs list
-                else {
-                    cell.bookmarkIcon.image = UIImage(systemName: "bookmark")
-                }
 
                 // if the song is already saved, upon search, make the bookmark filled
                 if (((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count) != 0) {
@@ -2347,6 +2321,9 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                         item?.id == recommendedList[indexPath.row]?.id!
                     }) != nil {
                         cell.bookmarkIcon.image = UIImage(systemName: "bookmark.fill")
+                    }
+                    else {
+                        cell.bookmarkIcon.image = UIImage(systemName: "bookmark")
                     }
                 }
             
@@ -2373,15 +2350,15 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                             item?.id == self.recommendedList[indexPath.row]?.id!
                         }) {
                             self.savedTable.beginUpdates()
-                            self.songTable.reloadData()
-                            self.recommendedTable.reloadData()
-                            self.BPMtable.reloadData()
                             
                             // delete the song from the saved songs table
                             self.savedTable.deleteRows(at: [(IndexPath(row: songIndex, section:0))], with: .automatic)
                             ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.deleteSavedSong(id: self.recommendedList[indexPath.row]?.id!))
                             
                             self.savedTable.endUpdates()
+                            self.songTable.reloadData()
+                            self.recommendedTable.reloadData()
+                            self.BPMtable.reloadData()
                             
                             // if the user unsaves the only song in the table
                             if ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs) == nil || ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! == 0{
@@ -2412,6 +2389,9 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                         // insert the new saved song to the saved songs page
                         self.savedTable.insertRows(at: [IndexPath(row:  ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! - 1, section: 0)], with: .automatic)
                         self.savedTable.endUpdates()
+                        self.songTable.reloadData()
+                        self.recommendedTable.reloadData()
+                        self.BPMtable.reloadData()
                     }
                 }
                 // else savedSongs is empty
@@ -2434,6 +2414,9 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     // insert the new saved song to the saved songs page
                     self.savedTable.insertRows(at: [IndexPath(row:  ((UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]?.savedSongs.count)! - 1, section: 0)], with: .automatic)
                     self.savedTable.endUpdates()
+                    self.songTable.reloadData()
+                    self.recommendedTable.reloadData()
+                    self.BPMtable.reloadData()
                 }
                 
             } // end actionblock
