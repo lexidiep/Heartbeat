@@ -209,12 +209,10 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         featured.layer.borderColor = UIColor.lightGray.cgColor
         featured.layer.borderWidth = 1.0
         featured.layer.cornerRadius = 5
-        //featured_slide.layer.cornerRadius = 5
-        //featured_slide.dataSource = self
-        //featured_slide.delegate = self
         scrollView.addSubview(featCarousel)
         featCarousel.dataSource = self
-        featCarousel.frame = CGRect(x: 0, y: 80, width: self.view.frame.width, height: 283)
+        featCarousel.layer.cornerRadius = 5
+        featCarousel.frame = CGRect(x: 7, y: 80, width: self.view.frame.width/1.05, height: 225)
         
         // recommended table
         recommendedTable.delegate = self
@@ -2442,12 +2440,15 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     // featured panel uses cocoapods for iCarousel
     func carousel(_ carousel: iCarousel, viewForItemAt index: Int, reusing view: UIView?) -> UIView {
-        let view = UIView(frame:CGRect(x: 0, y: 80, width: 374, height: 283))
-        let imageView = UIImageView()
-        imageView.frame = CGRect(x: 5, y: 0, width: 374, height: 283)
+        let view = UIView(frame:CGRect(x: 7, y: 80, width: self.view.frame.size.width/1.05, height: 225))
+        view.layer.cornerRadius = 5
+        let imageView = UIImageView(frame: view.bounds)
+        imageView.layer.cornerRadius = 5
         view.addSubview(imageView)
-        imageView.contentMode = .scaleAspectFill
+        //imageView.contentMode = .scaleToFill
+        imageView.clipsToBounds = true
         imageView.image = featImages[index]
+        
         return view
     }
     
