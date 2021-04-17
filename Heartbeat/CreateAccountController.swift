@@ -77,24 +77,13 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIPickerVi
         questionPicker.delegate = self
         questionPicker.dataSource = self
         pickerData = [ "What is your mother's maiden name?", "What is the name of your first pet?", "What was your first car?", "What elementary school did you attend?", "What city were you born in?" ]
+        questionPicker.selectRow(2, inComponent: 0, animated: true)
+        
         securityField.attributedPlaceholder = NSAttributedString(string: "Answer to Security Question", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         securityField.delegate = self
         securityField.addTarget(self, action: #selector(CreateAccountController.textFieldDidChange(_:)), for: UIControl.Event.editingChanged)
         securityNextButton.layer.cornerRadius = 5
-        
-        //debugging
-        /*
-        if (UIApplication.shared.delegate as! AppDelegate).userData.count != 0 {
-            print("\((UIApplication.shared.delegate as! AppDelegate).userData.count)) In CreateAccountScreen:")
-            for i in 0...(UIApplication.shared.delegate as! AppDelegate).userData.count-1 {
-                print((UIApplication.shared.delegate as! AppDelegate).userData[i]!.email!)
-            }
-        }
-        else {
-            print("(0) In CreateAccountScreen: empty")
-        }
-       */
-        
+
         // dismisses keyboard on tap anywhere
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(CreateAccountController.dismissKeyboard))
         tap.cancelsTouchesInView = false
