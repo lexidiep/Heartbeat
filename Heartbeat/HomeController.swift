@@ -8,7 +8,7 @@
 import UIKit
 import iCarousel
 
-class HomeController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, iCarouselDataSource {
+class HomeController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, iCarouselDataSource {
     
     
     // --------------- OUTLETS & VARIABLES ---------------
@@ -165,6 +165,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var editPasswordField: UITextField!
     @IBOutlet weak var editConfirmField: UITextField!
     @IBOutlet weak var editErrorMessage: UILabel!
+    var didChangePic:Bool = false
+    var choseFromLibrary:Bool = false
     
     
     // image data for each recommended panel
@@ -189,20 +191,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                       UIImage(named:"laugh_now_cry_later_drake_133bpm") ,
                       UIImage(named:"power_kanye_west_152bpm") ,
                       UIImage(named:"thunder_imagine_dragons_166bpm") ]
-    /*
-    var featImages = [UIImage]()
-    init(images: [UIImage]) {
-        super.init(nibName: nil, bundle: nil)
-        self.featImages =  [
-            textToImage(drawText: "Your Beat, Your Style", inImage: UIImage(named: "juice-wrld-ellie-goulding")!, atPoint: CGPoint(x: 20,y: 20)) ,
-            textToImage(drawText: "Find More Songs", inImage: UIImage(named: "mac_miller")!, atPoint: CGPoint(x: 20,y: 20)) ,
-            textToImage(drawText: "Feel The Music", inImage: UIImage(named: "khalid")!, atPoint: CGPoint(x: 20,y: 20)) ,
-            textToImage(drawText: "Save Your Favorite Songs", inImage: UIImage(named: "lana")!, atPoint: CGPoint(x: 20,y: 20)) ,
-            textToImage(drawText: "Top Recommended Songs", inImage: UIImage(named: "billie")!, atPoint: CGPoint(x: 20,y: 20)) ,
-            textToImage(drawText: "Heartbeat Feature", inImage: UIImage(named: "alicia_keys")!, atPoint: CGPoint(x: 20,y: 20))
-        ]
-    }
-*/
+
     var featImages = [UIImage(named: "juice-wrld-ellie-goulding") ,
                       UIImage(named: "mac_miller") ,
                       UIImage(named: "khalid") ,
@@ -237,17 +226,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         featCarousel.frame = CGRect(x: 7, y: 80, width: self.view.frame.width/1.05, height: 225)
         featCarousel.bounceDistance = 0.25
         featCarousel.currentItemIndex = 2
-        /*
-        featImages = [
-            textToImage(drawText: "Your Beat, Your Style", inImage: UIImage(named: "juice-wrld-ellie-goulding")!, atPoint: CGPoint(x: 20,y: 20)) ,
-            textToImage(drawText: "Find More Songs", inImage: UIImage(named: "mac_miller")!, atPoint: CGPoint(x: 20,y: 20)) ,
-            textToImage(drawText: "Feel The Music", inImage: UIImage(named: "khalid")!, atPoint: CGPoint(x: 20,y: 20)) ,
-            textToImage(drawText: "Save Your Favorite Songs", inImage: UIImage(named: "lana")!, atPoint: CGPoint(x: 20,y: 20)) ,
-            textToImage(drawText: "Top Recommended Songs", inImage: UIImage(named: "billie")!, atPoint: CGPoint(x: 20,y: 20)) ,
-            textToImage(drawText: "Heartbeat Feature", inImage: UIImage(named: "alicia_keys")!, atPoint: CGPoint(x: 20,y: 20))
-        ]
- */
-        
+   
         
         // recommended table
         recommendedTable.delegate = self
@@ -412,6 +391,13 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         // check if user has a name
         if (UIApplication.shared.delegate as! AppDelegate).userData[tempIndex]!.name != nil && (UIApplication.shared.delegate as! AppDelegate).userData[tempIndex]!.name != "" {
             nameLabel.text = "Name:   \((UIApplication.shared.delegate as! AppDelegate).userData[tempIndex]!.name!)"
+        }
+        // check if user has a profile picture
+        if (UIApplication.shared.delegate as! AppDelegate).userData[tempIndex]!.profilePic != nil {
+            profilePic.image = (UIApplication.shared.delegate as! AppDelegate).userData[tempIndex]!.profilePic!
+        }
+        else {
+            profilePic.image = UIImage(named: "general_profile")
         }
         passwordLabel.textColor = .lightGray
         passwordLabel.text?.append("   ")
@@ -1724,6 +1710,10 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             editConfirmField.isHidden = false
             editProfilePicButton.isHidden = false
             editProfileButton.setImage(nil, for: .normal)
+            deleteAccountButton.alpha = 0.7
+            deleteAccountButton.isEnabled = false
+            logOutButton.alpha = 0.7
+            logOutButton.isEnabled = false
             
             // if user made no edits
             if (editUsernameField.text == "" && editNameField.text == "" && editEmailField.text == "" && editPasswordField.text == "" && editConfirmField.text == "") {
@@ -1736,6 +1726,11 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         }
         // user is in view mode
         else {
+            deleteAccountButton.alpha = 1.0
+            deleteAccountButton.isEnabled = true
+            logOutButton.alpha = 1.0
+            logOutButton.isEnabled = true
+            
             editUsernameField.isHidden = true
             editNameField.isHidden = true
             editEmailField.isHidden = true
@@ -1786,13 +1781,81 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             
         }
         
-        
     } // end startEditProfile
+    
+    
+    // user can change profile picture from camera or photo library
+    @IBAction func changePicture(_ sender: Any) {
+        let titleFont = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 16)]
+        let titleAttrString = NSMutableAttributedString(string: "Edit Profile Picture", attributes: titleFont)
+        
+        let editAlert = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertController.Style.actionSheet)
+        
+        editAlert.setValue(titleAttrString, forKey:"attributedTitle")
+
+        let photoLibraryAction = UIAlertAction(title: "Choose From Photo Library", style: .default) { (action: UIAlertAction) in
+            let image = UIImagePickerController()
+            image.delegate = self
+            
+            image.sourceType = .photoLibrary
+            image.allowsEditing = true
+            
+            self.present(image, animated: true)
+            
+            self.choseFromLibrary = true
+        }
+        
+        let cameraAction = UIAlertAction(title: "Camera", style: .default) { (action: UIAlertAction) in
+            if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                let image = UIImagePickerController()
+                image.delegate = self
+                image.sourceType = .camera
+                image.allowsEditing = true
+                self.present(image, animated: true)
+                self.choseFromLibrary = false
+            }
+        }
+        
+        let deleteAction = UIAlertAction(title: "Delete Profile Picture", style: .destructive) { (action: UIAlertAction) in
+            self.profilePic.image = UIImage(named: "general_profile")
+            self.didChangePic = true
+            self.choseFromLibrary = false
+        }
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
+            self.didChangePic = false
+            self.choseFromLibrary = false
+        })
+
+        editAlert.addAction(photoLibraryAction)
+        editAlert.addAction(cameraAction)
+        editAlert.addAction(deleteAction)
+        editAlert.addAction(cancelAction)
+        self.present(editAlert, animated: true, completion: nil)
+
+    } // end changePicture
+    
+    
+    // saves image to library
+    @objc func image(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        if let error = error {
+            // we got back an error!
+            print("Error saving picture")
+        }
+    }
     
     
     // if user tries to log out, confirm logout and segue to login screen
     @IBAction func logoutTapped(_ sender: Any) {
-        let alert = UIAlertController(title: "Are you sure you want to logout?", message: "Once you log out, you are required to log in again to access your account.", preferredStyle: .alert)
+        let titleFont = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 18)]
+        let titleAttrString = NSMutableAttributedString(string: "Are you sure you want to logout?", attributes: titleFont)
+        let msgFont = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14)]
+        let msgAttrString = NSMutableAttributedString(string: "Once you log out, you are required to log in again to access your account.", attributes: msgFont)
+
+        let alert = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertController.Style.actionSheet)
+        
+        alert.setValue(titleAttrString, forKey:"attributedTitle")
+        alert.setValue(msgAttrString, forKey: "attributedMessage")
 
         alert.addAction(UIAlertAction(title: "Log Out", style: .default, handler: segueToLogin))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
@@ -1803,9 +1866,17 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     // if user tries to delete account, confirm delete, delete from database, and segue to login screen
     @IBAction func deleteAccountTapped(_ sender: Any) {
-        let alert = UIAlertController(title: "Are you sure you want to delete your account?", message: "This action cannot be undone and everything saved will be lost.", preferredStyle: .alert)
+        let titleFont = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 18)]
+        let titleAttrString = NSMutableAttributedString(string: "Are you sure you want to delete your account?", attributes: titleFont)
+        let msgFont = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14)]
+        let msgAttrString = NSMutableAttributedString(string: "This action cannot be undone and everything saved will be lost.", attributes: msgFont)
+        
+        let alert = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertController.Style.actionSheet)
+        
+        alert.setValue(titleAttrString, forKey:"attributedTitle")
+        alert.setValue(msgAttrString, forKey: "attributedMessage")
 
-        alert.addAction(UIAlertAction(title: "Delete Account", style: .default, handler: deleteAccount))
+        alert.addAction(UIAlertAction(title: "Delete Account", style: .destructive, handler: deleteAccount))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
 
         self.present(alert, animated: true)
@@ -2127,6 +2198,40 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         } // end textField switch
         
     } // end changeEditButton
+    
+    
+    // for changing profile picture
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+            // get user index
+            let userIndex = ((UIApplication.shared.delegate as! AppDelegate).userData).firstIndex(where: { (item) -> Bool in
+                item?.username == users_name
+            })
+            
+            profilePic.image = image
+            (UIApplication.shared.delegate as! AppDelegate).userData[userIndex!]!.profilePic = profilePic.image
+            if profilePic.image != UIImage(named: "general_profile") {
+                didChangePic = true
+            }
+            
+            if didChangePic {
+                self.editProfileButton.setTitle("Save", for: .normal)
+                self.editProfileButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+                self.editProfileButton.setTitleColor(UIColor.systemBlue, for: .normal)
+            }
+
+            if !choseFromLibrary {
+                // save image to library
+                UIImageWriteToSavedPhotosAlbum(profilePic.image!, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
+            }
+        }
+        else
+        {
+            // error message
+            print("Could not set image from photo library")
+        }
+        self.dismiss(animated: true, completion: nil)
+    } // end imagePickerController
     
     
     // number of items for recommended panel images
@@ -2928,17 +3033,17 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         
         var tempJuiceImg:UIImage = textToImage(drawText: "Your Beat, Your Style", inImage: UIImage(named: "juice-wrld-ellie-goulding")!, atPoint: CGPoint(x: 20,y: 300), fontSize: 60)
         var tempMacImg:UIImage = textToImage(drawText: "Discover More Songs", inImage: UIImage(named: "mac_miller")!, atPoint: CGPoint(x: 20,y: 350), fontSize: 70)
-        var tempKhalidImg:UIImage = textToImage(drawText: "Feel The Music", inImage: UIImage(named: "khalid")!, atPoint: CGPoint(x: 20,y: 440), fontSize: 105)
-        var tempLanaImg:UIImage = textToImage(drawText: "Save Your Favorite Songs", inImage: UIImage(named: "lana")!, atPoint: CGPoint(x: 20,y: 1300), fontSize: 240)
-        var tempBillieImg:UIImage = textToImage(drawText: "Top Recommended Songs", inImage: UIImage(named: "billie")!, atPoint: CGPoint(x: 20,y: 245), fontSize: 50)
+        var tempKhalidImg:UIImage = textToImage(drawText: "Feel The Music", inImage: UIImage(named: "khalid")!, atPoint: CGPoint(x: 20,y: 455), fontSize: 105)
+        var tempLanaImg:UIImage = textToImage(drawText: "Save Your Favorite Songs", inImage: UIImage(named: "lana")!, atPoint: CGPoint(x: 120,y: 1400), fontSize: 240)
+        var tempBillieImg:UIImage = textToImage(drawText: "Top Recommended Songs", inImage: UIImage(named: "billie")!, atPoint: CGPoint(x: 20,y: 255), fontSize: 50)
         var tempAliciaImg:UIImage = textToImage(drawText: "Heartbeat Feature", inImage: UIImage(named: "alicia_keys")!, atPoint: CGPoint(x: 20,y: 235), fontSize: 55)
         
         featImages = [
             textToImage(drawText: "Change up your profile information in profile settings", inImage: tempJuiceImg, atPoint: CGPoint(x: 20,y: 370), fontSize: 30) ,
             textToImage(drawText: "Search any song title to view it's information", inImage: tempMacImg, atPoint: CGPoint(x: 20,y: 430), fontSize: 35) ,
-            textToImage(drawText: "Find songs based on your heart rate", inImage: tempKhalidImg, atPoint: CGPoint(x: 20,y: 550), fontSize: 52) ,
-            textToImage(drawText: "Bookmark your favorite songs to view later", inImage: tempLanaImg, atPoint: CGPoint(x: 20,y: 1600), fontSize: 120) ,
-            textToImage(drawText: "Find popular songs in the Recommended section", inImage: tempBillieImg, atPoint: CGPoint(x: 20,y: 305), fontSize: 25) ,
+            textToImage(drawText: "Find songs based on your heart rate", inImage: tempKhalidImg, atPoint: CGPoint(x: 20,y: 568), fontSize: 52) ,
+            textToImage(drawText: "Bookmark your favorite songs to view later", inImage: tempLanaImg, atPoint: CGPoint(x: 120,y: 1700), fontSize: 120) ,
+            textToImage(drawText: "Find popular songs in the Recommended section", inImage: tempBillieImg, atPoint: CGPoint(x: 20,y: 315), fontSize: 25) ,
             textToImage(drawText: "Get a live feed of your heart rate through the camera", inImage:tempAliciaImg, atPoint: CGPoint(x: 20,y: 295), fontSize: 27)
         ]
         

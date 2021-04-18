@@ -62,6 +62,8 @@ class LoginController: UIViewController, UITextFieldDelegate {
             testAccount.savedSongs = []
             testAccount.securityQuestion = "What is your mother's maiden name?"
             testAccount.securityAnswer = "test"
+            testAccount.name = "ASU"
+            testAccount.profilePic = UIImage(named: "sparky")
             (UIApplication.shared.delegate as! AppDelegate).userData.append(testAccount)
         }
         
