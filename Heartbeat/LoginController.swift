@@ -107,25 +107,12 @@ class LoginController: UIViewController, UITextFieldDelegate {
         confirmPasswordField.addTarget(self, action: #selector(CreateAccountController.textFieldDidChange(_:)), for: UIControl.Event.editingChanged)
         confirmPasswordField.attributedPlaceholder = NSAttributedString(string: "Confirm Password", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         
-        
-        
-        // debugging
-        /*
-        if ((UIApplication.shared.delegate as! AppDelegate).userData.count != 0) {
-            print("(\((UIApplication.shared.delegate as! AppDelegate).userData.count)) In LoginScreen: ")
-            for i in 0...(UIApplication.shared.delegate as! AppDelegate).userData.count-1 {
-                print((UIApplication.shared.delegate as! AppDelegate).userData[i]!.username!)
-            }
-        }
-        else {
-            print("(0) In LoginScreen: empty")
-        }
-    */
-        
-        
+      
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(HomeController.dismissKeyboard))
         tap.cancelsTouchesInView = false
         loginView.addGestureRecognizer(tap)
+        loginButton.addGestureRecognizer(tap)
+        
  
     }   // end viewDidLoad()
     
@@ -558,6 +545,8 @@ class LoginController: UIViewController, UITextFieldDelegate {
     @objc func dismissKeyboard() {
         //Causes the view (or one of its embedded text fields) to resign the first responder status.
         loginView.endEditing(true)
+        usernameField.resignFirstResponder()
+        passwordField.resignFirstResponder()
     } // end dismiss keyboard
     
     

@@ -189,12 +189,25 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
                       UIImage(named:"laugh_now_cry_later_drake_133bpm") ,
                       UIImage(named:"power_kanye_west_152bpm") ,
                       UIImage(named:"thunder_imagine_dragons_166bpm") ]
-    
+    /*
+    var featImages = [UIImage]()
+    init(images: [UIImage]) {
+        super.init(nibName: nil, bundle: nil)
+        self.featImages =  [
+            textToImage(drawText: "Your Beat, Your Style", inImage: UIImage(named: "juice-wrld-ellie-goulding")!, atPoint: CGPoint(x: 20,y: 20)) ,
+            textToImage(drawText: "Find More Songs", inImage: UIImage(named: "mac_miller")!, atPoint: CGPoint(x: 20,y: 20)) ,
+            textToImage(drawText: "Feel The Music", inImage: UIImage(named: "khalid")!, atPoint: CGPoint(x: 20,y: 20)) ,
+            textToImage(drawText: "Save Your Favorite Songs", inImage: UIImage(named: "lana")!, atPoint: CGPoint(x: 20,y: 20)) ,
+            textToImage(drawText: "Top Recommended Songs", inImage: UIImage(named: "billie")!, atPoint: CGPoint(x: 20,y: 20)) ,
+            textToImage(drawText: "Heartbeat Feature", inImage: UIImage(named: "alicia_keys")!, atPoint: CGPoint(x: 20,y: 20))
+        ]
+    }
+*/
     var featImages = [UIImage(named: "juice-wrld-ellie-goulding") ,
                       UIImage(named: "mac_miller") ,
-                      UIImage(named: "billie") ,
-                      UIImage(named: "lana") ,
                       UIImage(named: "khalid") ,
+                      UIImage(named: "lana") ,
+                      UIImage(named: "billie") ,
                       UIImage(named: "alicia_keys") ]
     
     
@@ -222,6 +235,19 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         featCarousel.dataSource = self
         featCarousel.layer.cornerRadius = 5
         featCarousel.frame = CGRect(x: 7, y: 80, width: self.view.frame.width/1.05, height: 225)
+        featCarousel.bounceDistance = 0.25
+        featCarousel.currentItemIndex = 2
+        /*
+        featImages = [
+            textToImage(drawText: "Your Beat, Your Style", inImage: UIImage(named: "juice-wrld-ellie-goulding")!, atPoint: CGPoint(x: 20,y: 20)) ,
+            textToImage(drawText: "Find More Songs", inImage: UIImage(named: "mac_miller")!, atPoint: CGPoint(x: 20,y: 20)) ,
+            textToImage(drawText: "Feel The Music", inImage: UIImage(named: "khalid")!, atPoint: CGPoint(x: 20,y: 20)) ,
+            textToImage(drawText: "Save Your Favorite Songs", inImage: UIImage(named: "lana")!, atPoint: CGPoint(x: 20,y: 20)) ,
+            textToImage(drawText: "Top Recommended Songs", inImage: UIImage(named: "billie")!, atPoint: CGPoint(x: 20,y: 20)) ,
+            textToImage(drawText: "Heartbeat Feature", inImage: UIImage(named: "alicia_keys")!, atPoint: CGPoint(x: 20,y: 20))
+        ]
+ */
+        
         
         // recommended table
         recommendedTable.delegate = self
@@ -2862,6 +2888,34 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     
     
+    // --------------- FEATURED PANEL (TEXT IN IMAGE) ---------------
+    
+    func textToImage(drawText text: String, inImage image: UIImage, atPoint point: CGPoint, fontSize: Int) -> UIImage {
+        let textColor = UIColor.white
+        let textFont = UIFont(name: "Helvetica Neue", size: CGFloat(fontSize))!
+
+        let scale = UIScreen.main.scale
+        UIGraphicsBeginImageContextWithOptions(image.size, false, scale)
+
+        let textFontAttributes = [
+            NSAttributedString.Key.font: textFont,
+            NSAttributedString.Key.foregroundColor: textColor,
+            ] as [NSAttributedString.Key : Any]
+        image.draw(in: CGRect(origin: CGPoint.zero, size: image.size))
+
+        let rect = CGRect(origin: point, size: image.size)
+        text.draw(in: rect, withAttributes: textFontAttributes)
+
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        return newImage!
+    } // end textToImage
+    
+    
+    
+    
+    
     // --------------- FEATURED PANEL (iCAROUSEL) ---------------
     
     // Featured Panel Carousel
@@ -2871,6 +2925,22 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     // featured panel uses cocoapods for iCarousel
     func carousel(_ carousel: iCarousel, viewForItemAt index: Int, reusing view: UIView?) -> UIView {
+        
+        var tempJuiceImg:UIImage = textToImage(drawText: "Your Beat, Your Style", inImage: UIImage(named: "juice-wrld-ellie-goulding")!, atPoint: CGPoint(x: 20,y: 300), fontSize: 60)
+        var tempMacImg:UIImage = textToImage(drawText: "Discover More Songs", inImage: UIImage(named: "mac_miller")!, atPoint: CGPoint(x: 20,y: 350), fontSize: 70)
+        var tempKhalidImg:UIImage = textToImage(drawText: "Feel The Music", inImage: UIImage(named: "khalid")!, atPoint: CGPoint(x: 20,y: 440), fontSize: 105)
+        var tempLanaImg:UIImage = textToImage(drawText: "Save Your Favorite Songs", inImage: UIImage(named: "lana")!, atPoint: CGPoint(x: 20,y: 1300), fontSize: 240)
+        var tempBillieImg:UIImage = textToImage(drawText: "Top Recommended Songs", inImage: UIImage(named: "billie")!, atPoint: CGPoint(x: 20,y: 245), fontSize: 50)
+        var tempAliciaImg:UIImage = textToImage(drawText: "Heartbeat Feature", inImage: UIImage(named: "alicia_keys")!, atPoint: CGPoint(x: 20,y: 235), fontSize: 55)
+        
+        featImages = [
+            textToImage(drawText: "Change up your profile information in profile settings", inImage: tempJuiceImg, atPoint: CGPoint(x: 20,y: 370), fontSize: 30) ,
+            textToImage(drawText: "Search any song title to view it's information", inImage: tempMacImg, atPoint: CGPoint(x: 20,y: 430), fontSize: 35) ,
+            textToImage(drawText: "Find songs based on your heart rate", inImage: tempKhalidImg, atPoint: CGPoint(x: 20,y: 550), fontSize: 52) ,
+            textToImage(drawText: "Bookmark your favorite songs to view later", inImage: tempLanaImg, atPoint: CGPoint(x: 20,y: 1600), fontSize: 120) ,
+            textToImage(drawText: "Find popular songs in the Recommended section", inImage: tempBillieImg, atPoint: CGPoint(x: 20,y: 305), fontSize: 25) ,
+            textToImage(drawText: "Get a live feed of your heart rate through the camera", inImage:tempAliciaImg, atPoint: CGPoint(x: 20,y: 295), fontSize: 27)
+        ]
         
         // create a uiview to contain the image
         let view = UIView(frame:CGRect(x: 7, y: 80, width: self.view.frame.size.width/1.05, height: 225))
